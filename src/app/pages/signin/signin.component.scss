@@ -1,0 +1,64 @@
+body {
+  background-image: url("../../../assets/background.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+h1 {
+  margin-bottom: 40px;
+}
+
+form {
+  position: fixed;
+  top: 50%;
+  left: 25%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-container {
+  padding: 30px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+mat-form-field {
+  width: 280px;
+  margin-bottom: 15px;
+}
+
+.forgot-button {
+  margin: 0 0 20px 0;
+  text-align: right;
+  width: 100%;
+}
+
+.login {
+  width: 150px !important;
+  min-width: unset !important;
+}
+
+.register {
+  margin-top: 10px;
+}
+
+.password-input-wrapper {
+  display: flex;
+  align-items: center; /* Centrira ikonu vertikalno */
+}
+
+.password-input-wrapper input {
+  flex: 1; /* Omogućava inputu da zauzme preostali prostor */
+  margin-right: 5px; /* Dodaje malo prostora s desne strane inputa */
+}
+
+.password-input-wrapper mat-icon {
+  font-size: 24px; /* Postavlja veličinu ikone */
+  cursor: pointer; /* Dodaje kursor pokazivača na ikonu */
+}

@@ -1,0 +1,61 @@
+<body>
+  <form [formGroup]="form">
+    <div class="form-container">
+      <h1>Sign in</h1>
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input
+          type="email"
+          matInput
+          placeholder="Ex. pat@example.com"
+          formControlName="email"
+        />
+        @if (form.get('email')!.hasError('required')) {
+        <mat-error>Email is required</mat-error>
+        } @if (form.get('email')!.hasError('pattern')) {
+        <mat-error>Email is invalid</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <div class="password-input-wrapper">
+          <input
+            type="{{ showPassword ? 'text' : 'password' }}"
+            matInput
+            placeholder="Password"
+            formControlName="password"
+          />
+          <mat-icon (click)="togglePasswordVisibility()">{{
+            showPassword ? "visibility_off" : "visibility"
+          }}</mat-icon>
+        </div>
+        @if (form.get('password')!.hasError('required')) {
+        <mat-error>Password is required</mat-error>
+        } @if (form.get('password')!.hasError('minlength')) {
+        <mat-error>Minimum 8 characters</mat-error>
+        } @if (form.get('password')!.hasError('pattern')) {
+        <mat-error>Requires uppercase, lowercase, and digit</mat-error>
+        }
+      </mat-form-field>
+      <div class="forgot-button">
+        <button
+          mat-button
+          [disabled]="!form.get('email')!.valid"
+          test-id="forgot-password-button"
+        >
+          Forgot your password?
+        </button>
+      </div>
+      <button
+        mat-raised-button
+        class="login"
+        color="primary"
+        test-id="login-button"
+        [disabled]="!form.valid"
+      >
+        Login
+      </button>
+      <button mat-button class="register">Don't have an account yet?</button>
+    </div>
+  </form>
+</body>
