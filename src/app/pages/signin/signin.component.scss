@@ -50,15 +50,27 @@ mat-form-field {
 
 .password-input-wrapper {
   display: flex;
-  align-items: center; /* Centrira ikonu vertikalno */
+  align-items: center;
 }
 
 .password-input-wrapper input {
-  flex: 1; /* Omogućava inputu da zauzme preostali prostor */
-  margin-right: 5px; /* Dodaje malo prostora s desne strane inputa */
+  flex: 1;
+  margin-right: 5px;
 }
 
 .password-input-wrapper mat-icon {
-  font-size: 24px; /* Postavlja veličinu ikone */
-  cursor: pointer; /* Dodaje kursor pokazivača na ikonu */
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
 }

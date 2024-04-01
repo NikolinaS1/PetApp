@@ -52,10 +52,17 @@
         color="primary"
         test-id="login-button"
         [disabled]="!form.valid"
+        (click)="login()"
+        *ngIf="!isLoggingIn"
       >
         Login
       </button>
       <button mat-button class="register">Don't have an account yet?</button>
     </div>
   </form>
+  <div class="loader-container" *ngIf="isLoggingIn">
+    <div class="loader" test-id="login-loader">
+      <mat-spinner color="accent" diameter="70"></mat-spinner>
+    </div>
+  </div>
 </body>
