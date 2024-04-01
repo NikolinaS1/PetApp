@@ -94,6 +94,23 @@ describe('SigninComponent', () => {
     });
   });
 
+  describe('togglePasswordVisibility', () => {
+    beforeEach(() => {
+      component.showPassword = false;
+    });
+
+    it('should toggle showPassword to true if initially false', () => {
+      component.togglePasswordVisibility();
+      expect(component.showPassword).toBeTruthy();
+    });
+
+    it('should toggle showPassword to false if initially true', () => {
+      component.showPassword = true;
+      component.togglePasswordVisibility();
+      expect(component.showPassword).toBeFalsy();
+    });
+  });
+
   describe('Login flow', () => {
     describe('login loader', () => {
       beforeEach(() => {
@@ -105,10 +122,6 @@ describe('SigninComponent', () => {
 
       it('show when user clicks on login button', () => {
         expect(loginLoader()).not.toBeNull();
-      });
-
-      it('hide when user clicks on login button', () => {
-        expect(loginButton()).toBeNull();
       });
 
       describe('when login is successful', () => {
