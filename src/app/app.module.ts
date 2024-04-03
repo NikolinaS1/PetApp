@@ -8,9 +8,10 @@ import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { environment } from '../environments/environment.prod';
 import { BlankComponent } from './mocks/blank/blank.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @NgModule({
-  declarations: [AppComponent, BlankComponent],
+  declarations: [AppComponent, BlankComponent, NavbarComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

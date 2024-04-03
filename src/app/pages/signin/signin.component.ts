@@ -13,6 +13,7 @@ export class SigninComponent implements OnInit {
   form!: FormGroup;
   showPassword: boolean = false;
   isLoggingIn = false;
+  isRecoveringPassword = false;
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -52,11 +53,11 @@ export class SigninComponent implements OnInit {
         email: this.form.value.email,
         password: this.form.value.password,
       })
-      .subscribe(
-        () => {
+      .subscribe({
+        next: () => {
           this.router.navigate(['home']);
         },
-        (error: any) => {
+        error: () => {
           this.isLoggingIn = false;
           this.snackBar.open(
             'Error when entering email or password. Please try again.',
@@ -65,7 +66,34 @@ export class SigninComponent implements OnInit {
               duration: 5000,
             }
           );
-        }
-      );
+        },
+      });
+  }
+
+  forgotPassword() {
+    this.isRecoveringPassword = true;
+
+    this.authenticationService.forgotPassword(this.form.value.email).subscribe({
+      next: () => {
+        this.isRecoveringPassword = false;
+        this.snackBar.open(
+          'Password reset email has been sent to your email account.',
+          'OK',
+          {
+            duration: 5000,
+          }
+        );
+      },
+      error: (error: any) => {
+        this.isRecoveringPassword = false;
+        this.snackBar.open(
+          'Error while trying to reset password. Please try again',
+          'OK',
+          {
+            duration: 5000,
+          }
+        );
+      },
+    });
   }
 }

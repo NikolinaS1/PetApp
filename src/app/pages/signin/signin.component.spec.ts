@@ -166,6 +166,64 @@ describe('SigninComponent', () => {
     });
   });
 
+  describe('Forgot password flow', () => {
+    describe('user clicks on forgot password button', () => {
+      beforeEach(() => {
+        setEmail('valid.email@email.com');
+        forgotPasswordButton().click();
+        fixture.detectChanges();
+      });
+
+      it('show forgot password loader', () => {
+        expect(forgotPasswordLoader()).not.toBeNull();
+      });
+
+      it('hide forgot password button', () => {
+        expect(forgotPasswordButton()).toBeNull();
+      });
+
+      describe('when forgot password success', () => {
+        beforeEach(() => {
+          authenticationService._forgotPasswordResponse.next({});
+          fixture.detectChanges();
+        });
+
+        it('hide forgot password loader', () => {
+          expect(forgotPasswordLoader()).toBeNull();
+        });
+
+        it('show forgot password button', () => {
+          expect(forgotPasswordButton()).not.toBeNull();
+        });
+
+        it('show success message', () => {
+          expect(snackBar._isOpened).toBeTruthy();
+        });
+      });
+
+      describe('when forgot password fails', () => {
+        beforeEach(() => {
+          authenticationService._forgotPasswordResponse.error({
+            message: 'any message',
+          });
+          fixture.detectChanges();
+        });
+
+        it('hide forgot password loader', () => {
+          expect(forgotPasswordLoader()).toBeNull();
+        });
+
+        it('show forgot password button', () => {
+          expect(forgotPasswordButton()).not.toBeNull();
+        });
+
+        it('show error message', () => {
+          expect(snackBar._isOpened).toBeTruthy();
+        });
+      });
+    });
+  });
+
   function setEmail(value: string) {
     component.form.get('email')?.setValue(value);
     fixture.detectChanges();
@@ -187,10 +245,18 @@ describe('SigninComponent', () => {
   function loginLoader() {
     return page.querySelector('[test-id="login-loader"]');
   }
+
+  function forgotPasswordLoader() {
+    return page.querySelector('[test-id="forgot-password-loader"]');
+  }
 });
 
 class AuthenticationServiceMock {
+  _forgotPasswordResponse = new Subject();
   _signInResponse = new Subject();
+  forgotPassword() {
+    return this._forgotPasswordResponse.asObservable();
+  }
   signIn() {
     return this._signInResponse.asObservable();
   }

@@ -41,9 +41,19 @@
         <button
           mat-button
           [disabled]="!form.get('email')!.valid"
+          (click)="forgotPassword()"
+          *ngIf="!isRecoveringPassword"
           test-id="forgot-password-button"
         >
           Forgot your password?
+        </button>
+        <button
+          mat-button
+          class="button-loader"
+          *ngIf="isRecoveringPassword"
+          test-id="forgot-password-loader"
+        >
+          <mat-spinner color="primary" diameter="20"></mat-spinner>
         </button>
       </div>
       <button

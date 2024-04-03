@@ -13,6 +13,10 @@ export class AuthenticationService {
       this.auth.signInWithEmailAndPassword(params.email, params.password)
     );
   }
+
+  forgotPassword(email: string): Observable<void> {
+    return from(this.auth.sendPasswordResetEmail(email));
+  }
 }
 
 type SignIn = {
