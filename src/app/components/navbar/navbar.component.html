@@ -1,1 +1,161 @@
-<p>navbar works!</p>
+<nav class="main-nav">
+  <div class="logo-menu-block">
+    <div class="logo"><img src="../../../assets/logo.png" /></div>
+    <div class="menu-icon" fxShow="true" fxHide.gt-sm="true">
+      <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li matTooltip="Home">
+      <a routerLink="/" class="nav-link">
+        <mat-icon>home</mat-icon>
+      </a>
+    </li>
+    <li matTooltip="Profile">
+      <a routerLink="/profile" class="nav-link">
+        <mat-icon>person</mat-icon>
+      </a>
+    </li>
+    <li matTooltip="Messages">
+      <button mat-button [matMenuTriggerFor]="messageMenu">
+        <mat-icon matBadge="6" matBadgeColor="accent">message</mat-icon>
+      </button>
+      <mat-menu #messageMenu="matMenu" xPosition="before" class="customize">
+        <button mat-menu-item>
+          <div class="item-content">
+            <img
+              class="user"
+              src="../../../assets/person.jpg"
+              alt="User Image"
+            />
+            <div class="text-content">
+              <span class="name">Ime Prezime</span>
+              <p class="content">Dio Poruke...</p>
+            </div>
+          </div>
+        </button>
+        <button mat-menu-item>
+          <div class="item-content">
+            <img
+              class="user"
+              src="../../../assets/person.jpg"
+              alt="User Image"
+            />
+            <div class="text-content">
+              <span class="name">Ime Prezime</span>
+              <p class="content">Dio Poruke...</p>
+            </div>
+          </div>
+        </button>
+        <button mat-menu-item>
+          <div class="item-content">
+            <img
+              class="user"
+              src="../../../assets/person.jpg"
+              alt="User Image"
+            />
+            <div class="text-content">
+              <span class="name">Ime prezime</span>
+              <p class="content">
+                Dioooooooooooooooo porukeee hhsvc hdbshcb svdhsvh hsdbhs sdhs
+              </p>
+            </div>
+          </div>
+        </button>
+        <a routerLink="/messages" class="messages-link">Show all messages</a>
+      </mat-menu>
+    </li>
+    <li matTooltip="Notifications">
+      <button mat-button [matMenuTriggerFor]="notificationMenu">
+        <mat-icon matBadge="3" matBadgeColor="accent">notifications</mat-icon>
+      </button>
+      <mat-menu
+        #notificationMenu="matMenu"
+        xPosition="before"
+        class="notification-menu"
+      >
+        <button mat-menu-item>
+          <div class="item-content">
+            <img
+              class="user"
+              src="../../../assets/person.jpg"
+              alt="User Image"
+            />
+            <div class="text-content">
+              <p class="content">Bla bla bla</p>
+            </div>
+          </div>
+        </button>
+        <button mat-menu-item>
+          <div class="item-content">
+            <img
+              class="user"
+              src="../../../assets/person.jpg"
+              alt="User Image"
+            />
+            <div class="text-content">
+              <p class="content">Bla bla bla</p>
+            </div>
+          </div>
+        </button>
+        <button mat-menu-item>
+          <div class="item-content">
+            <img
+              class="user"
+              src="../../../assets/person.jpg"
+              alt="User Image"
+            />
+            <div class="text-content">
+              <p class="content">Bla bla bla</p>
+            </div>
+          </div>
+        </button>
+        <a routerLink="/notifications" class="notifications-link"
+          >Show all notifications</a
+        >
+      </mat-menu>
+    </li>
+    <li>
+      <mat-icon
+        color="accent"
+        (click)="logout()"
+        test-id="logout-button"
+        matTooltip="Logout"
+        >exit_to_app</mat-icon
+      >
+    </li>
+  </ul>
+</nav>
+<mat-sidenav-container autosize="true">
+  <mat-sidenav>
+    <mat-nav-list>
+      <a routerLink="/" mat-list-item>
+        <span class="entry">
+          <mat-icon>home</mat-icon>
+          <span>Home</span>
+        </span>
+      </a>
+      <a routerLink="/profile" mat-list-item>
+        <span class="entry">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </span>
+      </a>
+      <a mat-list-item>
+        <span class="entry">
+          <mat-icon>message</mat-icon>
+          <span>Mesages</span>
+        </span>
+      </a>
+      <a mat-list-item>
+        <span class="entry">
+          <mat-icon>notifications</mat-icon>
+          <span>Notifications</span>
+        </span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -8,9 +8,14 @@ const routes: Routes = [
       import('./pages/signin/signin.module').then((m) => m.SigninModule),
   },
   {
-    path: 'home',
+    path: '',
     loadChildren: () =>
       import('./pages/home/home.module').then((m) => m.HomeModule),
+  },
+  {
+    path: 'profile',
+    loadChildren: () =>
+      import('./pages/profile/profile.module').then((m) => m.ProfileModule),
   },
 ];
 

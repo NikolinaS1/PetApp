@@ -132,7 +132,7 @@ describe('SigninComponent', () => {
 
         it('go to home page', (done) => {
           setTimeout(() => {
-            expect(location.path()).toEqual('/home');
+            expect(location.path()).toEqual('');
             done();
           }, 100);
         });
@@ -146,7 +146,7 @@ describe('SigninComponent', () => {
 
         it('do not go to home page', (done) => {
           setTimeout(() => {
-            expect(location.path()).not.toEqual('/home');
+            expect(location.path()).not.toEqual('/');
             done();
           }, 100);
         });

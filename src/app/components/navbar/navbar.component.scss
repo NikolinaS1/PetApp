@@ -1,0 +1,136 @@
+.main-nav {
+  background-color: #fff;
+  padding: 15px 0px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+
+  .logo-menu-block {
+    display: flex;
+  }
+
+  .logo {
+    img {
+      width: 150px;
+      padding-left: 20px;
+    }
+  }
+
+  .nav-links {
+    list-style: none;
+    margin: 0;
+    margin-right: 20px;
+    padding: 0;
+    display: flex;
+
+    li {
+      margin-left: 40px;
+    }
+  }
+
+  a {
+    &.nav-link {
+      text-decoration: none;
+      font-size: 16px;
+      padding: 20px;
+      border-radius: 5px;
+      color: #000;
+      transition: color 0.3s ease, background-color 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        color: #71797e;
+      }
+    }
+  }
+}
+
+.item-content {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.text-content {
+  margin-left: 10px;
+}
+
+.user {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-right: 30px;
+}
+
+.name {
+  padding-top: 10px;
+  font-size: 20px;
+}
+
+.messages-link {
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.mat-mdc-menu-panel.mat-mdc-menu-panel {
+  max-width: initial !important;
+}
+
+@media only screen and (min-width: 700px) {
+  .menu-icon {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .nav-links li:not(:last-child) {
+    display: none;
+  }
+
+  .menu-icon mat-icon {
+    cursor: pointer;
+    margin: 5px 0 0 15px;
+  }
+}
+
+mat-toolbar {
+  position: fixed;
+  top: 0;
+  z-index: 2;
+}
+
+mat-sidenav-container {
+  height: 100%;
+}
+
+a {
+  margin: 10px 0 30px 0;
+}
+
+mat-sidenav {
+  padding-top: 3.5rem;
+  @media screen and (min-width: 600px) {
+    padding-top: 4rem;
+  }
+
+  .entry {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+}
+
+mat-sidenav-content {
+  padding-top: 3.5rem;
+  background-color: #b0c4de;
+  @media screen and (min-width: 600px) {
+    padding-top: 4rem;
+  }
+}

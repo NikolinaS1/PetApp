@@ -55,7 +55,7 @@ export class SigninComponent implements OnInit {
       })
       .subscribe({
         next: () => {
-          this.router.navigate(['home']);
+          this.router.navigate(['/']);
         },
         error: () => {
           this.isLoggingIn = false;
