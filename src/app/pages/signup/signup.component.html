@@ -1,7 +1,35 @@
 <body>
   <form [formGroup]="form">
     <div class="form-container">
-      <h1>Sign in</h1>
+      <h1>Sign up</h1>
+      <mat-form-field>
+        <mat-label>First name</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="First name"
+          formControlName="firstname"
+        />
+        @if (form.get('firstname')!.hasError('required')) {
+        <mat-error>First name is required</mat-error>
+        } @if (form.get('firstname')!.hasError('pattern')) {
+        <mat-error>First name is invalid</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Last name</mat-label>
+        <input
+          type="text"
+          matInput
+          placeholder="Last name"
+          formControlName="lastname"
+        />
+        @if (form.get('lastname')!.hasError('required')) {
+        <mat-error>Last name is required</mat-error>
+        } @if (form.get('lastname')!.hasError('pattern')) {
+        <mat-error>Last name is invalid</mat-error>
+        }
+      </mat-form-field>
       <mat-form-field>
         <mat-label>Email</mat-label>
         <input
@@ -37,37 +65,18 @@
         <mat-error>Requires uppercase, lowercase, and digit</mat-error>
         }
       </mat-form-field>
-      <div class="forgot-button">
-        <button
-          mat-button
-          [disabled]="!form.get('email')!.valid"
-          (click)="forgotPassword()"
-          *ngIf="!isRecoveringPassword"
-          test-id="forgot-password-button"
-        >
-          Forgot your password?
-        </button>
-        <button
-          mat-button
-          class="button-loader"
-          *ngIf="isRecoveringPassword"
-          test-id="forgot-password-loader"
-        >
-          <mat-spinner color="primary" diameter="20"></mat-spinner>
-        </button>
-      </div>
       <button
         mat-raised-button
-        class="login"
+        class="register"
         color="primary"
         test-id="login-button"
         [disabled]="!form.valid"
-        (click)="login()"
+        (click)="register()"
       >
-        Login
+        Register
       </button>
-      <button mat-button class="register" routerLink="/signup">
-        Don't have an account yet?
+      <button mat-button class="login" routerLink="/signin">
+        Already have an account?
       </button>
     </div>
   </form>
