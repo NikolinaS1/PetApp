@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class SignupComponent implements OnInit {
   form!: FormGroup;
   showPassword: boolean = false;
-  isLoggingIn = false;
+  isRegistering = false;
   isRecoveringPassword = false;
 
   constructor(
@@ -50,7 +50,29 @@ export class SignupComponent implements OnInit {
     });
   }
 
-  register() {}
+  register() {
+    this.isRegistering = true;
+    this.authenticationService
+      .signUp({
+        email: this.form.value.email,
+        password: this.form.value.password,
+      })
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+        error: () => {
+          this.isRegistering = false;
+          this.snackBar.open(
+            'The email address is already in use by another account.',
+            'OK',
+            {
+              duration: 5000,
+            }
+          );
+        },
+      });
+  }
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;

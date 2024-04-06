@@ -9,6 +9,10 @@ export class AuthenticationService {
   constructor(private auth: AngularFireAuth) {}
 
   logout(): Observable<void> {
-    return from(this.auth.signOut());
+    return from(
+      this.auth.signOut().then(() => {
+        localStorage.removeItem('token');
+      })
+    );
   }
 }

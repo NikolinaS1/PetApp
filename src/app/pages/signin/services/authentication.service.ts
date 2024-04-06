@@ -10,7 +10,11 @@ export class AuthenticationService {
 
   signIn(params: SignIn): Observable<any> {
     return from(
-      this.auth.signInWithEmailAndPassword(params.email, params.password)
+      this.auth
+        .signInWithEmailAndPassword(params.email, params.password)
+        .then((res) => {
+          localStorage.setItem('token', 'true');
+        })
     );
   }
 
