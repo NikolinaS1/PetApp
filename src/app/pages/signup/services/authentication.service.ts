@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +13,11 @@ export class AuthenticationService {
   constructor(
     private afAuth: AngularFireAuth,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
+
+  isRegistering = false;
 
   async signUp(
     email: string,
@@ -22,6 +26,7 @@ export class AuthenticationService {
     lastName: string
   ): Promise<any> {
     try {
+      this.isRegistering = true;
       const result = await this.afAuth.createUserWithEmailAndPassword(
         email,
         password
@@ -41,11 +46,19 @@ export class AuthenticationService {
       }
 
       localStorage.setItem('accessToken', user?.uid);
+      this.isRegistering = false;
       this.router.navigate(['/']);
 
       return result;
     } catch (error) {
       console.error('Error registering:', error);
+      this.snackBar.open(
+        'The email address is already in use by another account.',
+        'OK',
+        {
+          duration: 5000,
+        }
+      );
       throw error;
     }
   }

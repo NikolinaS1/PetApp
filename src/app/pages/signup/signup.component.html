@@ -91,7 +91,7 @@
       </button>
     </div>
   </form>
-  <div class="loader-container" *ngIf="isRegistering">
+  <div class="loader-container" *ngIf="authenticationService.isRegistering">
     <div class="loader" test-id="login-loader">
       <mat-spinner color="accent" diameter="70"></mat-spinner>
     </div>

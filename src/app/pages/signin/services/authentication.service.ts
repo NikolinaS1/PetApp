@@ -14,7 +14,10 @@ export class AuthenticationService {
     private snackBar: MatSnackBar
   ) {}
 
+  isLoggingIn = false;
+
   async signIn(email: string, password: string): Promise<any> {
+    this.isLoggingIn = true;
     try {
       const result = await this.afAuth.signInWithEmailAndPassword(
         email,
@@ -22,11 +25,19 @@ export class AuthenticationService {
       );
 
       localStorage.setItem('accessToken', result.user?.uid);
+      this.isLoggingIn = false;
       this.router.navigate(['/']);
 
       return result;
     } catch (error) {
       console.error('Error signing in:', error);
+      this.snackBar.open(
+        'Error when entering email or password. Please try again.',
+        'OK',
+        {
+          duration: 5000,
+        }
+      );
       throw error;
     }
   }
