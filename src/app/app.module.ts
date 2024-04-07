@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { environment } from '../environments/environment.prod';
 import { BlankComponent } from './mocks/blank/blank.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent, BlankComponent],
@@ -19,6 +20,7 @@ import { BlankComponent } from './mocks/blank/blank.component';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule,
+    HttpClientModule,
     provideAuth(() => getAuth()),
   ],
   providers: [provideAnimationsAsync()],

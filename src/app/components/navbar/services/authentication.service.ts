@@ -8,14 +8,18 @@ import { Router } from '@angular/router';
 export class AuthenticationService {
   constructor(private afAuth: AngularFireAuth, private router: Router) {}
 
-  async logout() {
+  async logout(): Promise<void> {
     try {
       await this.afAuth.signOut();
       localStorage.removeItem('accessToken');
       this.router.navigate(['/signin']);
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Error signing out:', error);
       throw error;
     }
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('accessToken');
   }
 }

@@ -14,36 +14,25 @@ export class AuthenticationService {
     private snackBar: MatSnackBar
   ) {}
 
-  async signIn(email: string, password: string) {
+  async signIn(email: string, password: string): Promise<any> {
     try {
       const result = await this.afAuth.signInWithEmailAndPassword(
         email,
         password
       );
-      const token = await result.user.getIdToken();
-      this.setLoggedInUser(token);
-      console.log('Successfully logged in!', result);
+
+      localStorage.setItem('accessToken', result.user?.uid);
       this.router.navigate(['/']);
+
       return result;
     } catch (error) {
-      console.error('Error logging in:', error);
-      this.snackBar.open('Invalid email or password. Please try again.', 'OK', {
-        duration: 5000,
-      });
+      console.error('Error signing in:', error);
       throw error;
     }
   }
 
-  setLoggedInUser(token: string) {
-    localStorage.setItem('accessToken', token);
-  }
-
-  getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
-  }
-
   isLoggedIn(): boolean {
-    return !!this.getAccessToken();
+    return !!localStorage.getItem('accessToken');
   }
 
   forgotPassword(email: string): Observable<void> {
