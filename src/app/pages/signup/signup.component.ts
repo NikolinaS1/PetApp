@@ -16,10 +16,8 @@ export class SignupComponent implements OnInit {
   isRecoveringPassword = false;
 
   constructor(
-    private authenticationService: AuthenticationService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private snackBar: MatSnackBar
+    public authenticationService: AuthenticationService,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -48,30 +46,6 @@ export class SignupComponent implements OnInit {
         ],
       ],
     });
-  }
-
-  register() {
-    this.isRegistering = true;
-    this.authenticationService
-      .signUp({
-        email: this.form.value.email,
-        password: this.form.value.password,
-      })
-      .subscribe({
-        next: () => {
-          this.router.navigate(['/']);
-        },
-        error: () => {
-          this.isRegistering = false;
-          this.snackBar.open(
-            'The email address is already in use by another account.',
-            'OK',
-            {
-              duration: 5000,
-            }
-          );
-        },
-      });
   }
 
   togglePasswordVisibility(): void {

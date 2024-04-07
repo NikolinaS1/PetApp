@@ -9,6 +9,7 @@
           matInput
           placeholder="Ex. pat@example.com"
           formControlName="email"
+          #userEmail
         />
         @if (form.get('email')!.hasError('required')) {
         <mat-error>Email is required</mat-error>
@@ -24,6 +25,7 @@
             matInput
             placeholder="Password"
             formControlName="password"
+            #userPassword
           />
           <mat-icon (click)="togglePasswordVisibility()">{{
             showPassword ? "visibility_off" : "visibility"
@@ -62,7 +64,9 @@
         color="primary"
         test-id="login-button"
         [disabled]="!form.valid"
-        (click)="login()"
+        (click)="
+          authenticationService.signIn(userEmail.value, userPassword.value)
+        "
       >
         Login
       </button>

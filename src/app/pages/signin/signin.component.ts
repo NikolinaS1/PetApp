@@ -16,7 +16,7 @@ export class SigninComponent implements OnInit {
   isRecoveringPassword = false;
 
   constructor(
-    private authenticationService: AuthenticationService,
+    public authenticationService: AuthenticationService,
     private formBuilder: FormBuilder,
     private router: Router,
     private snackBar: MatSnackBar
@@ -44,30 +44,6 @@ export class SigninComponent implements OnInit {
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
-  }
-
-  login() {
-    this.isLoggingIn = true;
-    this.authenticationService
-      .signIn({
-        email: this.form.value.email,
-        password: this.form.value.password,
-      })
-      .subscribe({
-        next: () => {
-          this.router.navigate(['/']);
-        },
-        error: () => {
-          this.isLoggingIn = false;
-          this.snackBar.open(
-            'Error when entering email or password. Please try again.',
-            'OK',
-            {
-              duration: 5000,
-            }
-          );
-        },
-      });
   }
 
   forgotPassword() {

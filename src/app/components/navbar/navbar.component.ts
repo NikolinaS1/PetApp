@@ -17,7 +17,7 @@ export class NavbarComponent implements OnInit {
   isCollapsed = true;
 
   constructor(
-    private authenticationService: AuthenticationService,
+    public authenticationService: AuthenticationService,
     private router: Router,
     private observer: BreakpointObserver
   ) {}
@@ -33,8 +33,8 @@ export class NavbarComponent implements OnInit {
     this.isCollapsed = false;
   }
 
-  logout() {
+  /* logout() {
     this.router.navigate(['signin']);
     this.authenticationService.logout().subscribe();
-  }
+  } */
 }
