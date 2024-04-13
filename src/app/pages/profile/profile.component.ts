@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from './services/user.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-profile',
@@ -10,7 +11,10 @@ export class ProfileComponent implements OnInit {
   userProfile: any;
   selectedImage: File | null = null;
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadUserProfile();
@@ -42,11 +46,21 @@ export class ProfileComponent implements OnInit {
         (imageUrl: string) => {
           this.userService.saveImageUrl(userId, imageUrl).then(() => {
             console.log('Profile image uploaded successfully');
+            this.snackBar.open('Profile image uploaded successfully.', 'OK', {
+              duration: 5000,
+            });
             this.loadUserProfile();
           });
         },
         (error) => {
           console.error('Error uploading profile image:', error);
+          this.snackBar.open(
+            'Error while trying to upload profile image.Please try again.',
+            'OK',
+            {
+              duration: 5000,
+            }
+          );
         }
       );
     } else {
