@@ -8,6 +8,7 @@ import { UserService } from './services/user.service';
 })
 export class ProfileComponent implements OnInit {
   userProfile: any;
+  selectedImage: File | null = null;
 
   constructor(private userService: UserService) {}
 
@@ -26,6 +27,30 @@ export class ProfileComponent implements OnInit {
         .catch((error) => {
           console.error('Error loading user profile:', error);
         });
+    }
+  }
+
+  onImageSelected(event: any) {
+    this.selectedImage = event.target.files[0];
+    this.uploadProfileImage();
+  }
+
+  uploadProfileImage() {
+    const userId = localStorage.getItem('accessToken');
+    if (this.selectedImage && userId) {
+      this.userService.uploadImage(this.selectedImage, userId).subscribe(
+        (imageUrl: string) => {
+          this.userService.saveImageUrl(userId, imageUrl).then(() => {
+            console.log('Profile image uploaded successfully');
+            this.loadUserProfile();
+          });
+        },
+        (error) => {
+          console.error('Error uploading profile image:', error);
+        }
+      );
+    } else {
+      console.error('No image selected or user ID missing');
     }
   }
 }

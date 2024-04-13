@@ -1,5 +1,23 @@
 <app-navbar></app-navbar>
 
-<div *ngIf="userProfile">
-  <h2>{{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+<div class="profile-info" *ngIf="userProfile">
+  <div class="profile-image">
+    <img
+      *ngIf="userProfile?.profileImageUrl"
+      [src]="userProfile.profileImageUrl"
+      alt="Profile Image"
+    />
+    <img
+      *ngIf="!userProfile?.profileImageUrl"
+      src="../../../assets/profile-icon.png"
+      alt="Default Profile Image"
+    />
+    <button mat-mini-fab (click)="inputField.click()">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+  <input #inputField type="file" hidden (change)="onImageSelected($event)" />
+  <div class="name">
+    <h2>{{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+  </div>
 </div>

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ProfileComponent } from './profile.component';
 import { RouterModule, Routes } from '@angular/router';
 import { NavbarModule } from '../../components/navbar/navbar.module';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 const routes: Routes = [
   {
@@ -13,6 +15,12 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [ProfileComponent],
-  imports: [CommonModule, NavbarModule, RouterModule.forChild(routes)],
+  imports: [
+    CommonModule,
+    NavbarModule,
+    MatIconModule,
+    MatButtonModule,
+    RouterModule.forChild(routes),
+  ],
 })
 export class ProfileModule {}
