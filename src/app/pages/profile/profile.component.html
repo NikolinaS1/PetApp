@@ -1,1 +1,5 @@
 <app-navbar></app-navbar>
+
+<div *ngIf="userProfile">
+  <h2>{{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+</div>
