@@ -37,4 +37,14 @@
 .add {
   margin-left: 0;
   margin-right: auto;
+  display: flex;
+}
+
+.pet-image img {
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  margin: 0 5px 0 5px;
+  object-fit: cover;
+  object-position: center;
 }

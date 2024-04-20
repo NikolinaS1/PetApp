@@ -3,6 +3,7 @@ import { UserService } from './services/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddPetDialogComponent } from '../../components/add-pet-dialog/add-pet-dialog.component';
+import { Pet } from './models/pet.model';
 
 @Component({
   selector: 'app-profile',
@@ -12,6 +13,7 @@ import { AddPetDialogComponent } from '../../components/add-pet-dialog/add-pet-d
 export class ProfileComponent implements OnInit {
   userProfile: any;
   selectedImage: File | null = null;
+  pets: Pet[] = [];
 
   constructor(
     private userService: UserService,
@@ -21,6 +23,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
+    this.getPets();
   }
 
   openAddPetDialog(): void {
@@ -102,6 +105,15 @@ export class ProfileComponent implements OnInit {
         });
     } else {
       console.error('User ID missing or profile image URL not available');
+    }
+  }
+
+  getPets() {
+    const uid = localStorage.getItem('accessToken');
+    if (uid) {
+      this.userService.getPets(uid).subscribe((pets) => {
+        this.pets = pets;
+      });
     }
   }
 }

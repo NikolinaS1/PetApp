@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { firstValueFrom, from, switchMap } from 'rxjs';
+import { Observable, firstValueFrom, from, switchMap } from 'rxjs';
+import { Pet } from '../models/pet.model';
+import { UserProfile } from '../models/userProfile.model';
 import {
   deleteObject,
   getDownloadURL,
@@ -9,13 +10,6 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage';
-
-interface UserProfile {
-  firstName: string;
-  lastName: string;
-  email: string;
-  profileImageUrl?: string;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -72,5 +66,11 @@ export class UserService {
       console.error('Error deleting profile image:', error);
       throw error;
     }
+  }
+
+  getPets(uid: string): Observable<Pet[]> {
+    return this.firestore
+      .collection(`pets/${uid}/pets`)
+      .valueChanges({ idField: 'id' }) as Observable<Pet[]>;
   }
 }

@@ -34,6 +34,9 @@
       >
         <mat-icon>add</mat-icon>
       </button>
+      <div *ngFor="let pet of pets" class="pet-image">
+        <img [src]="pet.imageUrl" alt="Pet Image" />
+      </div>
     </div>
   </div>
 </div>
