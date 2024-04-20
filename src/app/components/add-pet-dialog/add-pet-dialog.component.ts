@@ -11,6 +11,7 @@ export class AddPetDialogComponent implements OnInit {
   selectedImage: File | null = null;
   petName: string = '';
   imageUrl: string | null = null;
+  isSaving = false;
 
   constructor(
     private petService: PetService,
@@ -20,6 +21,7 @@ export class AddPetDialogComponent implements OnInit {
   ngOnInit(): void {}
 
   addPet() {
+    this.isSaving = true;
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
       console.error('Access token not found in local storage.');
@@ -30,6 +32,7 @@ export class AddPetDialogComponent implements OnInit {
       this.petService
         .addPetWithImage(this.petName, this.selectedImage, accessToken)
         .then(() => {
+          this.isSaving = false;
           console.log('Pet added successfully!');
           this.dialogRef.close();
           this.selectedImage = null;
