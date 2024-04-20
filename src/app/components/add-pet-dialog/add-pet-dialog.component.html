@@ -1,15 +1,35 @@
 <div class="add-pet">
   <div class="pet-image">
-    <img src="../../../assets/add-pet.png" alt="Profile Image" />
-    <button mat-mini-fab color="accent">
+    <img
+      *ngIf="imageUrl; else defaultImage"
+      [src]="imageUrl"
+      alt="Profile Image"
+    />
+    <ng-template #defaultImage>
+      <img src="../../../assets/add-pet.png" alt="Profile Image" />
+    </ng-template>
+    <button mat-mini-fab (click)="inputField.click()">
       <mat-icon>edit</mat-icon>
     </button>
   </div>
+  <input #inputField type="file" hidden (change)="onImageSelected($event)" />
   <div class="pet-name">
     <mat-form-field appearance="fill">
       <mat-label>Pet name</mat-label>
-      <input matInput type="text" placeholder="Enter your pet name" />
+      <input
+        matInput
+        type="text"
+        placeholder="Enter your pet name"
+        [(ngModel)]="petName"
+      />
     </mat-form-field>
   </div>
-  <button mat-raised-button color="primary">Add pet</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="addPet()"
+    [disabled]="!petName || !selectedImage"
+  >
+    Add pet
+  </button>
 </div>

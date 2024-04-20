@@ -26,7 +26,7 @@ export class ProfileComponent implements OnInit {
   openAddPetDialog(): void {
     this.dialog.open(AddPetDialogComponent, {
       width: '400px',
-      height: '450px',
+      height: '440px',
     });
   }
 
