@@ -2,12 +2,19 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { firstValueFrom, from, switchMap } from 'rxjs';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
 
-interface UserData {
+interface UserProfile {
   firstName: string;
   lastName: string;
   email: string;
+  profileImageUrl?: string;
 }
 
 @Injectable({
@@ -16,12 +23,12 @@ interface UserData {
 export class UserService {
   constructor(private firestore: AngularFirestore) {}
 
-  async getUserProfile(uid: string): Promise<any> {
+  async getUserProfile(uid: string): Promise<UserProfile | null> {
     try {
       const userProfileRef = this.firestore.collection('users').doc(uid);
       const userProfileSnapshot = await firstValueFrom(userProfileRef.get());
       if (userProfileSnapshot.exists) {
-        return userProfileSnapshot.data();
+        return userProfileSnapshot.data() as UserProfile;
       } else {
         return null;
       }
@@ -40,9 +47,30 @@ export class UserService {
   }
 
   saveImageUrl(userId: string, imageUrl: string) {
-    return this.firestore
-      .collection('users')
-      .doc(userId)
-      .update({ profileImageUrl: imageUrl });
+    if (imageUrl) {
+      return this.firestore
+        .collection('users')
+        .doc(userId)
+        .update({ profileImageUrl: imageUrl });
+    } else {
+      console.error('Invalid image URL');
+      return Promise.reject(new Error('Invalid image URL'));
+    }
+  }
+
+  async deleteProfileImage(userId: string, url: string): Promise<void> {
+    try {
+      const storage = getStorage();
+      const fileRef = ref(storage, url);
+
+      await deleteObject(fileRef);
+
+      await this.firestore.collection('users').doc(userId).update({
+        profileImageUrl: null,
+      });
+    } catch (error) {
+      console.error('Error deleting profile image:', error);
+      throw error;
+    }
   }
 }

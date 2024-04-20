@@ -1,0 +1,15 @@
+.add-pet {
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pet-image img {
+  width: 150px;
+  height: 150px;
+  margin-top: 20px;
+  border-radius: 100%;
+  object-fit: cover;
+  object-position: center;
+  border: 2px solid grey;
+}

@@ -107,6 +107,7 @@ mat-toolbar {
 
 mat-sidenav-container {
   height: 100%;
+  position: absolute; //stvara problem navu, ali sadržaj je na vrhu barem
 }
 
 a {
@@ -129,6 +130,7 @@ mat-sidenav {
 
 mat-sidenav-content {
   padding-top: 3.5rem;
+  z-index: 1;
   background-color: #b0c4de;
   @media screen and (min-width: 600px) {
     padding-top: 4rem;

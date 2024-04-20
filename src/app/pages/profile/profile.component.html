@@ -12,12 +12,28 @@
       src="../../../assets/profile-icon.png"
       alt="Default Profile Image"
     />
-    <button mat-mini-fab (click)="inputField.click()">
+    <button mat-mini-fab [matMenuTriggerFor]="menu">
       <mat-icon>edit</mat-icon>
     </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="inputField.click()">Choose Image</button>
+      <button mat-menu-item (click)="deleteImage()">Delete Image</button>
+    </mat-menu>
   </div>
   <input #inputField type="file" hidden (change)="onImageSelected($event)" />
-  <div class="name">
-    <h2>{{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+  <div class="right-side">
+    <div class="name">
+      <h2>{{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+    </div>
+    <div class="add">
+      <button
+        mat-mini-fab
+        color="primary"
+        matTooltip="Add pet"
+        (click)="openAddPetDialog()"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
   </div>
 </div>
