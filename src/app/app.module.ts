@@ -11,6 +11,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { environment } from '../environments/environment.prod';
 import { BlankComponent } from './mocks/blank/blank.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AddPetDialogModule } from './components/add-pet-dialog/add-pet-dialog.module';
 
 @NgModule({
   declarations: [AppComponent, BlankComponent],
@@ -22,6 +23,7 @@ import { HttpClientModule } from '@angular/common/http';
     AngularFirestoreModule,
     HttpClientModule,
     provideAuth(() => getAuth()),
+    AddPetDialogModule,
   ],
   providers: [provideAnimationsAsync()],
   bootstrap: [AppComponent],

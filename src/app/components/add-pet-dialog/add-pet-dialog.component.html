@@ -1,6 +1,15 @@
 <div class="add-pet">
   <div class="pet-image">
     <img src="../../../assets/add-pet.png" alt="Profile Image" />
-    <button mat-mini-fab></button>
+    <button mat-mini-fab color="accent">
+      <mat-icon>edit</mat-icon>
+    </button>
   </div>
+  <div class="pet-name">
+    <mat-form-field appearance="fill">
+      <mat-label>Pet name</mat-label>
+      <input matInput type="text" placeholder="Enter your pet name" />
+    </mat-form-field>
+  </div>
+  <button mat-raised-button color="primary">Add pet</button>
 </div>

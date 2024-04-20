@@ -1,7 +1,15 @@
 .add-pet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   margin-left: auto;
   margin-right: auto;
+}
+
+.pet-image {
+  margin: 30px 0 30px 0;
+  position: relative;
 }
 
 .pet-image img {
@@ -11,5 +19,14 @@
   border-radius: 100%;
   object-fit: cover;
   object-position: center;
-  border: 2px solid grey;
+}
+
+.pet-image button {
+  position: absolute;
+  bottom: 10px;
+  right: 0;
+}
+
+button {
+  margin-top: 20px;
 }
