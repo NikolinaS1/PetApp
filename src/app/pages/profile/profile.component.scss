@@ -53,3 +53,21 @@
   top: 50%;
   left: 10%;
 }
+
+.actions-container {
+  margin-top: 20px;
+  background-color: #fff;
+  width: 50%;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  padding: 10px 0 10px 0;
+  margin-right: auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.link-actions,
+.button-actions {
+  padding: 0 10px 0 10px;
+}
