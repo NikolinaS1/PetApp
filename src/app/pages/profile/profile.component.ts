@@ -14,6 +14,7 @@ export class ProfileComponent implements OnInit {
   userProfile: any;
   selectedImage: File | null = null;
   pets: Pet[] = [];
+  isUploading = false;
 
   constructor(
     private userService: UserService,
@@ -48,11 +49,25 @@ export class ProfileComponent implements OnInit {
   }
 
   onImageSelected(event: any) {
-    this.selectedImage = event.target.files[0];
-    this.uploadProfileImage();
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/bmp'];
+    const file = event.target.files[0];
+
+    if (file && allowedTypes.includes(file.type)) {
+      this.selectedImage = file;
+      this.uploadProfileImage();
+    } else {
+      this.snackBar.open(
+        'Invalid file type. Please select a valid image file.',
+        'OK',
+        {
+          duration: 5000,
+        }
+      );
+    }
   }
 
   uploadProfileImage() {
+    this.isUploading = true;
     const userId = localStorage.getItem('accessToken');
     if (this.selectedImage && userId) {
       this.userService.uploadImage(this.selectedImage, userId).subscribe(
@@ -63,6 +78,7 @@ export class ProfileComponent implements OnInit {
               duration: 5000,
             });
             this.loadUserProfile();
+            this.isUploading = false;
           });
         },
         (error) => {

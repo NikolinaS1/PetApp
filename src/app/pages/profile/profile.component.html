@@ -12,6 +12,9 @@
       src="../../../assets/profile-icon.png"
       alt="Default Profile Image"
     />
+    <button mat-button *ngIf="isUploading" class="button-loader">
+      <mat-spinner color="accent" diameter="30"></mat-spinner>
+    </button>
     <button mat-mini-fab [matMenuTriggerFor]="menu">
       <mat-icon>edit</mat-icon>
     </button>
@@ -35,7 +38,12 @@
         <mat-icon>add</mat-icon>
       </button>
       <div *ngFor="let pet of pets" class="pet-image">
-        <img [src]="pet.imageUrl" alt="Pet Image" />
+        <img
+          [src]="pet.imageUrl"
+          alt="Pet Image"
+          #tooltip="matTooltip"
+          [matTooltip]="pet.petName"
+        />
       </div>
     </div>
   </div>
