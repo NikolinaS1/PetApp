@@ -16,17 +16,19 @@
       <p>{{ userProfile.firstName }} {{ userProfile.lastName }}</p>
     </div>
   </div>
-  <form class="post-form">
+  <div class="post-form">
     <mat-form-field class="post" style="width: 600px">
       <mat-label>New post</mat-label>
       <textarea
         rows="8"
-        matInput
         placeholder="Write something..."
         maxlength="255"
+        matInput
+        type="text"
+        [(ngModel)]="status"
       ></textarea>
     </mat-form-field>
-  </form>
+  </div>
   <div class="add-image">
     <div class="text"><p>Add to post:</p></div>
     <div class="image">
@@ -34,10 +36,25 @@
         src="../../../assets/postimage.png"
         alt="Add image"
         matTooltip="Image"
+        (click)="fileInput.click()"
+      />
+      <input
+        type="file"
+        #fileInput
+        (change)="onImageSelected($event)"
+        style="display: none"
+      />
+      <img
+        *ngIf="imageUrl"
+        [src]="imageUrl"
+        alt="Selected Image"
+        class="selectedImage"
       />
     </div>
   </div>
   <div class="add-post-button">
-    <button mat-raised-button color="primary">Add post</button>
+    <button mat-raised-button color="primary" (click)="addPost()">
+      Add post
+    </button>
   </div>
 </div>

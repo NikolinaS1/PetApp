@@ -29,7 +29,7 @@ export class AddPetDialogComponent implements OnInit {
       return;
     }
 
-    if (this.selectedImage && this.petName) {
+    if (this.selectedImage && this.petName && this.petDescription) {
       this.petService
         .addPetWithImage(
           this.petName,
@@ -43,6 +43,7 @@ export class AddPetDialogComponent implements OnInit {
           this.dialogRef.close();
           this.selectedImage = null;
           this.petName = '';
+          this.petDescription = '';
         })
         .catch((error) => {
           console.error('Error adding pet with image:', error);
