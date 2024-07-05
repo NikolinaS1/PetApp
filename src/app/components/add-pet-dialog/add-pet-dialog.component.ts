@@ -10,6 +10,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class AddPetDialogComponent implements OnInit {
   selectedImage: File | null = null;
   petName: string = '';
+  petDescription: string = '';
   imageUrl: string | null = null;
   isSaving = false;
 
@@ -30,7 +31,12 @@ export class AddPetDialogComponent implements OnInit {
 
     if (this.selectedImage && this.petName) {
       this.petService
-        .addPetWithImage(this.petName, this.selectedImage, accessToken)
+        .addPetWithImage(
+          this.petName,
+          this.petDescription,
+          this.selectedImage,
+          accessToken
+        )
         .then(() => {
           this.isSaving = false;
           console.log('Pet added successfully!');

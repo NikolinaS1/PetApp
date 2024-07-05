@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddPetDialogComponent } from '../../components/add-pet-dialog/add-pet-dialog.component';
 import { Pet } from './models/pet.model';
+import { AddPostDialogComponent } from '../../components/add-post-dialog/add-post-dialog.component';
 
 @Component({
   selector: 'app-profile',
@@ -29,8 +30,15 @@ export class ProfileComponent implements OnInit {
 
   openAddPetDialog(): void {
     this.dialog.open(AddPetDialogComponent, {
-      width: '400px',
-      height: '440px',
+      width: '440px',
+      height: '550px',
+    });
+  }
+
+  openAddPostDialog(): void {
+    this.dialog.open(AddPostDialogComponent, {
+      width: '600px',
+      height: '430px',
     });
   }
 

@@ -42,7 +42,7 @@
           [src]="pet.imageUrl"
           alt="Pet Image"
           #tooltip="matTooltip"
-          [matTooltip]="pet.petName"
+          [matTooltip]="pet.name"
         />
       </div>
     </div>
@@ -55,6 +55,8 @@
   </div>
   <div class="button-actions">
     <button mat-button color="accent">Filter</button>
-    <button mat-raised-button color="primary">Add new post</button>
+    <button mat-raised-button color="primary" (click)="openAddPostDialog()">
+      Add new post
+    </button>
   </div>
 </div>

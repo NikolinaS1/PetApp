@@ -24,13 +24,24 @@
       />
     </mat-form-field>
   </div>
+  <div class="description">
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        placeholder="Tell us more about your pet"
+        [(ngModel)]="petDescription"
+        rows="4"
+      ></textarea>
+    </mat-form-field>
+  </div>
   <div class="add-pet-button">
     <button
       mat-raised-button
       color="primary"
       class="add"
       (click)="addPet()"
-      [disabled]="!petName || !selectedImage"
+      [disabled]="!petName || !selectedImage || !petDescription"
     >
       Add pet
     </button>

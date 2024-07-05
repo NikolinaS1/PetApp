@@ -1,0 +1,43 @@
+<div class="content">
+  <div class="user">
+    <div class="profile-image">
+      <img
+        *ngIf="userProfile?.profileImageUrl"
+        [src]="userProfile.profileImageUrl"
+        alt="Profile Image"
+      />
+      <img
+        *ngIf="!userProfile?.profileImageUrl"
+        src="../../../assets/profile-icon.png"
+        alt="Default Profile Image"
+      />
+    </div>
+    <div class="name">
+      <p>{{ userProfile.firstName }} {{ userProfile.lastName }}</p>
+    </div>
+  </div>
+  <form class="post-form">
+    <mat-form-field class="post" style="width: 600px">
+      <mat-label>New post</mat-label>
+      <textarea
+        rows="8"
+        matInput
+        placeholder="Write something..."
+        maxlength="255"
+      ></textarea>
+    </mat-form-field>
+  </form>
+  <div class="add-image">
+    <div class="text"><p>Add to post:</p></div>
+    <div class="image">
+      <img
+        src="../../../assets/postimage.png"
+        alt="Add image"
+        matTooltip="Image"
+      />
+    </div>
+  </div>
+  <div class="add-post-button">
+    <button mat-raised-button color="primary">Add post</button>
+  </div>
+</div>

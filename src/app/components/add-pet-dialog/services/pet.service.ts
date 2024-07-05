@@ -9,7 +9,12 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 export class PetService {
   constructor(private firestore: AngularFirestore) {}
 
-  async addPetWithImage(petName: string, file: File, userId: string) {
+  async addPetWithImage(
+    petName: string,
+    petDescription: string,
+    file: File,
+    userId: string
+  ) {
     const storage = getStorage();
     const petId = this.firestore.createId();
     const filePath = `pets/${userId}/${file.name}`;
@@ -24,7 +29,8 @@ export class PetService {
         .doc(userId)
         .collection('pets')
         .add({
-          petName: petName,
+          name: petName,
+          description: petDescription,
           imageUrl: imageUrl,
         });
 

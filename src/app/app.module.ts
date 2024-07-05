@@ -12,6 +12,7 @@ import { environment } from '../environments/environment.prod';
 import { BlankComponent } from './mocks/blank/blank.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AddPetDialogModule } from './components/add-pet-dialog/add-pet-dialog.module';
+import { AddPostDialogModule } from './components/add-post-dialog/add-post-dialog.module';
 
 @NgModule({
   declarations: [AppComponent, BlankComponent],
@@ -24,6 +25,7 @@ import { AddPetDialogModule } from './components/add-pet-dialog/add-pet-dialog.m
     HttpClientModule,
     provideAuth(() => getAuth()),
     AddPetDialogModule,
+    AddPostDialogModule,
   ],
   providers: [provideAnimationsAsync()],
   bootstrap: [AppComponent],
