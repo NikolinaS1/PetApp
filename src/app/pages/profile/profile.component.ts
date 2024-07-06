@@ -117,30 +117,42 @@ export class ProfileComponent implements OnInit {
   }
 
   deleteImage() {
-    const userId = localStorage.getItem('accessToken');
-    if (userId && this.userProfile && this.userProfile.profileImageUrl) {
-      this.userService
-        .deleteProfileImage(userId, this.userProfile.profileImageUrl)
-        .then(() => {
-          console.log('Profile image deleted successfully');
-          this.snackBar.open('Profile image deleted successfully.', 'OK', {
-            duration: 5000,
-          });
-          this.loadUserProfile();
-        })
-        .catch((error) => {
-          console.error('Error deleting profile image:', error);
-          this.snackBar.open(
-            'Error while trying to delete profile image. Please try again.',
-            'OK',
-            {
-              duration: 5000,
-            }
-          );
-        });
-    } else {
-      console.error('User ID missing or profile image URL not available');
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '320px',
+      height: 'auto',
+      data: {
+        message: `Are you sure you want to delete your profile image?`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const userId = localStorage.getItem('accessToken');
+        if (userId && this.userProfile && this.userProfile.profileImageUrl) {
+          this.userService
+            .deleteProfileImage(userId, this.userProfile.profileImageUrl)
+            .then(() => {
+              console.log('Profile image deleted successfully');
+              this.snackBar.open('Profile image deleted successfully.', 'OK', {
+                duration: 5000,
+              });
+              this.loadUserProfile();
+            })
+            .catch((error) => {
+              console.error('Error deleting profile image:', error);
+              this.snackBar.open(
+                'Error while trying to delete profile image. Please try again.',
+                'OK',
+                {
+                  duration: 5000,
+                }
+              );
+            });
+        } else {
+          console.error('User ID missing or profile image URL not available');
+        }
+      }
+    });
   }
 
   getPets() {

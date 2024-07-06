@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PetService } from './services/pet.service';
 import { Pet } from '../../pages/profile/models/pet.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-add-pet-dialog',
@@ -22,6 +23,7 @@ export class AddPetDialogComponent implements OnInit {
   constructor(
     private petService: PetService,
     private dialogRef: MatDialogRef<AddPetDialogComponent>,
+    private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: { pet: Pet }
   ) {}
 
@@ -55,13 +57,17 @@ export class AddPetDialogComponent implements OnInit {
         )
         .then(() => {
           this.isSaving = false;
-          this.successMessage = 'Pet updated successfully!';
           this.dialogRef.close();
+          this.snackBar.open('Pet updated successfully.', 'OK', {
+            duration: 5000,
+          });
         })
         .catch((error) => {
           this.isSaving = false;
-          this.errorMessage = 'Error updating pet: ' + error.message;
           console.error('Error updating pet:', error);
+          this.snackBar.open('Error updating pet. Please try again.', 'OK', {
+            duration: 5000,
+          });
         });
     } else {
       this.petService
@@ -73,13 +79,17 @@ export class AddPetDialogComponent implements OnInit {
         )
         .then(() => {
           this.isSaving = false;
-          this.successMessage = 'Pet added successfully!';
           this.dialogRef.close();
+          this.snackBar.open('Pet added successfully.', 'OK', {
+            duration: 5000,
+          });
         })
         .catch((error) => {
           this.isSaving = false;
-          this.errorMessage = 'Error adding pet: ' + error.message;
           console.error('Error adding pet:', error);
+          this.snackBar.open('Error adding new pet. Please try again.', 'OK', {
+            duration: 5000,
+          });
         });
     }
   }

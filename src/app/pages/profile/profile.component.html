@@ -20,7 +20,13 @@
     </button>
     <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="inputField.click()">Choose Image</button>
-      <button mat-menu-item (click)="deleteImage()">Delete Image</button>
+      <button
+        mat-menu-item
+        *ngIf="userProfile.profileImageUrl"
+        (click)="deleteImage()"
+      >
+        Delete Image
+      </button>
     </mat-menu>
   </div>
   <input #inputField type="file" hidden (change)="onImageSelected($event)" />

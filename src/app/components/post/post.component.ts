@@ -3,6 +3,8 @@ import { UserService } from '../../pages/profile/services/user.service';
 import { IPost } from './models/post.model';
 import { PostService } from '../add-post-dialog/services/post.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-post',
@@ -16,7 +18,8 @@ export class PostComponent implements OnInit {
   constructor(
     private userService: UserService,
     private postService: PostService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -48,19 +51,31 @@ export class PostComponent implements OnInit {
   }
 
   deletePost(post: IPost): void {
-    const userId = localStorage.getItem('accessToken');
-    if (userId) {
-      this.postService
-        .deletePost(userId, post.id)
-        .then(() => {
-          this.snackBar.open('Post deleted successfully.', 'OK', {
-            duration: 5000,
-          });
-          this.getPosts();
-        })
-        .catch((error) => {
-          console.error('Error deleting post:', error);
-        });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '320px',
+      height: 'auto',
+      data: {
+        message: `Are you sure you want to delete that post?`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const userId = localStorage.getItem('accessToken');
+        if (userId) {
+          this.postService
+            .deletePost(userId, post.id)
+            .then(() => {
+              this.snackBar.open('Post deleted successfully.', 'OK', {
+                duration: 5000,
+              });
+              this.getPosts();
+            })
+            .catch((error) => {
+              console.error('Error deleting post:', error);
+            });
+        }
+      }
+    });
   }
 }
