@@ -7,6 +7,7 @@
   margin-left: auto;
   margin-right: auto;
   padding-bottom: 20px;
+  position: relative;
 }
 
 .user {
@@ -62,9 +63,17 @@
   margin: 0 8px 0px 10px;
   font-size: 30px;
   padding: 10px;
+  cursor: pointer;
 }
 
 .action_comment mat-icon {
   font-size: 30px;
   padding: 10px;
+  cursor: pointer;
+}
+
+.options {
+  margin-left: auto;
+  padding-right: 10px;
+  cursor: pointer;
 }

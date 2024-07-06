@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../pages/profile/services/user.service';
 import { IPost } from './models/post.model';
 import { PostService } from '../add-post-dialog/services/post.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-post',
@@ -14,7 +15,8 @@ export class PostComponent implements OnInit {
 
   constructor(
     private userService: UserService,
-    private postService: PostService
+    private postService: PostService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +44,23 @@ export class PostComponent implements OnInit {
       this.postService.getPosts(uid).subscribe((posts) => {
         this.posts = posts;
       });
+    }
+  }
+
+  deletePost(post: IPost): void {
+    const userId = localStorage.getItem('accessToken');
+    if (userId) {
+      this.postService
+        .deletePost(userId, post.id)
+        .then(() => {
+          this.snackBar.open('Post deleted successfully.', 'OK', {
+            duration: 5000,
+          });
+          this.getPosts();
+        })
+        .catch((error) => {
+          console.error('Error deleting post:', error);
+        });
     }
   }
 }

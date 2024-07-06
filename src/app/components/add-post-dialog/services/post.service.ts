@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from 'firebase/storage';
 import { Observable, map } from 'rxjs';
 import { IPost } from '../../post/models/post.model';
 
@@ -71,6 +77,32 @@ export class PostService {
     } else {
       console.error('Invalid image URL');
       return Promise.reject(new Error('Invalid image URL'));
+    }
+  }
+
+  async deletePost(userId: string, postId: string) {
+    const storage = getStorage();
+    const filePath = `posts/${userId}/${postId}`;
+    const fileRef = ref(storage, filePath);
+
+    try {
+      await deleteObject(fileRef);
+    } catch (error) {
+      console.error('Error deleting image file:', error);
+    }
+
+    try {
+      await this.firestore
+        .collection('posts')
+        .doc(userId)
+        .collection('posts')
+        .doc(postId)
+        .delete();
+
+      return 'Post deleted successfully!';
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      throw error;
     }
   }
 }
