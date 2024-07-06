@@ -54,7 +54,7 @@ export class PostService {
     return this.firestore
       .collection('posts')
       .doc(uid)
-      .collection('posts')
+      .collection('posts', (ref) => ref.orderBy('createdAt', 'desc'))
       .valueChanges({ idField: 'id' })
       .pipe(
         map((posts: any[]) =>
