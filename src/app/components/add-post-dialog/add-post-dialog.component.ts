@@ -52,7 +52,10 @@ export class AddPostDialogComponent implements OnInit {
         .addPost(this.status, this.selectedImage, accessToken)
         .then(() => {
           console.log('Post added successfully!');
-          this.dialogRef.close();
+          this.snackBar.open('New post added successfully..', 'OK', {
+            duration: 5000,
+          });
+          this.dialogRef.close(true);
           this.selectedImage = null;
           this.status = '';
         })

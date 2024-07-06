@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { PostModule } from '../../components/post/post.module';
 
 const routes: Routes = [
   {
@@ -30,6 +31,7 @@ const routes: Routes = [
     MatDialogModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    PostModule,
     RouterModule.forChild(routes),
   ],
 })

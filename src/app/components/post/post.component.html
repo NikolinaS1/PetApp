@@ -1,0 +1,43 @@
+<div class="post" *ngFor="let post of posts">
+  <div class="user">
+    <div class="profile-image">
+      <img
+        *ngIf="userProfile?.profileImageUrl"
+        [src]="userProfile.profileImageUrl"
+        alt="Profile Image"
+      />
+      <img
+        *ngIf="!userProfile?.profileImageUrl"
+        src="../../../assets/profile-icon.png"
+        alt="Default Profile Image"
+      />
+    </div>
+    <div class="name_date">
+      <div class="name">
+        <p>{{ userProfile?.firstName }} {{ userProfile?.lastName }}</p>
+      </div>
+      <div class="date">
+        <p *ngIf="post.createdAt">
+          {{ post.createdAt | date : "d MMMM, yyyy" }} at
+          {{ post.createdAt | date : "h:mm a" }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="text">
+      <p>{{ post.text }}</p>
+    </div>
+    <div class="image" *ngIf="post.imageUrl">
+      <img [src]="post.imageUrl" alt="Post Image" />
+    </div>
+  </div>
+  <div class="actions">
+    <div class="action_like">
+      <mat-icon color="primary">favorite_border</mat-icon>
+    </div>
+    <div class="action_comment">
+      <mat-icon color="primary"> comment</mat-icon>
+    </div>
+  </div>
+</div>
