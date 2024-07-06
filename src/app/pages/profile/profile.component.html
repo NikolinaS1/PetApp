@@ -29,14 +29,16 @@
       <h1>{{ userProfile.firstName }} {{ userProfile.lastName }}</h1>
     </div>
     <div class="add">
-      <button
-        mat-mini-fab
-        color="primary"
-        matTooltip="Add pet"
-        (click)="openAddPetDialog()"
-      >
-        <mat-icon>add</mat-icon>
-      </button>
+      <div class="button-add">
+        <button
+          mat-mini-fab
+          color="primary"
+          matTooltip="Add pet"
+          (click)="openAddPetDialog()"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
       <div *ngFor="let pet of pets" class="pet-image">
         <img
           [src]="pet.imageUrl"
@@ -45,7 +47,7 @@
           [matTooltip]="pet.name"
           (click)="openEditPetDialog(pet)"
         />
-        <button mat-icon-button (click)="deletePet(pet)" class="delete-button">
+        <button mat-mini-fab (click)="deletePet(pet)" class="delete-button">
           <mat-icon>delete</mat-icon>
         </button>
       </div>
