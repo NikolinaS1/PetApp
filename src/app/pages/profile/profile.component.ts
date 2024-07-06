@@ -5,6 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddPetDialogComponent } from '../../components/add-pet-dialog/add-pet-dialog.component';
 import { Pet } from './models/pet.model';
 import { AddPostDialogComponent } from '../../components/add-post-dialog/add-post-dialog.component';
+import { PetService } from '../../components/add-pet-dialog/services/pet.service';
+import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-profile',
@@ -19,6 +21,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private userService: UserService,
+    private petService: PetService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
   ) {}
@@ -39,6 +42,14 @@ export class ProfileComponent implements OnInit {
     this.dialog.open(AddPostDialogComponent, {
       width: '600px',
       height: '430px',
+    });
+  }
+
+  openEditPetDialog(pet: Pet): void {
+    this.dialog.open(AddPetDialogComponent, {
+      width: '440px',
+      height: '550px',
+      data: { pet },
     });
   }
 
@@ -139,5 +150,34 @@ export class ProfileComponent implements OnInit {
         this.pets = pets;
       });
     }
+  }
+
+  deletePet(pet: Pet) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '320px',
+      height: 'auto',
+      data: {
+        message: `Are you sure you want to delete ${pet.name}?`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const userId = localStorage.getItem('accessToken');
+        if (userId) {
+          this.petService
+            .deletePet(userId, pet.id)
+            .then(() => {
+              this.snackBar.open('Pet deleted successfully.', 'OK', {
+                duration: 5000,
+              });
+              this.getPets();
+            })
+            .catch((error) => {
+              console.error('Error deleting a pet:', error);
+            });
+        }
+      }
+    });
   }
 }

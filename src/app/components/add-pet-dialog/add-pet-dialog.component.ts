@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { PetService } from './services/pet.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Pet } from '../../pages/profile/models/pet.model';
 
 @Component({
   selector: 'app-add-pet-dialog',
@@ -13,15 +14,29 @@ export class AddPetDialogComponent implements OnInit {
   petDescription: string = '';
   imageUrl: string | null = null;
   isSaving = false;
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
+  isEditing = false;
+  petId: string | null = null;
 
   constructor(
     private petService: PetService,
-    private dialogRef: MatDialogRef<AddPetDialogComponent>
+    private dialogRef: MatDialogRef<AddPetDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { pet: Pet }
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.data && this.data.pet) {
+      this.isEditing = true;
+      const { pet } = this.data;
+      this.petId = pet.id;
+      this.petName = pet.name;
+      this.petDescription = pet.description;
+      this.imageUrl = pet.imageUrl;
+    }
+  }
 
-  addPet() {
+  savePet() {
     this.isSaving = true;
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
@@ -29,7 +44,26 @@ export class AddPetDialogComponent implements OnInit {
       return;
     }
 
-    if (this.selectedImage && this.petName && this.petDescription) {
+    if (this.isEditing && this.petId) {
+      this.petService
+        .updatePet(
+          this.petId,
+          this.petName,
+          this.petDescription,
+          this.selectedImage ? this.selectedImage : null,
+          accessToken
+        )
+        .then(() => {
+          this.isSaving = false;
+          this.successMessage = 'Pet updated successfully!';
+          this.dialogRef.close();
+        })
+        .catch((error) => {
+          this.isSaving = false;
+          this.errorMessage = 'Error updating pet: ' + error.message;
+          console.error('Error updating pet:', error);
+        });
+    } else {
       this.petService
         .addPetWithImage(
           this.petName,
@@ -39,17 +73,14 @@ export class AddPetDialogComponent implements OnInit {
         )
         .then(() => {
           this.isSaving = false;
-          console.log('Pet added successfully!');
+          this.successMessage = 'Pet added successfully!';
           this.dialogRef.close();
-          this.selectedImage = null;
-          this.petName = '';
-          this.petDescription = '';
         })
         .catch((error) => {
-          console.error('Error adding pet with image:', error);
+          this.isSaving = false;
+          this.errorMessage = 'Error adding pet: ' + error.message;
+          console.error('Error adding pet:', error);
         });
-    } else {
-      console.error('Please select an image and enter a pet name.');
     }
   }
 

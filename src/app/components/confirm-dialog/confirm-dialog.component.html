@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Deleting a pet</h1>
+<div mat-dialog-content>
+  <p>{{ data.message }}</p>
+</div>
+<div class="actions">
+  <button mat-raised-button color="primary" (click)="onNoClick()">No</button>
+  <button mat-raised-button color="warn" (click)="onYesClick()" cdkFocusInitial>
+    Yes
+  </button>
+</div>

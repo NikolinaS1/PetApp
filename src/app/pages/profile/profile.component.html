@@ -26,7 +26,7 @@
   <input #inputField type="file" hidden (change)="onImageSelected($event)" />
   <div class="right-side">
     <div class="name">
-      <h2>{{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+      <h1>{{ userProfile.firstName }} {{ userProfile.lastName }}</h1>
     </div>
     <div class="add">
       <button
@@ -43,7 +43,11 @@
           alt="Pet Image"
           #tooltip="matTooltip"
           [matTooltip]="pet.name"
+          (click)="openEditPetDialog(pet)"
         />
+        <button mat-icon-button (click)="deletePet(pet)" class="delete-button">
+          <mat-icon>delete</mat-icon>
+        </button>
       </div>
     </div>
   </div>

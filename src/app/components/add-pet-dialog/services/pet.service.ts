@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { from, switchMap } from 'rxjs';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from 'firebase/storage';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +33,8 @@ export class PetService {
         .collection('pets')
         .doc(userId)
         .collection('pets')
-        .add({
+        .doc(petId)
+        .set({
           name: petName,
           description: petDescription,
           imageUrl: imageUrl,
@@ -41,15 +47,71 @@ export class PetService {
     }
   }
 
-  saveImageUrl(userId: string, imageUrl: string) {
-    if (imageUrl) {
-      return this.firestore
+  async updatePet(
+    petId: string,
+    petName: string,
+    petDescription: string,
+    file: File | null,
+    userId: string
+  ) {
+    const storage = getStorage();
+    let imageUrl = null;
+
+    try {
+      if (file) {
+        const filePath = `pets/${userId}/${file.name}`;
+        const fileRef = ref(storage, filePath);
+        const snapshot = await uploadBytes(fileRef, file);
+        imageUrl = await getDownloadURL(snapshot.ref);
+      }
+
+      const petRef = this.firestore
         .collection('pets')
         .doc(userId)
-        .update({ petImageUrl: imageUrl });
-    } else {
-      console.error('Invalid image URL');
-      return Promise.reject(new Error('Invalid image URL'));
+        .collection('pets')
+        .doc(petId);
+
+      const updateData: any = {
+        name: petName,
+        description: petDescription,
+      };
+
+      if (imageUrl) {
+        updateData.imageUrl = imageUrl;
+      }
+
+      await petRef.update(updateData);
+
+      return 'Pet updated successfully!';
+    } catch (error) {
+      console.error('Error updating pet with image:', error);
+      throw error;
+    }
+  }
+
+  async deletePet(userId: string, petId: string) {
+    const storage = getStorage();
+    const filePath = `pets/${userId}/${petId}`;
+    const fileRef = ref(storage, filePath);
+
+    try {
+      await deleteObject(fileRef);
+    } catch (error) {
+      console.error('Error deleting image file:', error);
+    }
+
+    try {
+      await this.firestore
+        .collection('pets')
+        .doc(userId)
+        .collection('pets')
+        .doc(petId)
+        .delete();
+
+      return 'Pet deleted successfully!';
+    } catch (error) {
+      console.error('Error deleting a pet:', error);
+      throw error;
     }
   }
 }

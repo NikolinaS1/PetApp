@@ -40,10 +40,10 @@
       mat-raised-button
       color="primary"
       class="add"
-      (click)="addPet()"
-      [disabled]="!petName || !selectedImage || !petDescription"
+      (click)="savePet()"
+      [disabled]="!petName || !petDescription || (!isEditing && !selectedImage)"
     >
-      Add pet
+      {{ isEditing ? "Update pet" : "Add pet" }}
     </button>
     <button mat-button *ngIf="isSaving" class="button-loader">
       <mat-spinner color="primary" diameter="20"></mat-spinner>

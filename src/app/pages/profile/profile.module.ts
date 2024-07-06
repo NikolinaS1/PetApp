@@ -11,6 +11,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PostModule } from '../../components/post/post.module';
+import { ConfirmDialogModule } from '../../components/confirm-dialog/confirm-dialog.module';
 
 const routes: Routes = [
   {
@@ -31,6 +32,7 @@ const routes: Routes = [
     MatDialogModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    ConfirmDialogModule,
     PostModule,
     RouterModule.forChild(routes),
   ],
