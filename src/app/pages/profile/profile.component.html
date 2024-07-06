@@ -1,75 +1,78 @@
 <app-navbar></app-navbar>
 
-<div class="profile-info" *ngIf="userProfile">
-  <div class="profile-image">
-    <img
-      *ngIf="userProfile?.profileImageUrl"
-      [src]="userProfile.profileImageUrl"
-      alt="Profile Image"
-    />
-    <img
-      *ngIf="!userProfile?.profileImageUrl"
-      src="../../../assets/profile-icon.png"
-      alt="Default Profile Image"
-    />
-    <button mat-button *ngIf="isUploading" class="button-loader">
-      <mat-spinner color="accent" diameter="30"></mat-spinner>
-    </button>
-    <button mat-mini-fab [matMenuTriggerFor]="menu">
-      <mat-icon>edit</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="inputField.click()">Choose Image</button>
-      <button
-        mat-menu-item
-        *ngIf="userProfile.profileImageUrl"
-        (click)="deleteImage()"
-      >
-        Delete Image
+<div class="content">
+  <div class="profile-info" *ngIf="userProfile">
+    <div class="profile-image">
+      <img
+        *ngIf="userProfile?.profileImageUrl"
+        [src]="userProfile.profileImageUrl"
+        alt="Profile Image"
+      />
+      <img
+        *ngIf="!userProfile?.profileImageUrl"
+        src="../../../assets/profile-icon.png"
+        alt="Default Profile Image"
+      />
+      <button mat-button *ngIf="isUploading" class="button-loader">
+        <mat-spinner color="accent" diameter="30"></mat-spinner>
       </button>
-    </mat-menu>
-  </div>
-  <input #inputField type="file" hidden (change)="onImageSelected($event)" />
-  <div class="right-side">
-    <div class="name">
-      <h1>{{ userProfile.firstName }} {{ userProfile.lastName }}</h1>
-    </div>
-    <div class="add">
-      <div class="button-add">
+      <button mat-mini-fab [matMenuTriggerFor]="menu">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="inputField.click()">Choose Image</button>
         <button
-          mat-mini-fab
-          color="primary"
-          matTooltip="Add pet"
-          (click)="openAddPetDialog()"
+          mat-menu-item
+          *ngIf="userProfile.profileImageUrl"
+          (click)="deleteImage()"
         >
-          <mat-icon>add</mat-icon>
+          Delete Image
         </button>
+      </mat-menu>
+    </div>
+    <input #inputField type="file" hidden (change)="onImageSelected($event)" />
+    <div class="right-side">
+      <div class="name">
+        <h1>{{ userProfile.firstName }} {{ userProfile.lastName }}</h1>
       </div>
-      <div *ngFor="let pet of pets" class="pet-image">
-        <img
-          [src]="pet.imageUrl"
-          alt="Pet Image"
-          #tooltip="matTooltip"
-          [matTooltip]="pet.name"
-          (click)="openEditPetDialog(pet)"
-        />
-        <button mat-mini-fab (click)="deletePet(pet)" class="delete-button">
-          <mat-icon>delete</mat-icon>
-        </button>
+      <div class="add">
+        <div class="button-add">
+          <button
+            mat-mini-fab
+            color="primary"
+            matTooltip="Add pet"
+            (click)="openAddPetDialog()"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        <div *ngFor="let pet of pets" class="pet-image">
+          <img
+            [src]="pet.imageUrl"
+            alt="Pet Image"
+            #tooltip="matTooltip"
+            [matTooltip]="pet.name"
+            (click)="openEditPetDialog(pet)"
+          />
+          <button mat-mini-fab (click)="deletePet(pet)" class="delete-button">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<div class="actions-container">
-  <div class="link-actions">
-    <button mat-button color="accent">All posts</button>
-    <button mat-button color="accent">Friends</button>
+  <div class="actions-container">
+    <div class="link-actions">
+      <button mat-button color="accent">All posts</button>
+      <button mat-button color="accent">Friends</button>
+    </div>
+    <div class="button-actions">
+      <!--<button mat-button color="accent">Filter</button>-->
+      <button mat-raised-button color="primary" (click)="openAddPostDialog()">
+        Add new post
+      </button>
+    </div>
   </div>
-  <div class="button-actions">
-    <!--<button mat-button color="accent">Filter</button>-->
-    <button mat-raised-button color="primary" (click)="openAddPostDialog()">
-      Add new post
-    </button>
-  </div>
+  <app-post></app-post>
 </div>
-<app-post></app-post>
+<footer><app-footer></app-footer></footer>

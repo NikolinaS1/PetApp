@@ -77,3 +77,11 @@
   padding-right: 10px;
   cursor: pointer;
 }
+
+mat-paginator {
+  display: flex;
+  margin: 20px 0;
+  background-color: transparent;
+  justify-content: flex-end;
+  margin-right: 100px;
+}
