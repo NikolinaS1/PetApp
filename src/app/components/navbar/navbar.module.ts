@@ -12,7 +12,8 @@ import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
-import { MatSidenav } from '@angular/material/sidenav';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [NavbarComponent],
@@ -29,7 +30,11 @@ import { MatSidenav } from '@angular/material/sidenav';
     RouterModule,
     MatMenuModule,
     MatBadgeModule,
-    MatSidenav,
+    FormsModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatAutocompleteModule,
+    ReactiveFormsModule,
   ],
   exports: [NavbarComponent],
 })

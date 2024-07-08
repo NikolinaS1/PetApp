@@ -25,6 +25,7 @@
     "express": "^4.19.2",
     "firebase": "^10.11.0",
     "jsonwebtoken": "^9.0.2",
+    "ngx-infinite-scroll": "^18.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

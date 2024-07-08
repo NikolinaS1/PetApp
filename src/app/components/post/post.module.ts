@@ -6,7 +6,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [PostComponent],
@@ -16,7 +17,9 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatMenuModule,
     MatSnackBarModule,
     MatBadgeModule,
+    MatProgressSpinnerModule,
     MatDialogModule,
+    InfiniteScrollModule,
   ],
   exports: [PostComponent],
 })

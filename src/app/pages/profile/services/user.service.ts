@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable, firstValueFrom, from, switchMap } from 'rxjs';
+import { Observable, firstValueFrom, from, map, switchMap } from 'rxjs';
 import { Pet } from '../models/pet.model';
 import { UserProfile } from '../models/userProfile.model';
 import {
@@ -72,5 +72,25 @@ export class UserService {
     return this.firestore
       .collection(`pets/${uid}/pets`)
       .valueChanges({ idField: 'id' }) as Observable<Pet[]>;
+  }
+
+  searchUsers(query: string): Observable<any[]> {
+    return this.firestore
+      .collection('users', (ref) =>
+        ref
+          .orderBy('firstName')
+          .startAt(query)
+          .endAt(query + '\uf8ff')
+      )
+      .snapshotChanges()
+      .pipe(
+        map((actions) =>
+          actions.map((a) => {
+            const data = a.payload.doc.data() as { [key: string]: any };
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        )
+      );
   }
 }

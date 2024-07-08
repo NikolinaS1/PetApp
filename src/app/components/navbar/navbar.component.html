@@ -5,6 +5,44 @@
       <mat-icon (click)="sidenav.toggle()">menu</mat-icon>
     </div>
   </div>
+  <form class="search-form">
+    <mat-form-field class="search" [style.width.px]="390">
+      <mat-label>Search</mat-label>
+      <input
+        type="search"
+        matInput
+        [formControl]="searchControl"
+        [matAutocomplete]="auto"
+        placeholder="Search..."
+      />
+      <mat-icon matSuffix>search</mat-icon>
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option
+          *ngFor="let user of filteredUsers | async"
+          [value]="user.firstName"
+        >
+          <div class="user-info">
+            <img
+              *ngIf="user.profileImageUrl; else noImage"
+              class="user"
+              [src]="user.profileImageUrl"
+              alt="User Image"
+            />
+            <ng-template #noImage>
+              <img
+                src="../../../assets/profile-icon.png"
+                class="user"
+                alt="Default Profile Image"
+              />
+            </ng-template>
+            <div class="text-content">
+              <span class="name">{{ user.firstName }} {{ user.lastName }}</span>
+            </div>
+          </div>
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </form>
   <ul class="nav-links">
     <li matTooltip="Home">
       <a routerLink="/" class="nav-link">
