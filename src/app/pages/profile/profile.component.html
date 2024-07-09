@@ -16,7 +16,11 @@
       <button mat-button *ngIf="isUploading" class="button-loader">
         <mat-spinner color="accent" diameter="30"></mat-spinner>
       </button>
-      <button mat-mini-fab [matMenuTriggerFor]="menu">
+      <button
+        mat-mini-fab
+        *ngIf="currentUserId === uid"
+        [matMenuTriggerFor]="menu"
+      >
         <mat-icon>edit</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
@@ -39,6 +43,7 @@
         <div class="button-add">
           <button
             mat-mini-fab
+            *ngIf="currentUserId === uid"
             color="primary"
             matTooltip="Add pet"
             (click)="openAddPetDialog()"
@@ -54,7 +59,12 @@
             [matTooltip]="pet.name"
             (click)="openEditPetDialog(pet)"
           />
-          <button mat-mini-fab (click)="deletePet(pet)" class="delete-button">
+          <button
+            mat-mini-fab
+            *ngIf="currentUserId === uid"
+            (click)="deletePet(pet)"
+            class="delete-button"
+          >
             <mat-icon>delete</mat-icon>
           </button>
         </div>
@@ -67,8 +77,12 @@
       <button mat-button color="accent">Friends</button>
     </div>
     <div class="button-actions">
-      <!--<button mat-button color="accent">Filter</button>-->
-      <button mat-raised-button color="primary" (click)="openAddPostDialog()">
+      <button
+        mat-raised-button
+        *ngIf="currentUserId === uid"
+        color="primary"
+        (click)="openAddPostDialog()"
+      >
         Add new post
       </button>
     </div>

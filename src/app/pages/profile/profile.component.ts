@@ -7,6 +7,7 @@ import { Pet } from './models/pet.model';
 import { AddPostDialogComponent } from '../../components/add-post-dialog/add-post-dialog.component';
 import { PetService } from '../../components/add-pet-dialog/services/pet.service';
 import { ConfirmDialogComponent } from '../../components/confirm-dialog/confirm-dialog.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -18,17 +19,31 @@ export class ProfileComponent implements OnInit {
   selectedImage: File | null = null;
   pets: Pet[] = [];
   isUploading = false;
+  uid: string | null = null;
+  currentUserId = localStorage.getItem('accessToken');
 
   constructor(
     private userService: UserService,
     private petService: PetService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.loadUserProfile();
-    this.getPets();
+    this.route.paramMap.subscribe((params) => {
+      this.uid = params.get('userId');
+      if (this.uid) {
+        this.loadUserProfile(this.uid);
+        this.getPets(this.uid);
+      } else {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+          this.loadUserProfile(accessToken);
+          this.getPets(accessToken);
+        }
+      }
+    });
   }
 
   openAddPetDialog(): void {
@@ -53,18 +68,15 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  loadUserProfile(): void {
-    const uid = localStorage.getItem('accessToken');
-    if (uid) {
-      this.userService
-        .getUserProfile(uid)
-        .then((profile) => {
-          this.userProfile = profile;
-        })
-        .catch((error) => {
-          console.error('Error loading user profile:', error);
-        });
-    }
+  loadUserProfile(userId: string): void {
+    this.userService
+      .getUserProfile(userId)
+      .then((profile) => {
+        this.userProfile = profile;
+      })
+      .catch((error) => {
+        console.error('Error loading user profile:', error);
+      });
   }
 
   onImageSelected(event: any) {
@@ -96,7 +108,7 @@ export class ProfileComponent implements OnInit {
             this.snackBar.open('Profile image uploaded successfully.', 'OK', {
               duration: 5000,
             });
-            this.loadUserProfile();
+            this.loadUserProfile(userId);
             this.isUploading = false;
           });
         },
@@ -136,7 +148,7 @@ export class ProfileComponent implements OnInit {
               this.snackBar.open('Profile image deleted successfully.', 'OK', {
                 duration: 5000,
               });
-              this.loadUserProfile();
+              this.loadUserProfile(userId);
             })
             .catch((error) => {
               console.error('Error deleting profile image:', error);
@@ -155,13 +167,10 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  getPets() {
-    const uid = localStorage.getItem('accessToken');
-    if (uid) {
-      this.userService.getPets(uid).subscribe((pets) => {
-        this.pets = pets;
-      });
-    }
+  getPets(userId: string) {
+    this.userService.getPets(userId).subscribe((pets) => {
+      this.pets = pets;
+    });
   }
 
   deletePet(pet: Pet) {
@@ -183,7 +192,7 @@ export class ProfileComponent implements OnInit {
               this.snackBar.open('Pet deleted successfully.', 'OK', {
                 duration: 5000,
               });
-              this.getPets();
+              this.getPets(userId);
             })
             .catch((error) => {
               console.error('Error deleting a pet:', error);

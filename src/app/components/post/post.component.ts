@@ -5,7 +5,7 @@ import { PostService } from '../add-post-dialog/services/post.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { PageEvent } from '@angular/material/paginator';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-post',
@@ -15,23 +15,28 @@ import { PageEvent } from '@angular/material/paginator';
 export class PostComponent implements OnInit {
   userProfile: any;
   posts: IPost[] = [];
+  uid: string | null = null;
+  currentUserId = localStorage.getItem('accessToken');
 
   constructor(
     private userService: UserService,
     private postService: PostService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.loadUserProfile();
+    this.route.paramMap.subscribe((params) => {
+      this.uid = params.get('userId');
+      this.loadUserProfile();
+    });
   }
 
   loadUserProfile(): void {
-    const uid = localStorage.getItem('accessToken');
-    if (uid) {
+    if (this.uid) {
       this.userService
-        .getUserProfile(uid)
+        .getUserProfile(this.uid)
         .then((profile) => {
           this.userProfile = profile;
           this.getPosts();
@@ -39,15 +44,34 @@ export class PostComponent implements OnInit {
         .catch((error) => {
           console.error('Error loading user profile:', error);
         });
+    } else {
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        this.userService
+          .getUserProfile(accessToken)
+          .then((profile) => {
+            this.userProfile = profile;
+            this.getPosts();
+          })
+          .catch((error) => {
+            console.error('Error loading user profile:', error);
+          });
+      }
     }
   }
 
   getPosts(): void {
-    const uid = localStorage.getItem('accessToken');
-    if (uid) {
-      this.postService.getPosts(uid).subscribe((posts) => {
+    if (this.uid) {
+      this.postService.getPosts(this.uid).subscribe((posts) => {
         this.posts = posts;
       });
+    } else {
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        this.postService.getPosts(accessToken).subscribe((posts) => {
+          this.posts = posts;
+        });
+      }
     }
   }
 
@@ -62,7 +86,9 @@ export class PostComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const userId = localStorage.getItem('accessToken');
+        const userId = this.uid
+          ? this.uid
+          : localStorage.getItem('accessToken');
         if (userId) {
           this.postService
             .deletePost(userId, post.id)

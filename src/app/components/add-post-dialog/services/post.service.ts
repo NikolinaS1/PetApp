@@ -7,7 +7,7 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage';
-import { Observable, map } from 'rxjs';
+import { Observable, from, map, mergeMap, toArray } from 'rxjs';
 import { IPost } from '../../post/models/post.model';
 
 @Injectable({
@@ -65,6 +65,39 @@ export class PostService {
             createdAt: p.createdAt ? p.createdAt.toDate() : null,
           }))
         )
+      );
+  }
+
+  getAllPosts(): Observable<IPost[]> {
+    return this.firestore
+      .collection('posts')
+      .get()
+      .pipe(
+        mergeMap((querySnapshot) => {
+          const userIds = querySnapshot.docs.map((doc) => doc.id);
+          return from(userIds).pipe(
+            mergeMap((userId) =>
+              this.firestore
+                .collection('posts')
+                .doc(userId)
+                .collection('posts', (ref) => ref.orderBy('createdAt', 'desc'))
+                .valueChanges({ idField: 'id' })
+                .pipe(
+                  map((posts: any[]) =>
+                    posts.map((p) => ({
+                      id: p.id,
+                      text: p.text,
+                      imageUrl: p.imageUrl,
+                      createdAt: p.createdAt ? p.createdAt.toDate() : null,
+                      userId: userId,
+                    }))
+                  )
+                )
+            ),
+            toArray(),
+            map((postsArrays) => postsArrays.flat())
+          );
+        })
       );
   }
 

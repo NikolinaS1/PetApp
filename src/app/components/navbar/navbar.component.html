@@ -6,7 +6,7 @@
     </div>
   </div>
   <form class="search-form">
-    <mat-form-field class="search" [style.width.px]="390">
+    <mat-form-field class="search" [style.width.px]="392">
       <mat-label>Search</mat-label>
       <input
         type="search"
@@ -21,7 +21,7 @@
           *ngFor="let user of filteredUsers | async"
           [value]="user.firstName"
         >
-          <div class="user-info">
+          <div class="user-info" (click)="navigateToUserProfile(user.id)">
             <img
               *ngIf="user.profileImageUrl; else noImage"
               class="user"
@@ -50,7 +50,7 @@
       </a>
     </li>
     <li matTooltip="Profile">
-      <a routerLink="/profile" class="nav-link">
+      <a (click)="navigateToCurrentUserProfile()" class="nav-link">
         <mat-icon>person</mat-icon>
       </a>
     </li>

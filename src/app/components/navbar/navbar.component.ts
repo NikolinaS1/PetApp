@@ -19,6 +19,7 @@ export class NavbarComponent implements OnInit {
   isCollapsed = true;
   searchControl = new FormControl();
   filteredUsers!: Observable<any[]>;
+  uid = localStorage.getItem('accessToken');
 
   constructor(
     public authenticationService: AuthenticationService,
@@ -41,6 +42,16 @@ export class NavbarComponent implements OnInit {
   toggle() {
     this.sidenav.toggle();
     this.isCollapsed = false;
+  }
+
+  navigateToUserProfile(userId: string) {
+    this.router.navigate(['/profile', userId]);
+  }
+
+  navigateToCurrentUserProfile() {
+    if (this.uid) {
+      this.router.navigate(['/profile', this.uid]);
+    }
   }
 
   /* logout() {

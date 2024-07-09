@@ -24,7 +24,11 @@
           </p>
         </div>
       </div>
-      <div class="options" [matMenuTriggerFor]="menu">
+      <div
+        class="options"
+        *ngIf="currentUserId === uid"
+        [matMenuTriggerFor]="menu"
+      >
         <mat-icon color="primary">more_vert</mat-icon>
         <mat-menu #menu="matMenu" xPosition="before">
           <button mat-menu-item (click)="deletePost(post)">Delete post</button>
