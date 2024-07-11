@@ -50,6 +50,7 @@ export class ProfileComponent implements OnInit {
     this.dialog.open(AddPetDialogComponent, {
       width: '440px',
       height: '550px',
+      data: { userId: this.uid },
     });
   }
 
@@ -64,7 +65,7 @@ export class ProfileComponent implements OnInit {
     this.dialog.open(AddPetDialogComponent, {
       width: '440px',
       height: '550px',
-      data: { pet },
+      data: { pet, userId: this.uid },
     });
   }
 

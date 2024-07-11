@@ -19,15 +19,20 @@ export class AddPetDialogComponent implements OnInit {
   successMessage: string | null = null;
   isEditing = false;
   petId: string | null = null;
+  isOwner = false;
 
   constructor(
     private petService: PetService,
     private dialogRef: MatDialogRef<AddPetDialogComponent>,
     private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: { pet: Pet }
+    @Inject(MAT_DIALOG_DATA)
+    public data: { pet: Pet; userId: string }
   ) {}
 
   ngOnInit(): void {
+    const currentUserId = localStorage.getItem('accessToken');
+    this.isOwner = currentUserId === this.data.userId;
+
     if (this.data && this.data.pet) {
       this.isEditing = true;
       const { pet } = this.data;
@@ -39,6 +44,9 @@ export class AddPetDialogComponent implements OnInit {
   }
 
   savePet() {
+    if (!this.isOwner) {
+      return;
+    }
     this.isSaving = true;
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
