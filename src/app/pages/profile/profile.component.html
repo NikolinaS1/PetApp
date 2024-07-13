@@ -73,8 +73,18 @@
   </div>
   <div class="actions-container">
     <div class="link-actions">
-      <button mat-button color="accent">All posts</button>
-      <button mat-button color="accent">Friends</button>
+      <div class="posts">
+        <p>{{ postCount }}</p>
+        <button mat-button color="accent">Posts</button>
+      </div>
+      <div class="followers">
+        <p>0</p>
+        <button mat-button color="accent">Followers</button>
+      </div>
+      <div class="following">
+        <p>0</p>
+        <button mat-button color="accent">Following</button>
+      </div>
     </div>
     <div class="button-actions">
       <button
@@ -85,8 +95,17 @@
       >
         Add new post
       </button>
+      <ng-container *ngIf="currentUserId !== uid">
+        <button
+          mat-raised-button
+          [color]="isFollowingUser ? 'warn' : 'primary'"
+          (click)="isFollowingUser ? unfollowUser() : followUser()"
+        >
+          {{ isFollowingUser ? "Unfollow" : "Follow" }}
+        </button>
+      </ng-container>
     </div>
   </div>
-  <app-post></app-post>
+  <app-post (postCount)="onPostCountChange($event)"></app-post>
 </div>
 <footer><app-footer></app-footer></footer>

@@ -21,6 +21,8 @@ export class ProfileComponent implements OnInit {
   isUploading = false;
   uid: string | null = null;
   currentUserId = localStorage.getItem('accessToken');
+  postCount: number = 0;
+  isFollowingUser: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -36,14 +38,26 @@ export class ProfileComponent implements OnInit {
       if (this.uid) {
         this.loadUserProfile(this.uid);
         this.getPets(this.uid);
+        this.checkIfFollowing();
       } else {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
           this.loadUserProfile(accessToken);
           this.getPets(accessToken);
+          this.checkIfFollowing();
         }
       }
     });
+  }
+
+  checkIfFollowing(): void {
+    if (this.uid) {
+      this.userService
+        .isFollowing(this.currentUserId, this.uid)
+        .subscribe((following: boolean) => {
+          this.isFollowingUser = following;
+        });
+    }
   }
 
   openAddPetDialog(): void {
@@ -78,6 +92,10 @@ export class ProfileComponent implements OnInit {
       .catch((error) => {
         console.error('Error loading user profile:', error);
       });
+  }
+
+  onPostCountChange(count: number): void {
+    this.postCount = count;
   }
 
   onImageSelected(event: any) {
@@ -200,6 +218,18 @@ export class ProfileComponent implements OnInit {
             });
         }
       }
+    });
+  }
+
+  followUser(): void {
+    this.userService.followUser(this.uid).catch((error) => {
+      console.error('Error following user:', error);
+    });
+  }
+
+  unfollowUser(): void {
+    this.userService.unfollowUser(this.uid).catch((error) => {
+      console.error('Error unfollowing user:', error);
     });
   }
 }

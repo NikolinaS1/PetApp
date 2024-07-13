@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { UserService } from '../../pages/profile/services/user.service';
 import { IPost } from './models/post.model';
 import { PostService } from '../add-post-dialog/services/post.service';
@@ -17,6 +17,7 @@ export class PostComponent implements OnInit {
   posts: IPost[] = [];
   uid: string | null = null;
   currentUserId = localStorage.getItem('accessToken');
+  @Output() postCount = new EventEmitter<number>();
 
   constructor(
     private userService: UserService,
@@ -64,12 +65,14 @@ export class PostComponent implements OnInit {
     if (this.uid) {
       this.postService.getPosts(this.uid).subscribe((posts) => {
         this.posts = posts;
+        this.postCount.emit(posts.length);
       });
     } else {
       const accessToken = localStorage.getItem('accessToken');
       if (accessToken) {
         this.postService.getPosts(accessToken).subscribe((posts) => {
           this.posts = posts;
+          this.postCount.emit(posts.length);
         });
       }
     }

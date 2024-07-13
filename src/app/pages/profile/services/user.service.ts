@@ -3,6 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable, firstValueFrom, from, map, switchMap } from 'rxjs';
 import { Pet } from '../models/pet.model';
 import { UserProfile } from '../models/userProfile.model';
+import firebase from 'firebase/compat/app';
 import {
   deleteObject,
   getDownloadURL,
@@ -10,12 +11,16 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  constructor(private firestore: AngularFirestore) {}
+  constructor(
+    private firestore: AngularFirestore,
+    private auth: AngularFireAuth
+  ) {}
 
   async getUserProfile(uid: string): Promise<UserProfile | null> {
     try {
@@ -90,6 +95,53 @@ export class UserService {
             const id = a.payload.doc.id;
             return { id, ...data };
           })
+        )
+      );
+  }
+
+  followUser(followingUserId: string): Promise<void> {
+    return this.auth.currentUser.then((user) => {
+      if (user) {
+        const currentUserId = user.uid;
+        return this.firestore
+          .collection('users')
+          .doc(currentUserId)
+          .update({
+            following:
+              firebase.firestore.FieldValue.arrayUnion(followingUserId),
+          });
+      } else {
+        throw new Error('No user logged in');
+      }
+    });
+  }
+
+  unfollowUser(followingUserId: string): Promise<void> {
+    return this.auth.currentUser.then((user) => {
+      if (user) {
+        const currentUserId = user.uid;
+        return this.firestore
+          .collection('users')
+          .doc(currentUserId)
+          .update({
+            following:
+              firebase.firestore.FieldValue.arrayRemove(followingUserId),
+          });
+      } else {
+        throw new Error('No user logged in');
+      }
+    });
+  }
+
+  isFollowing(userId: string, followingUserId: string): Observable<boolean> {
+    return this.firestore
+      .collection('users')
+      .doc(userId)
+      .valueChanges()
+      .pipe(
+        map(
+          (user: any) =>
+            user && user.following && user.following.includes(followingUserId)
         )
       );
   }

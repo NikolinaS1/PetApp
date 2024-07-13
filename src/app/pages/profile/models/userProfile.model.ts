@@ -3,4 +3,5 @@ export interface UserProfile {
   lastName: string;
   email: string;
   profileImageUrl?: string;
+  following?: string[];
 }
