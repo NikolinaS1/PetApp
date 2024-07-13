@@ -22,6 +22,7 @@ export class ProfileComponent implements OnInit {
   uid: string | null = null;
   currentUserId = localStorage.getItem('accessToken');
   postCount: number = 0;
+  followingCount: number = 0;
   isFollowingUser: boolean = false;
 
   constructor(
@@ -39,12 +40,14 @@ export class ProfileComponent implements OnInit {
         this.loadUserProfile(this.uid);
         this.getPets(this.uid);
         this.checkIfFollowing();
+        this.getFollowingCount(this.uid);
       } else {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
           this.loadUserProfile(accessToken);
           this.getPets(accessToken);
           this.checkIfFollowing();
+          this.getFollowingCount(this.uid);
         }
       }
     });
@@ -230,6 +233,12 @@ export class ProfileComponent implements OnInit {
   unfollowUser(): void {
     this.userService.unfollowUser(this.uid).catch((error) => {
       console.error('Error unfollowing user:', error);
+    });
+  }
+
+  getFollowingCount(userId: string): void {
+    this.userService.getFollowingCount(userId).subscribe((count) => {
+      this.followingCount = count;
     });
   }
 }

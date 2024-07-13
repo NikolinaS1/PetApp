@@ -145,4 +145,20 @@ export class UserService {
         )
       );
   }
+
+  getFollowingCount(userId: string): Observable<number> {
+    return this.firestore
+      .collection('users')
+      .doc(userId)
+      .valueChanges()
+      .pipe(
+        map((user: UserProfile) => {
+          if (user && user.following) {
+            return user.following.length;
+          } else {
+            return 0;
+          }
+        })
+      );
+  }
 }
