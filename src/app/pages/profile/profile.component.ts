@@ -20,9 +20,10 @@ export class ProfileComponent implements OnInit {
   pets: Pet[] = [];
   isUploading = false;
   uid: string | null = null;
-  currentUserId = localStorage.getItem('accessToken');
+  currentUserId: string | null = localStorage.getItem('accessToken');
   postCount: number = 0;
-  followingCount: number = 0;
+  followingCountCurrentUser: number = 0;
+  followingCountDisplayedUser: number = 0;
   isFollowingUser: boolean = false;
 
   constructor(
@@ -41,20 +42,17 @@ export class ProfileComponent implements OnInit {
         this.getPets(this.uid);
         this.checkIfFollowing();
         this.getFollowingCount(this.uid);
-      } else {
-        const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
-          this.loadUserProfile(accessToken);
-          this.getPets(accessToken);
-          this.checkIfFollowing();
-          this.getFollowingCount(this.uid);
-        }
+      } else if (this.currentUserId) {
+        this.loadUserProfile(this.currentUserId);
+        this.getPets(this.currentUserId);
+        this.checkIfFollowing();
+        this.getFollowingCount(this.currentUserId);
       }
     });
   }
 
   checkIfFollowing(): void {
-    if (this.uid) {
+    if (this.uid && this.currentUserId) {
       this.userService
         .isFollowing(this.currentUserId, this.uid)
         .subscribe((following: boolean) => {
@@ -225,20 +223,63 @@ export class ProfileComponent implements OnInit {
   }
 
   followUser(): void {
-    this.userService.followUser(this.uid).catch((error) => {
-      console.error('Error following user:', error);
-    });
+    if (this.uid && this.currentUserId) {
+      this.userService
+        .followUser(this.uid)
+        .then(() => {
+          this.updateFollowingCount();
+          this.isFollowingUser = true;
+        })
+        .catch((error) => {
+          console.error('Error following user:', error);
+        });
+    }
   }
 
   unfollowUser(): void {
-    this.userService.unfollowUser(this.uid).catch((error) => {
-      console.error('Error unfollowing user:', error);
-    });
+    if (this.uid && this.currentUserId) {
+      this.userService
+        .unfollowUser(this.uid)
+        .then(() => {
+          this.updateFollowingCount();
+          this.isFollowingUser = false;
+        })
+        .catch((error) => {
+          console.error('Error unfollowing user:', error);
+        });
+    }
+  }
+
+  private updateFollowingCount(): void {
+    const userId = this.uid || this.currentUserId;
+    this.userService.getFollowingCount(userId).subscribe(
+      (count) => {
+        if (userId === this.currentUserId) {
+          this.followingCountCurrentUser = count;
+        } else {
+          this.followingCountDisplayedUser = count;
+        }
+      },
+      (error) => {
+        console.error('Error fetching following count:', error);
+        this.followingCountCurrentUser = 0;
+        this.followingCountDisplayedUser = 0;
+      }
+    );
   }
 
   getFollowingCount(userId: string): void {
-    this.userService.getFollowingCount(userId).subscribe((count) => {
-      this.followingCount = count;
-    });
+    this.userService.getFollowingCount(userId).subscribe(
+      (count) => {
+        if (userId === this.currentUserId) {
+          this.followingCountCurrentUser = count;
+        } else {
+          this.followingCountDisplayedUser = count;
+        }
+      },
+      (error) => {
+        console.error('Error fetching following count:', error);
+      }
+    );
   }
 }

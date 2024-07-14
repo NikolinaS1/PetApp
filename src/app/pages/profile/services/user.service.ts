@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable, firstValueFrom, from, map, switchMap } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  firstValueFrom,
+  from,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 import { Pet } from '../models/pet.model';
 import { UserProfile } from '../models/userProfile.model';
 import firebase from 'firebase/compat/app';
@@ -99,38 +107,56 @@ export class UserService {
       );
   }
 
-  followUser(followingUserId: string): Promise<void> {
-    return this.auth.currentUser.then((user) => {
-      if (user) {
-        const currentUserId = user.uid;
-        return this.firestore
-          .collection('users')
-          .doc(currentUserId)
-          .update({
-            following:
-              firebase.firestore.FieldValue.arrayUnion(followingUserId),
-          });
-      } else {
-        throw new Error('No user logged in');
-      }
-    });
+  async followUser(followingUserId: string): Promise<void> {
+    try {
+      const currentUserId = localStorage.getItem('accessToken');
+
+      await this.firestore
+        .collection('users')
+        .doc(currentUserId)
+        .update({
+          following: firebase.firestore.FieldValue.arrayUnion(followingUserId),
+        });
+    } catch (error) {
+      console.error('Error following user:', error);
+      throw error;
+    }
   }
 
-  unfollowUser(followingUserId: string): Promise<void> {
-    return this.auth.currentUser.then((user) => {
-      if (user) {
-        const currentUserId = user.uid;
-        return this.firestore
-          .collection('users')
-          .doc(currentUserId)
-          .update({
-            following:
-              firebase.firestore.FieldValue.arrayRemove(followingUserId),
-          });
-      } else {
-        throw new Error('No user logged in');
-      }
-    });
+  async unfollowUser(followingUserId: string): Promise<void> {
+    try {
+      const currentUserId = localStorage.getItem('accessToken');
+
+      await this.firestore
+        .collection('users')
+        .doc(currentUserId)
+        .update({
+          following: firebase.firestore.FieldValue.arrayRemove(followingUserId),
+        });
+    } catch (error) {
+      console.error('Error unfollowing user:', error);
+      throw error;
+    }
+  }
+
+  getFollowingCount(userId: string): Observable<number> {
+    return this.firestore
+      .collection('users')
+      .doc(userId)
+      .valueChanges()
+      .pipe(
+        map((user: any) => {
+          if (user && user.following) {
+            return user.following.length;
+          } else {
+            return 0;
+          }
+        }),
+        catchError((error) => {
+          console.error('Error fetching following count:', error);
+          return of(0);
+        })
+      );
   }
 
   isFollowing(userId: string, followingUserId: string): Observable<boolean> {
@@ -143,22 +169,6 @@ export class UserService {
           (user: any) =>
             user && user.following && user.following.includes(followingUserId)
         )
-      );
-  }
-
-  getFollowingCount(userId: string): Observable<number> {
-    return this.firestore
-      .collection('users')
-      .doc(userId)
-      .valueChanges()
-      .pipe(
-        map((user: UserProfile) => {
-          if (user && user.following) {
-            return user.following.length;
-          } else {
-            return 0;
-          }
-        })
       );
   }
 }

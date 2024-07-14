@@ -82,7 +82,13 @@
         <button mat-button color="accent">Followers</button>
       </div>
       <div class="following">
-        <p>{{ followingCount }}</p>
+        <p>
+          {{
+            uid === currentUserId
+              ? followingCountCurrentUser
+              : followingCountDisplayedUser
+          }}
+        </p>
         <button mat-button color="accent">Following</button>
       </div>
     </div>
