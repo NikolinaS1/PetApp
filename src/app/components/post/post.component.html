@@ -3,19 +3,19 @@
     <div class="user">
       <div class="profile-image">
         <img
-          *ngIf="userProfile?.profileImageUrl"
-          [src]="userProfile.profileImageUrl"
+          *ngIf="post.profileImageUrl"
+          [src]="post.profileImageUrl"
           alt="Profile Image"
         />
         <img
-          *ngIf="!userProfile?.profileImageUrl"
+          *ngIf="!post.profileImageUrl"
           src="../../../assets/profile-icon.png"
           alt="Default Profile Image"
         />
       </div>
       <div class="name_date">
         <div class="name">
-          <p>{{ userProfile?.firstName }} {{ userProfile?.lastName }}</p>
+          <p>{{ post.firstName }} {{ post.lastName }}</p>
         </div>
         <div class="date">
           <p *ngIf="post.createdAt">

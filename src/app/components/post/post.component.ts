@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserService } from '../../pages/profile/services/user.service';
 import { IPost } from './models/post.model';
 import { PostService } from '../add-post-dialog/services/post.service';
@@ -13,7 +13,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./post.component.scss'],
 })
 export class PostComponent implements OnInit {
-  userProfile: any;
+  @Input() userProfile: any;
   posts: IPost[] = [];
   uid: string | null = null;
   currentUserId = localStorage.getItem('accessToken');
@@ -30,51 +30,23 @@ export class PostComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.uid = params.get('userId');
-      this.loadUserProfile();
+      this.loadPosts();
     });
   }
 
-  loadUserProfile(): void {
-    if (this.uid) {
-      this.userService
-        .getUserProfile(this.uid)
-        .then((profile) => {
-          this.userProfile = profile;
-          this.getPosts();
-        })
-        .catch((error) => {
-          console.error('Error loading user profile:', error);
-        });
-    } else {
-      const accessToken = localStorage.getItem('accessToken');
-      if (accessToken) {
-        this.userService
-          .getUserProfile(accessToken)
-          .then((profile) => {
-            this.userProfile = profile;
-            this.getPosts();
-          })
-          .catch((error) => {
-            console.error('Error loading user profile:', error);
-          });
-      }
-    }
-  }
-
-  getPosts(): void {
+  loadPosts(): void {
     if (this.uid) {
       this.postService.getPosts(this.uid).subscribe((posts) => {
         this.posts = posts;
         this.postCount.emit(posts.length);
       });
     } else {
-      const accessToken = localStorage.getItem('accessToken');
-      if (accessToken) {
-        this.postService.getPosts(accessToken).subscribe((posts) => {
+      this.postService
+        .getPostsByFollowing(this.currentUserId)
+        .subscribe((posts) => {
           this.posts = posts;
           this.postCount.emit(posts.length);
         });
-      }
     }
   }
 
@@ -99,7 +71,7 @@ export class PostComponent implements OnInit {
               this.snackBar.open('Post deleted successfully.', 'OK', {
                 duration: 5000,
               });
-              this.getPosts();
+              this.loadPosts();
             })
             .catch((error) => {
               console.error('Error deleting post:', error);

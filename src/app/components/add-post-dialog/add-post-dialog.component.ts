@@ -48,8 +48,19 @@ export class AddPostDialogComponent implements OnInit {
     }
 
     if (this.selectedImage || this.status.trim() !== '') {
+      const firstName = this.userProfile?.firstName || '';
+      const lastName = this.userProfile?.lastName || '';
+      const profileImageUrl = this.userProfile?.profileImageUrl || '';
+
       this.postService
-        .addPost(this.status, this.selectedImage, accessToken)
+        .addPost(
+          this.status,
+          this.selectedImage,
+          accessToken,
+          firstName,
+          lastName,
+          profileImageUrl
+        )
         .then(() => {
           console.log('Post added successfully!');
           this.snackBar.open('New post added successfully.', 'OK', {

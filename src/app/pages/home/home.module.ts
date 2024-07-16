@@ -4,6 +4,7 @@ import { HomeComponent } from './home.component';
 import { RouterModule, Routes } from '@angular/router';
 import { NavbarModule } from '../../components/navbar/navbar.module';
 import { FooterModule } from '../../components/footer/footer.module';
+import { PostModule } from '../../components/post/post.module';
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
     NavbarModule,
     RouterModule.forChild(routes),
     FooterModule,
+    PostModule,
   ],
 })
 export class HomeModule {}

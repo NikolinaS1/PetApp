@@ -112,6 +112,9 @@
       </ng-container>
     </div>
   </div>
-  <app-post (postCount)="onPostCountChange($event)"></app-post>
+  <app-post
+    (postCount)="onPostCountChange($event)"
+    [userProfile]="userProfile"
+  ></app-post>
 </div>
 <footer><app-footer></app-footer></footer>

@@ -7,7 +7,16 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage';
-import { Observable, from, map, mergeMap, toArray } from 'rxjs';
+import {
+  Observable,
+  combineLatest,
+  from,
+  map,
+  mergeMap,
+  of,
+  switchMap,
+  toArray,
+} from 'rxjs';
 import { IPost } from '../../post/models/post.model';
 
 @Injectable({
@@ -16,7 +25,14 @@ import { IPost } from '../../post/models/post.model';
 export class PostService {
   constructor(private firestore: AngularFirestore) {}
 
-  async addPost(text: string, imageFile: File | null, userId: string) {
+  async addPost(
+    text: string,
+    imageFile: File | null,
+    userId: string,
+    firstName: string,
+    lastName: string,
+    profileImageUrl: string
+  ) {
     const storage = getStorage();
     const postId = this.firestore.createId();
 
@@ -41,6 +57,9 @@ export class PostService {
           imageUrl: imageUrl,
           postId: postId,
           createdAt: new Date(),
+          firstName: firstName,
+          lastName: lastName,
+          profileImageUrl: profileImageUrl,
         });
 
       return 'Post added successfully!';
@@ -63,6 +82,9 @@ export class PostService {
             text: p.text,
             imageUrl: p.imageUrl,
             createdAt: p.createdAt ? p.createdAt.toDate() : null,
+            firstName: p.firstName,
+            lastName: p.lastName,
+            profileImageUrl: p.profileImageUrl,
           }))
         )
       );
@@ -90,6 +112,9 @@ export class PostService {
                       imageUrl: p.imageUrl,
                       createdAt: p.createdAt ? p.createdAt.toDate() : null,
                       userId: userId,
+                      firstName: p.firstName,
+                      lastName: p.lastName,
+                      profileImageUrl: p.profileImageUrl,
                     }))
                   )
                 )
@@ -137,5 +162,64 @@ export class PostService {
       console.error('Error deleting post:', error);
       throw error;
     }
+  }
+
+  getPostsByFollowing(currentUserId: string): Observable<IPost[]> {
+    return this.firestore
+      .collection('users')
+      .doc(currentUserId)
+      .valueChanges()
+      .pipe(
+        switchMap((user: any) => {
+          const followingIds: string[] = user.following || [];
+          if (followingIds.length === 0) {
+            return of([]);
+          }
+          const postObservables: Observable<IPost[]>[] = followingIds.map(
+            (userId: string) =>
+              this.firestore
+                .collection('posts')
+                .doc(userId)
+                .collection('posts', (ref) => ref.orderBy('createdAt', 'desc'))
+                .valueChanges({ idField: 'id' })
+                .pipe(
+                  map((posts: any[]) =>
+                    posts.map((p) => ({
+                      id: p.id,
+                      text: p.text,
+                      imageUrl: p.imageUrl,
+                      createdAt: p.createdAt ? p.createdAt.toDate() : null,
+                      userId: userId,
+                      firstName: p.firstName,
+                      lastName: p.lastName,
+                      profileImageUrl: p.profileImageUrl,
+                    }))
+                  )
+                )
+          );
+          return combineLatest(postObservables).pipe(
+            map((postsArrays: IPost[][]) => postsArrays.flat()),
+            map((posts: IPost[]) =>
+              posts.sort(
+                (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+              )
+            )
+          );
+        }),
+        switchMap((posts: IPost[]) => {
+          const userIds = posts.map((post) => post.userId);
+          const userObservables = userIds.map((userId) =>
+            this.firestore.collection('users').doc(userId).valueChanges()
+          );
+          return combineLatest(userObservables).pipe(
+            map((users) => {
+              return posts.map((post, index) => ({
+                ...post,
+                user: users[index],
+              }));
+            })
+          );
+        })
+      );
   }
 }

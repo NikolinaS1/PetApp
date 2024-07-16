@@ -3,6 +3,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import {
   Observable,
   catchError,
+  combineLatest,
   firstValueFrom,
   from,
   map,
@@ -20,6 +21,7 @@ import {
   uploadBytes,
 } from 'firebase/storage';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { IPost } from '../../../components/post/models/post.model';
 
 @Injectable({
   providedIn: 'root',

@@ -31,6 +31,7 @@ export class AuthenticationService {
       return result;
     } catch (error) {
       console.error('Error signing in:', error);
+      this.isLoggingIn = false;
       this.snackBar.open(
         'Error when entering email or password. Please try again.',
         'OK',
