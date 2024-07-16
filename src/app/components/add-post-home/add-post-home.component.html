@@ -1,0 +1,25 @@
+<div class="posts" (click)="openAddPostDialog()">
+  <div class="post">
+    <div class="post-form">
+      <mat-form-field class="post" style="width: 100%">
+        <mat-label>What's on your mind?</mat-label>
+        <textarea
+          rows="4"
+          placeholder="Write something..."
+          matInput
+          type="text"
+        ></textarea>
+      </mat-form-field>
+    </div>
+    <div class="add-image">
+      <div class="text"><p>Add to post:</p></div>
+      <div class="image">
+        <img
+          src="../../../assets/postimage.png"
+          alt="Add image"
+          matTooltip="Image"
+        />
+      </div>
+    </div>
+  </div>
+</div>

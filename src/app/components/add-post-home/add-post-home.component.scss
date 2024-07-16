@@ -1,0 +1,32 @@
+.posts {
+  margin-top: 20px;
+  background-color: #fff;
+  width: 50%;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  cursor: pointer;
+}
+
+.post-form {
+  margin-bottom: -10px;
+}
+
+.add-image {
+  display: flex;
+  padding-bottom: 10px;
+}
+
+.add-image .text {
+  margin: 10px 10px 0 15px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.add-image .image img {
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+}
