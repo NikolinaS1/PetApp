@@ -242,4 +242,31 @@ export class UserService {
       throw error;
     }
   }
+
+  async getFollowersDetails(userId: string): Promise<UserProfile[]> {
+    try {
+      const userDoc = await this.firestore
+        .collection('users')
+        .doc(userId)
+        .get()
+        .toPromise();
+      const userData = userDoc.data() as UserProfile;
+      if (!userData || !userData.followers) {
+        return [];
+      }
+
+      const followerIds = userData.followers;
+
+      const followerDocs = await Promise.all(
+        followerIds.map((id) =>
+          this.firestore.collection('users').doc(id).get().toPromise()
+        )
+      );
+
+      return followerDocs.map((doc) => doc.data() as UserProfile);
+    } catch (error) {
+      console.error('Error fetching follower user details:', error);
+      throw error;
+    }
+  }
 }

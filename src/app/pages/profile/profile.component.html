@@ -128,8 +128,8 @@
   <ng-container *ngIf="following">
     <app-following [userId]="uid"></app-following>
   </ng-container>
-  <!--  <ng-container *ngIf="showFollowers">
-    <app-followers></app-followers>
-  </ng-container> -->
+  <ng-container *ngIf="followers">
+    <app-followers [userId]="uid"></app-followers>
+  </ng-container>
 </div>
 <footer><app-footer></app-footer></footer>

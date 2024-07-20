@@ -14,6 +14,7 @@ import { PostModule } from '../../components/post/post.module';
 import { ConfirmDialogModule } from '../../components/confirm-dialog/confirm-dialog.module';
 import { FooterModule } from '../../components/footer/footer.module';
 import { FollowingModule } from '../../components/following/following.module';
+import { FollowersModule } from '../../components/followers/followers.module';
 
 const routes: Routes = [
   {
@@ -39,6 +40,7 @@ const routes: Routes = [
     PostModule,
     RouterModule.forChild(routes),
     FollowingModule,
+    FollowersModule,
   ],
 })
 export class ProfileModule {}
