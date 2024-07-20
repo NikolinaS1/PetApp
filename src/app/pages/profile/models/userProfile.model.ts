@@ -4,4 +4,5 @@ export interface UserProfile {
   email: string;
   profileImageUrl?: string;
   following?: string[];
+  followers?: string[];
 }

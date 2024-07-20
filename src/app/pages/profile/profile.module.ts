@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PostModule } from '../../components/post/post.module';
 import { ConfirmDialogModule } from '../../components/confirm-dialog/confirm-dialog.module';
 import { FooterModule } from '../../components/footer/footer.module';
+import { FollowingModule } from '../../components/following/following.module';
 
 const routes: Routes = [
   {
@@ -37,6 +38,7 @@ const routes: Routes = [
     FooterModule,
     PostModule,
     RouterModule.forChild(routes),
+    FollowingModule,
   ],
 })
 export class ProfileModule {}

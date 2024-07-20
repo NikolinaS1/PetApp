@@ -75,7 +75,7 @@
     <div class="link-actions">
       <div class="posts">
         <p>{{ postCount }}</p>
-        <button mat-button color="accent">Posts</button>
+        <button mat-button color="accent" (click)="showPosts()">Posts</button>
       </div>
       <div class="followers">
         <p>
@@ -85,7 +85,9 @@
               : followersCountDisplayedUser
           }}
         </p>
-        <button mat-button color="accent">Followers</button>
+        <button mat-button color="accent" (click)="showFollowers()">
+          Followers
+        </button>
       </div>
       <div class="following">
         <p>
@@ -95,7 +97,9 @@
               : followingCountDisplayedUser
           }}
         </p>
-        <button mat-button color="accent">Following</button>
+        <button mat-button color="accent" (click)="showFollowing()">
+          Following
+        </button>
       </div>
     </div>
     <div class="button-actions">
@@ -118,6 +122,14 @@
       </ng-container>
     </div>
   </div>
-  <app-post (postCount)="onPostCountChange($event)"></app-post>
+  <ng-container *ngIf="posts">
+    <app-post (postCount)="onPostCountChange($event)"></app-post>
+  </ng-container>
+  <ng-container *ngIf="following">
+    <app-following [userId]="uid"></app-following>
+  </ng-container>
+  <!--  <ng-container *ngIf="showFollowers">
+    <app-followers></app-followers>
+  </ng-container> -->
 </div>
 <footer><app-footer></app-footer></footer>

@@ -215,4 +215,31 @@ export class UserService {
         )
       );
   }
+
+  async getFollowingUserDetails(userId: string): Promise<UserProfile[]> {
+    try {
+      const userDoc = await this.firestore
+        .collection('users')
+        .doc(userId)
+        .get()
+        .toPromise();
+      const userData = userDoc.data() as UserProfile;
+      if (!userData || !userData.following) {
+        return [];
+      }
+
+      const followingIds = userData.following;
+
+      const userDocs = await Promise.all(
+        followingIds.map((id) =>
+          this.firestore.collection('users').doc(id).get().toPromise()
+        )
+      );
+
+      return userDocs.map((doc) => doc.data() as UserProfile);
+    } catch (error) {
+      console.error('Error fetching following user details:', error);
+      throw error;
+    }
+  }
 }

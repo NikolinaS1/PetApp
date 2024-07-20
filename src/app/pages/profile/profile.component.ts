@@ -27,6 +27,9 @@ export class ProfileComponent implements OnInit {
   followingCountDisplayedUser: number = 0;
   followersCountDisplayedUser: number = 0;
   isFollowingUser: boolean = false;
+  posts: boolean = true;
+  following: boolean = false;
+  followers: boolean = false;
 
   constructor(
     private userService: UserService,
@@ -45,12 +48,18 @@ export class ProfileComponent implements OnInit {
         this.checkIfFollowing();
         this.getFollowingCount(this.uid);
         this.getFollowersCount(this.uid);
+        this.posts = true;
+        this.following = false;
+        this.followers = false;
       } else if (this.currentUserId) {
         this.loadUserProfile(this.currentUserId);
         this.getPets(this.currentUserId);
         this.checkIfFollowing();
         this.getFollowingCount(this.currentUserId);
         this.getFollowersCount(this.currentUserId);
+        this.posts = true;
+        this.following = false;
+        this.followers = false;
       }
     });
   }
@@ -324,5 +333,23 @@ export class ProfileComponent implements OnInit {
         this.followersCountDisplayedUser = 0;
       }
     );
+  }
+
+  showPosts(): void {
+    this.posts = true;
+    this.following = false;
+    this.followers = false;
+  }
+
+  showFollowing(): void {
+    this.posts = false;
+    this.following = true;
+    this.followers = false;
+  }
+
+  showFollowers(): void {
+    this.posts = false;
+    this.following = false;
+    this.followers = true;
   }
 }
