@@ -23,7 +23,9 @@ export class ProfileComponent implements OnInit {
   currentUserId: string | null = localStorage.getItem('accessToken');
   postCount: number = 0;
   followingCountCurrentUser: number = 0;
+  followersCountCurrentUser: number = 0;
   followingCountDisplayedUser: number = 0;
+  followersCountDisplayedUser: number = 0;
   isFollowingUser: boolean = false;
 
   constructor(
@@ -42,11 +44,13 @@ export class ProfileComponent implements OnInit {
         this.getPets(this.uid);
         this.checkIfFollowing();
         this.getFollowingCount(this.uid);
+        this.getFollowersCount(this.uid);
       } else if (this.currentUserId) {
         this.loadUserProfile(this.currentUserId);
         this.getPets(this.currentUserId);
         this.checkIfFollowing();
         this.getFollowingCount(this.currentUserId);
+        this.getFollowersCount(this.currentUserId);
       }
     });
   }
@@ -228,6 +232,7 @@ export class ProfileComponent implements OnInit {
         .followUser(this.uid)
         .then(() => {
           this.updateFollowingCount();
+          this.updateFollowersCount();
           this.isFollowingUser = true;
         })
         .catch((error) => {
@@ -242,6 +247,7 @@ export class ProfileComponent implements OnInit {
         .unfollowUser(this.uid)
         .then(() => {
           this.updateFollowingCount();
+          this.updateFollowersCount();
           this.isFollowingUser = false;
         })
         .catch((error) => {
@@ -268,6 +274,24 @@ export class ProfileComponent implements OnInit {
     );
   }
 
+  private updateFollowersCount(): void {
+    const userId = this.uid || this.currentUserId;
+    this.userService.getFollowersCount(userId).subscribe(
+      (count) => {
+        if (userId === this.currentUserId) {
+          this.followersCountCurrentUser = count;
+        } else {
+          this.followersCountDisplayedUser = count;
+        }
+      },
+      (error) => {
+        console.error('Error fetching followers count:', error);
+        this.followersCountCurrentUser = 0;
+        this.followersCountDisplayedUser = 0;
+      }
+    );
+  }
+
   getFollowingCount(userId: string): void {
     this.userService.getFollowingCount(userId).subscribe(
       (count) => {
@@ -279,6 +303,25 @@ export class ProfileComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching following count:', error);
+        this.followingCountCurrentUser = 0;
+        this.followingCountDisplayedUser = 0;
+      }
+    );
+  }
+
+  getFollowersCount(userId: string): void {
+    this.userService.getFollowersCount(userId).subscribe(
+      (count) => {
+        if (userId === this.currentUserId) {
+          this.followersCountCurrentUser = count;
+        } else {
+          this.followersCountDisplayedUser = count;
+        }
+      },
+      (error) => {
+        console.error('Error fetching followers count:', error);
+        this.followersCountCurrentUser = 0;
+        this.followersCountDisplayedUser = 0;
       }
     );
   }

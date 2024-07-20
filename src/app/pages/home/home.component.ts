@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../components/add-post-dialog/services/post.service';
 import { IPost } from '../../components/post/models/post.model';
+import { UserService } from '../profile/services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -8,10 +9,14 @@ import { IPost } from '../../components/post/models/post.model';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  posts: any[] = [];
+  userProfile: any;
+  posts: IPost[] = [];
   currentUserId: string | null = localStorage.getItem('accessToken');
 
-  constructor(private postService: PostService) {}
+  constructor(
+    private postService: PostService,
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
     if (this.currentUserId) {
@@ -24,6 +29,18 @@ export class HomeComponent implements OnInit {
           console.error('Error fetching posts:', error);
         },
       });
+      this.loadUserProfile(this.currentUserId);
     }
+  }
+
+  loadUserProfile(userId: string): void {
+    this.userService
+      .getUserProfile(userId)
+      .then((profile) => {
+        this.userProfile = profile;
+      })
+      .catch((error) => {
+        console.error('Error loading user profile:', error);
+      });
   }
 }

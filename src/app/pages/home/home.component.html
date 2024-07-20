@@ -1,8 +1,8 @@
 <app-navbar></app-navbar>
-<body>
+<div class="main-content">
   <div class="posts">
     <app-add-post-home></app-add-post-home>
-    <app-post></app-post>
+    <app-post [userProfile]="userProfile"></app-post>
   </div>
-</body>
-<footer><app-footer></app-footer></footer>
+  <footer><app-footer></app-footer></footer>
+</div>

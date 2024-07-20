@@ -112,13 +112,24 @@ export class UserService {
   async followUser(followingUserId: string): Promise<void> {
     try {
       const currentUserId = localStorage.getItem('accessToken');
+      const batch = this.firestore.firestore.batch();
 
-      await this.firestore
+      const currentUserRef = this.firestore
         .collection('users')
-        .doc(currentUserId)
-        .update({
-          following: firebase.firestore.FieldValue.arrayUnion(followingUserId),
-        });
+        .doc(currentUserId).ref;
+      const followingUserRef = this.firestore
+        .collection('users')
+        .doc(followingUserId).ref;
+
+      batch.update(currentUserRef, {
+        following: firebase.firestore.FieldValue.arrayUnion(followingUserId),
+      });
+
+      batch.update(followingUserRef, {
+        followers: firebase.firestore.FieldValue.arrayUnion(currentUserId),
+      });
+
+      await batch.commit();
     } catch (error) {
       console.error('Error following user:', error);
       throw error;
@@ -128,13 +139,24 @@ export class UserService {
   async unfollowUser(followingUserId: string): Promise<void> {
     try {
       const currentUserId = localStorage.getItem('accessToken');
+      const batch = this.firestore.firestore.batch();
 
-      await this.firestore
+      const currentUserRef = this.firestore
         .collection('users')
-        .doc(currentUserId)
-        .update({
-          following: firebase.firestore.FieldValue.arrayRemove(followingUserId),
-        });
+        .doc(currentUserId).ref;
+      const followingUserRef = this.firestore
+        .collection('users')
+        .doc(followingUserId).ref;
+
+      batch.update(currentUserRef, {
+        following: firebase.firestore.FieldValue.arrayRemove(followingUserId),
+      });
+
+      batch.update(followingUserRef, {
+        followers: firebase.firestore.FieldValue.arrayRemove(currentUserId),
+      });
+
+      await batch.commit();
     } catch (error) {
       console.error('Error unfollowing user:', error);
       throw error;
@@ -156,6 +178,26 @@ export class UserService {
         }),
         catchError((error) => {
           console.error('Error fetching following count:', error);
+          return of(0);
+        })
+      );
+  }
+
+  getFollowersCount(userId: string): Observable<number> {
+    return this.firestore
+      .collection('users')
+      .doc(userId)
+      .valueChanges()
+      .pipe(
+        map((user: any) => {
+          if (user && user.followers) {
+            return user.followers.length;
+          } else {
+            return 0;
+          }
+        }),
+        catchError((error) => {
+          console.error('Error fetching followers count:', error);
           return of(0);
         })
       );

@@ -1,7 +1,20 @@
-body {
-  min-height: calc(100vh - 40px);
+body,
+html {
+  height: 100%;
+  margin: 0;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 .posts {
+  flex: 1;
   margin-top: 110px;
+}
+
+footer {
+  margin-top: auto;
 }

@@ -7,16 +7,8 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage';
-import {
-  Observable,
-  combineLatest,
-  from,
-  map,
-  mergeMap,
-  of,
-  switchMap,
-  toArray,
-} from 'rxjs';
+import { combineLatest, from, Observable, of, switchMap } from 'rxjs';
+import { map, toArray } from 'rxjs/operators';
 import { IPost } from '../../post/models/post.model';
 
 @Injectable({
@@ -95,10 +87,10 @@ export class PostService {
       .collection('posts')
       .get()
       .pipe(
-        mergeMap((querySnapshot) => {
+        switchMap((querySnapshot) => {
           const userIds = querySnapshot.docs.map((doc) => doc.id);
           return from(userIds).pipe(
-            mergeMap((userId) =>
+            switchMap((userId) =>
               this.firestore
                 .collection('posts')
                 .doc(userId)
@@ -165,61 +157,42 @@ export class PostService {
   }
 
   getPostsByFollowing(currentUserId: string): Observable<IPost[]> {
-    return this.firestore
-      .collection('users')
-      .doc(currentUserId)
-      .valueChanges()
-      .pipe(
-        switchMap((user: any) => {
-          const followingIds: string[] = user.following || [];
-          if (followingIds.length === 0) {
-            return of([]);
-          }
-          const postObservables: Observable<IPost[]>[] = followingIds.map(
-            (userId: string) =>
-              this.firestore
-                .collection('posts')
-                .doc(userId)
-                .collection('posts', (ref) => ref.orderBy('createdAt', 'desc'))
-                .valueChanges({ idField: 'id' })
-                .pipe(
-                  map((posts: any[]) =>
-                    posts.map((p) => ({
-                      id: p.id,
-                      text: p.text,
-                      imageUrl: p.imageUrl,
-                      createdAt: p.createdAt ? p.createdAt.toDate() : null,
-                      userId: userId,
-                      firstName: p.firstName,
-                      lastName: p.lastName,
-                      profileImageUrl: p.profileImageUrl,
-                    }))
+    return this.getPosts(currentUserId).pipe(
+      switchMap((currentUserPosts) =>
+        this.firestore
+          .collection('users')
+          .doc(currentUserId)
+          .valueChanges()
+          .pipe(
+            switchMap((user: any) => {
+              const followingIds: string[] = user.following || [];
+              const postObservables: Observable<IPost[]>[] = followingIds.map(
+                (userId: string) =>
+                  this.getPosts(userId).pipe(
+                    map((posts) =>
+                      posts.map((p) => ({
+                        ...p,
+                        userId: userId,
+                        firstName: p.firstName,
+                        lastName: p.lastName,
+                        profileImageUrl: p.profileImageUrl,
+                      }))
+                    )
+                  )
+              );
+              return combineLatest(postObservables).pipe(
+                map((postsArrays: IPost[][]) =>
+                  postsArrays.flat().concat(currentUserPosts)
+                ),
+                map((posts: IPost[]) =>
+                  posts.sort(
+                    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
                   )
                 )
-          );
-          return combineLatest(postObservables).pipe(
-            map((postsArrays: IPost[][]) => postsArrays.flat()),
-            map((posts: IPost[]) =>
-              posts.sort(
-                (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-              )
-            )
-          );
-        }),
-        switchMap((posts: IPost[]) => {
-          const userIds = posts.map((post) => post.userId);
-          const userObservables = userIds.map((userId) =>
-            this.firestore.collection('users').doc(userId).valueChanges()
-          );
-          return combineLatest(userObservables).pipe(
-            map((users) => {
-              return posts.map((post, index) => ({
-                ...post,
-                user: users[index],
-              }));
+              );
             })
-          );
-        })
-      );
+          )
+      )
+    );
   }
 }

@@ -78,7 +78,13 @@
         <button mat-button color="accent">Posts</button>
       </div>
       <div class="followers">
-        <p>0</p>
+        <p>
+          {{
+            uid === currentUserId
+              ? followersCountCurrentUser
+              : followersCountDisplayedUser
+          }}
+        </p>
         <button mat-button color="accent">Followers</button>
       </div>
       <div class="following">
@@ -112,9 +118,6 @@
       </ng-container>
     </div>
   </div>
-  <app-post
-    (postCount)="onPostCountChange($event)"
-    [userProfile]="userProfile"
-  ></app-post>
+  <app-post (postCount)="onPostCountChange($event)"></app-post>
 </div>
 <footer><app-footer></app-footer></footer>
