@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,8 @@ export class AuthenticationService {
     private afAuth: AngularFireAuth,
     private http: HttpClient,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private firestore: AngularFirestore
   ) {}
 
   isRegistering = false;
@@ -38,16 +40,18 @@ export class AuthenticationService {
         await user.updateProfile({
           displayName: `${firstName} ${lastName}`,
         });
-        await firebase.firestore().collection('users').doc(user.uid).set({
+
+        await this.firestore.collection('users').doc(user.uid).set({
           firstName,
           lastName,
           email,
+          id: user.uid,
         });
-      }
 
-      localStorage.setItem('accessToken', user?.uid);
-      this.isRegistering = false;
-      this.router.navigate(['/']);
+        localStorage.setItem('accessToken', user.uid);
+        this.isRegistering = false;
+        this.router.navigate(['/']);
+      }
 
       return result;
     } catch (error) {

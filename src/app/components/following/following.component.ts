@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UserService } from '../../pages/profile/services/user.service';
 import { UserProfile } from '../../pages/profile/models/userProfile.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-following',
@@ -11,7 +12,7 @@ export class FollowingComponent implements OnInit {
   @Input() userId: string | null = null;
   followingUsers: UserProfile[] = [];
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
     if (this.userId) {
@@ -23,6 +24,12 @@ export class FollowingComponent implements OnInit {
         .catch((error) => {
           console.error('Error fetching following users:', error);
         });
+    }
+  }
+
+  goToUserProfile(userId: string): void {
+    if (userId) {
+      this.router.navigate(['/profile', userId]);
     }
   }
 }

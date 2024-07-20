@@ -12,7 +12,9 @@
         class="profile-image"
       />
       <div class="user-info">
-        <h3>{{ user.firstName }} {{ user.lastName }}</h3>
+        <h3 (click)="goToUserProfile(user.id)" class="user-name">
+          {{ user.firstName }} {{ user.lastName }}
+        </h3>
       </div>
     </div>
   </div>
