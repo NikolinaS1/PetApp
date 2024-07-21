@@ -73,6 +73,7 @@
   padding: 0 5px 5px 0;
   cursor: pointer;
   margin: 0 20px 0 10px;
+  position: relative;
 }
 
 .options {
@@ -91,4 +92,13 @@ mat-paginator {
 
 ::ng-deep .mat-badge-content {
   transition: none !important;
+}
+
+.badge-click-area {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 }

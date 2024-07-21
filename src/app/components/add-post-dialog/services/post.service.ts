@@ -11,6 +11,7 @@ import {
 import { combineLatest, from, Observable, of, switchMap } from 'rxjs';
 import { map, toArray } from 'rxjs/operators';
 import { IPost } from '../../post/models/post.model';
+import { UserProfile } from '../../../pages/profile/models/userProfile.model';
 
 @Injectable({
   providedIn: 'root',
@@ -250,6 +251,39 @@ export class PostService {
     } catch (error) {
       console.error('Error unliking post:', error);
       throw new Error('Unable to unlike post. Please try again later.');
+    }
+  }
+
+  async getLikesUserDetails(
+    userId: string,
+    postId: string
+  ): Promise<UserProfile[]> {
+    try {
+      const postDoc = await this.firestore
+        .collection('posts')
+        .doc(userId)
+        .collection('posts')
+        .doc(postId)
+        .get()
+        .toPromise();
+
+      const postData = postDoc.data() as IPost;
+      if (!postData || !postData.likes) {
+        return [];
+      }
+
+      const likesIds = postData.likes;
+
+      const userDocs = await Promise.all(
+        likesIds.map((id) =>
+          this.firestore.collection('users').doc(id).get().toPromise()
+        )
+      );
+
+      return userDocs.map((doc) => doc.data() as UserProfile);
+    } catch (error) {
+      console.error('Error fetching likes user details:', error);
+      throw error;
     }
   }
 }

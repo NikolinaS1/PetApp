@@ -56,6 +56,10 @@
               ? "favorite"
               : "favorite_border"
           }}
+          <span
+            class="badge-click-area"
+            (click)="openLikesDialog($event, post.id, post.userId)"
+          ></span>
         </mat-icon>
       </div>
       <div class="action_comment">

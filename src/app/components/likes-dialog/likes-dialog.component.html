@@ -1,0 +1,21 @@
+<div class="content">
+  <div class="likes-list">
+    <h1>Users who liked</h1>
+    <div *ngFor="let user of likesUsers" class="user-card">
+      <img
+        [src]="
+          user.profileImageUrl
+            ? user.profileImageUrl
+            : 'assets/profile-icon.png'
+        "
+        alt="{{ user.firstName }}'s profile image"
+        class="profile-image"
+      />
+      <div class="user-info">
+        <h3 (click)="goToUserProfile(user.id)" class="user-name">
+          {{ user.firstName }} {{ user.lastName }}
+        </h3>
+      </div>
+    </div>
+  </div>
+</div>

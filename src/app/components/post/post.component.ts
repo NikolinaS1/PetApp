@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { LikesDialogComponent } from '../likes-dialog/likes-dialog.component';
 
 @Component({
   selector: 'app-post',
@@ -29,6 +30,15 @@ export class PostComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.uid = params.get('userId');
       this.loadPosts();
+    });
+  }
+
+  openLikesDialog(event: Event, postId: string, userId: string): void {
+    event.stopPropagation();
+    this.dialog.open(LikesDialogComponent, {
+      width: '450px',
+      height: '500px',
+      data: { userId, postId },
     });
   }
 

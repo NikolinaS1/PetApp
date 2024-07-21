@@ -9,6 +9,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { LikesDialogModule } from '../likes-dialog/likes-dialog.module';
 
 @NgModule({
   declarations: [PostComponent],
@@ -20,6 +21,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
     MatBadgeModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    LikesDialogModule,
     InfiniteScrollModule,
   ],
   exports: [PostComponent],
