@@ -45,10 +45,23 @@
     </div>
     <div class="actions">
       <div class="action_like">
-        <mat-icon color="primary">favorite_border</mat-icon>
+        <mat-icon
+          matBadge="{{ post.likes.length }}"
+          matBadgeColor="primary"
+          [color]="post.likes.includes(currentUserId) ? 'accent' : 'primary'"
+          (click)="toggleLike(post)"
+        >
+          {{
+            post.likes && post.likes.includes(currentUserId)
+              ? "favorite"
+              : "favorite_border"
+          }}
+        </mat-icon>
       </div>
       <div class="action_comment">
-        <mat-icon color="primary"> comment</mat-icon>
+        <mat-icon matBadge="0" matBadgeColor="primary" color="primary"
+          >comment</mat-icon
+        >
       </div>
     </div>
   </div>

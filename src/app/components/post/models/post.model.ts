@@ -7,4 +7,5 @@ export interface IPost {
   firstName?: string;
   lastName?: string;
   profileImageUrl?: string;
+  likes?: string[];
 }

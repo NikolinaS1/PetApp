@@ -44,7 +44,7 @@
 }
 
 .content .text {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
   line-height: 32px;
   margin: 2% 3%;
@@ -57,19 +57,22 @@
 
 .actions {
   display: flex;
+  margin: 20px 0 0 10px;
 }
 
-.action_like mat-icon {
-  margin: 0 8px 0px 10px;
-  font-size: 30px;
-  padding: 10px;
-  cursor: pointer;
+.action_like,
+.action_comment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+.action_like mat-icon,
 .action_comment mat-icon {
   font-size: 30px;
-  padding: 10px;
+  padding: 0 5px 5px 0;
   cursor: pointer;
+  margin: 0 20px 0 10px;
 }
 
 .options {
@@ -84,4 +87,8 @@ mat-paginator {
   background-color: transparent;
   justify-content: flex-end;
   margin-right: 100px;
+}
+
+::ng-deep .mat-badge-content {
+  transition: none !important;
 }

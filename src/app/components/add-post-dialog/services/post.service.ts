@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { arrayUnion, arrayRemove, Timestamp } from 'firebase/firestore'; // Ensure correct import
 import {
-  deleteObject,
-  getDownloadURL,
   getStorage,
   ref,
   uploadBytes,
+  getDownloadURL,
+  deleteObject,
 } from 'firebase/storage';
 import { combineLatest, from, Observable, of, switchMap } from 'rxjs';
 import { map, toArray } from 'rxjs/operators';
@@ -52,6 +53,7 @@ export class PostService {
           firstName: firstName,
           lastName: lastName,
           profileImageUrl: profileImageUrl,
+          likes: [],
         });
 
       return 'Post added successfully!';
@@ -66,18 +68,18 @@ export class PostService {
       .collection('posts')
       .doc(uid)
       .collection('posts', (ref) => ref.orderBy('createdAt', 'desc'))
-      .valueChanges({ idField: 'id' })
+      .snapshotChanges()
       .pipe(
-        map((posts: any[]) =>
-          posts.map((p) => ({
-            id: p.id,
-            text: p.text,
-            imageUrl: p.imageUrl,
-            createdAt: p.createdAt ? p.createdAt.toDate() : null,
-            firstName: p.firstName,
-            lastName: p.lastName,
-            profileImageUrl: p.profileImageUrl,
-          }))
+        map((actions) =>
+          actions.map((a) => {
+            const data = a.payload.doc.data() as IPost;
+            const id = a.payload.doc.id;
+            const createdAt =
+              data.createdAt instanceof Timestamp
+                ? data.createdAt.toDate()
+                : data.createdAt;
+            return { id, ...data, createdAt };
+          })
         )
       );
   }
@@ -102,11 +104,16 @@ export class PostService {
                       id: p.id,
                       text: p.text,
                       imageUrl: p.imageUrl,
-                      createdAt: p.createdAt ? p.createdAt.toDate() : null,
+                      createdAt: p.createdAt
+                        ? p.createdAt instanceof Timestamp
+                          ? p.createdAt.toDate()
+                          : p.createdAt
+                        : null,
                       userId: userId,
                       firstName: p.firstName,
                       lastName: p.lastName,
                       profileImageUrl: p.profileImageUrl,
+                      likes: p.likes || [],
                     }))
                   )
                 )
@@ -172,10 +179,10 @@ export class PostService {
                     map((posts) =>
                       posts.map((p) => ({
                         ...p,
-                        userId: userId,
-                        firstName: p.firstName,
-                        lastName: p.lastName,
-                        profileImageUrl: p.profileImageUrl,
+                        createdAt:
+                          p.createdAt instanceof Timestamp
+                            ? p.createdAt.toDate()
+                            : p.createdAt,
                       }))
                     )
                   )
@@ -194,5 +201,55 @@ export class PostService {
           )
       )
     );
+  }
+
+  async likePost(userId: string, postId: string): Promise<void> {
+    try {
+      const currentUserId = localStorage.getItem('accessToken');
+      if (!currentUserId) {
+        throw new Error('No user is logged in.');
+      }
+
+      const batch = this.firestore.firestore.batch();
+      const postRef = this.firestore
+        .collection('posts')
+        .doc(userId)
+        .collection('posts')
+        .doc(postId).ref;
+
+      batch.update(postRef, {
+        likes: arrayUnion(currentUserId),
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error('Error liking post:', error);
+      throw new Error('Unable to like post. Please try again later.');
+    }
+  }
+
+  async unlikePost(userId: string, postId: string): Promise<void> {
+    try {
+      const currentUserId = localStorage.getItem('accessToken');
+      if (!currentUserId) {
+        throw new Error('No user is logged in.');
+      }
+
+      const batch = this.firestore.firestore.batch();
+      const postRef = this.firestore
+        .collection('posts')
+        .doc(userId)
+        .collection('posts')
+        .doc(postId).ref;
+
+      batch.update(postRef, {
+        likes: arrayRemove(currentUserId),
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error('Error unliking post:', error);
+      throw new Error('Unable to unlike post. Please try again later.');
+    }
   }
 }
