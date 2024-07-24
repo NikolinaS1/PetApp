@@ -12,6 +12,8 @@ import { combineLatest, from, Observable, of, switchMap } from 'rxjs';
 import { map, toArray } from 'rxjs/operators';
 import { IPost } from '../../post/models/post.model';
 import { UserProfile } from '../../../pages/profile/models/userProfile.model';
+import { IComment } from '../../comments-dialog/models/comments.model';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -79,7 +81,12 @@ export class PostService {
               data.createdAt instanceof Timestamp
                 ? data.createdAt.toDate()
                 : data.createdAt;
-            return { id, ...data, createdAt };
+            return {
+              id,
+              ...data,
+              createdAt,
+              commentCount: data.commentCount || 0,
+            };
           })
         )
       );
@@ -115,6 +122,7 @@ export class PostService {
                       lastName: p.lastName,
                       profileImageUrl: p.profileImageUrl,
                       likes: p.likes || [],
+                      commentCount: p.commentCount || 0,
                     }))
                   )
                 )
@@ -283,6 +291,117 @@ export class PostService {
       return userDocs.map((doc) => doc.data() as UserProfile);
     } catch (error) {
       console.error('Error fetching likes user details:', error);
+      throw error;
+    }
+  }
+
+  async addComment(
+    postId: string,
+    postOwnerId: string,
+    text: string
+  ): Promise<void> {
+    try {
+      const currentUserId = localStorage.getItem('accessToken');
+      if (!currentUserId) {
+        throw new Error('No user is logged in.');
+      }
+
+      const userDoc = await this.firestore
+        .collection('users')
+        .doc(currentUserId)
+        .get()
+        .toPromise();
+      const userData = userDoc.data() as UserProfile;
+
+      const comment: IComment = {
+        commentId: uuidv4(),
+        userId: currentUserId,
+        text: text,
+        createdAt: new Date(),
+        firstName: userData.firstName || 'Unknown',
+        lastName: userData.lastName || 'User',
+        profileImageUrl: userData.profileImageUrl,
+      };
+
+      const postRef = this.firestore
+        .collection('posts')
+        .doc(postOwnerId)
+        .collection('posts')
+        .doc(postId);
+
+      await this.firestore.firestore.runTransaction(async (transaction) => {
+        const postDoc = await transaction.get(postRef.ref);
+        if (!postDoc.exists) {
+          throw new Error('Post does not exist!');
+        }
+        const postData = postDoc.data() as IPost;
+        const comments = postData.comments || [];
+        comments.push(comment);
+        const commentCount = comments.length;
+
+        transaction.update(postRef.ref, {
+          comments: comments,
+          commentCount: commentCount,
+        });
+      });
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      throw error;
+    }
+  }
+
+  getComments(postId: string, postOwnerId: string): Observable<IComment[]> {
+    return this.firestore
+      .collection('posts')
+      .doc(postOwnerId)
+      .collection('posts')
+      .doc(postId)
+      .valueChanges()
+      .pipe(
+        map((post: IPost) => {
+          return (post.comments || []).map((comment) => {
+            if (comment.createdAt instanceof Timestamp) {
+              comment.createdAt = comment.createdAt.toDate();
+            }
+            return comment;
+          });
+        })
+      );
+  }
+
+  async deleteComment(
+    postId: string,
+    postOwnerId: string,
+    commentId: string
+  ): Promise<void> {
+    try {
+      const postRef = this.firestore
+        .collection('posts')
+        .doc(postOwnerId)
+        .collection('posts')
+        .doc(postId);
+
+      await this.firestore.firestore.runTransaction(async (transaction) => {
+        const postDoc = await transaction.get(postRef.ref);
+        if (!postDoc.exists) {
+          throw new Error('Post does not exist!');
+        }
+        const postData = postDoc.data() as IPost;
+        const comments = postData.comments || [];
+
+        const updatedComments = comments.filter(
+          (c) => c.commentId !== commentId
+        );
+
+        transaction.update(postRef.ref, {
+          comments: updatedComments,
+          commentCount: updatedComments.length,
+        });
+      });
+
+      console.log('Comment deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting comment:', error);
       throw error;
     }
   }

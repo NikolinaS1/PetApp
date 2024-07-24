@@ -1,0 +1,115 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.comments-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 10px;
+}
+
+.comments-list-container h1 {
+  padding: 20px 0 10px 20px;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 0 10px;
+  position: relative;
+}
+
+.profile-image {
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+  border-radius: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.comment-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+}
+
+.delete {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.text {
+  border: 1px solid #f0f0f0;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.text strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #3f51b5;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.text strong:hover {
+  color: mix(#9e9e9e, #673ab7, 50%);
+}
+
+span {
+  font-size: 0.75em;
+  color: #666;
+}
+
+.text p {
+  word-wrap: break-word;
+  text-align: justify;
+  text-justify: inter-word;
+  margin: 0;
+}
+
+.comment-form-container {
+  position: relative;
+  padding: 10px;
+}
+
+.comment-form {
+  position: relative;
+}
+
+.comment-form textarea {
+  resize: none;
+  overflow-y: auto;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  min-height: 40px;
+  max-height: 200px;
+  box-sizing: border-box;
+  padding-right: 48px;
+}
+
+.post-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  cursor: pointer;
+}

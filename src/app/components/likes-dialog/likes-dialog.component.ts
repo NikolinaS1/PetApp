@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UserProfile } from '../../pages/profile/models/userProfile.model';
 import { Router } from '@angular/router';
 import { PostService } from '../add-post-dialog/services/post.service';
@@ -15,6 +15,7 @@ export class LikesDialogComponent implements OnInit {
   constructor(
     private postService: PostService,
     private router: Router,
+    private dialogRef: MatDialogRef<LikesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { userId: string; postId: string }
   ) {}
 
@@ -34,6 +35,7 @@ export class LikesDialogComponent implements OnInit {
   goToUserProfile(userId: string): void {
     if (userId) {
       this.router.navigate(['/profile', userId]);
+      this.dialogRef.close();
     }
   }
 }

@@ -4,8 +4,9 @@ import { PostService } from '../add-post-dialog/services/post.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LikesDialogComponent } from '../likes-dialog/likes-dialog.component';
+import { CommentsDialogComponent } from '../comments-dialog/comments-dialog.component';
 
 @Component({
   selector: 'app-post',
@@ -23,7 +24,8 @@ export class PostComponent implements OnInit {
     private postService: PostService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -36,6 +38,14 @@ export class PostComponent implements OnInit {
   openLikesDialog(event: Event, postId: string, userId: string): void {
     event.stopPropagation();
     this.dialog.open(LikesDialogComponent, {
+      width: '450px',
+      height: '500px',
+      data: { userId, postId },
+    });
+  }
+
+  openCommentsDialog(postId: string, userId: string): void {
+    this.dialog.open(CommentsDialogComponent, {
       width: '450px',
       height: '500px',
       data: { userId, postId },
@@ -142,5 +152,11 @@ export class PostComponent implements OnInit {
       }
       return post;
     });
+  }
+
+  goToUserProfile(userId: string): void {
+    if (userId) {
+      this.router.navigate(['/profile', userId]);
+    }
   }
 }

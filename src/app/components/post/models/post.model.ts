@@ -1,3 +1,5 @@
+import { IComment } from '../../comments-dialog/models/comments.model';
+
 export interface IPost {
   id: string;
   text?: string;
@@ -8,4 +10,6 @@ export interface IPost {
   lastName?: string;
   profileImageUrl?: string;
   likes?: string[];
+  comments?: IComment[];
+  commentCount?: number;
 }

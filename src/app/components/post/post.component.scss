@@ -36,6 +36,12 @@
 .name {
   font-weight: bold;
   color: #3f51b5;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.name:hover {
+  color: mix(#9e9e9e, #673ab7, 50%);
 }
 
 .date {

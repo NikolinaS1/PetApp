@@ -8,8 +8,8 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatDialogModule } from '@angular/material/dialog';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { LikesDialogModule } from '../likes-dialog/likes-dialog.module';
+import { CommentsDialogModule } from '../comments-dialog/comments-dialog.module';
 
 @NgModule({
   declarations: [PostComponent],
@@ -22,6 +22,7 @@ import { LikesDialogModule } from '../likes-dialog/likes-dialog.module';
     MatProgressSpinnerModule,
     MatDialogModule,
     LikesDialogModule,
+    CommentsDialogModule,
     InfiniteScrollModule,
   ],
   exports: [PostComponent],
