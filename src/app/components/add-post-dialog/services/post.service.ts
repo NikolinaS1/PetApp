@@ -27,7 +27,8 @@ export class PostService {
     userId: string,
     firstName: string,
     lastName: string,
-    profileImageUrl: string
+    profileImageUrl: string,
+    petNames: string[]
   ) {
     const storage = getStorage();
     const postId = this.firestore.createId();
@@ -57,6 +58,7 @@ export class PostService {
           lastName: lastName,
           profileImageUrl: profileImageUrl,
           likes: [],
+          petNames: petNames,
         });
 
       return 'Post added successfully!';
@@ -123,6 +125,7 @@ export class PostService {
                       profileImageUrl: p.profileImageUrl,
                       likes: p.likes || [],
                       commentCount: p.commentCount || 0,
+                      petNames: p.petNames || [],
                     }))
                   )
                 )

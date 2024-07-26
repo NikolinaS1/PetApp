@@ -17,6 +17,15 @@
         <div class="name">
           <p (click)="goToUserProfile(post.userId)">
             {{ post.firstName }} {{ post.lastName }}
+            <span
+              class="pet-names"
+              *ngIf="post.petNames && post.petNames.length > 0"
+            >
+              posted about
+              <span *ngFor="let pet of post.petNames; let last = last">
+                {{ pet }}<span *ngIf="!last">, </span>
+              </span>
+            </span>
           </p>
         </div>
         <div class="date">

@@ -1,19 +1,36 @@
 <div class="content">
   <div class="user">
-    <div class="profile-image">
-      <img
-        *ngIf="userProfile?.profileImageUrl"
-        [src]="userProfile.profileImageUrl"
-        alt="Profile Image"
-      />
-      <img
-        *ngIf="!userProfile?.profileImageUrl"
-        src="../../../assets/profile-icon.png"
-        alt="Default Profile Image"
-      />
-    </div>
-    <div class="name">
-      <p>{{ userProfile.firstName }} {{ userProfile.lastName }}</p>
+    <div class="user-info">
+      <div class="profile-image">
+        <img
+          *ngIf="userProfile?.profileImageUrl"
+          [src]="userProfile.profileImageUrl"
+          alt="Profile Image"
+        />
+        <img
+          *ngIf="!userProfile?.profileImageUrl"
+          src="../../../assets/profile-icon.png"
+          alt="Default Profile Image"
+        />
+      </div>
+      <div class="name">
+        <p>{{ userProfile.firstName }} {{ userProfile.lastName }}</p>
+      </div>
+      <div class="select-container" *ngIf="petNames.length > 0">
+        <mat-form-field
+          appearance="fill"
+          class="select-field"
+          [style.width.px]="250"
+        >
+          <mat-label>Select pets related to post</mat-label>
+          <mat-select [(ngModel)]="selectedPets" multiple>
+            <mat-option *ngFor="let pet of petNames" [value]="pet.name">
+              {{ pet.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="placeholder" *ngIf="petNames.length === 0"></div>
     </div>
   </div>
   <div class="post-form">

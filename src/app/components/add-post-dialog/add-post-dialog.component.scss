@@ -1,12 +1,17 @@
 .user {
   display: flex;
+  flex-direction: column;
   position: relative;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
 }
 
 .profile-image img {
   width: 40px;
   height: 40px;
-  margin-top: 20px;
   border-radius: 100%;
   object-fit: cover;
   object-position: center;
@@ -16,9 +21,26 @@
 .name {
   font-weight: bold;
   color: #3f51b5;
-  position: absolute;
-  bottom: 0;
-  margin-left: 70px;
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.select-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding-top: -10px;
+}
+
+.select-field {
+  margin-top: 20px;
+  width: 160px;
+}
+
+.placeholder {
+  width: 160px;
+  height: 56px;
+  margin-top: 20px;
 }
 
 .post-form {

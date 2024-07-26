@@ -12,4 +12,5 @@ export interface IPost {
   likes?: string[];
   comments?: IComment[];
   commentCount?: number;
+  petNames: string[];
 }

@@ -14,6 +14,9 @@ export class AddPostDialogComponent implements OnInit {
   selectedImage: File | null = null;
   status: string = '';
   imageUrl: string | null = null;
+  petNames: { name: string }[] = [];
+  selectedPets: string[] = [];
+  currentUserId = localStorage.getItem('accessToken');
 
   constructor(
     private userService: UserService,
@@ -24,6 +27,7 @@ export class AddPostDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
+    this.loadPetNames();
   }
 
   loadUserProfile(): void {
@@ -59,7 +63,8 @@ export class AddPostDialogComponent implements OnInit {
           accessToken,
           firstName,
           lastName,
-          profileImageUrl
+          profileImageUrl,
+          this.selectedPets
         )
         .then(() => {
           console.log('Post added successfully!');
@@ -69,6 +74,7 @@ export class AddPostDialogComponent implements OnInit {
           this.dialogRef.close(true);
           this.selectedImage = null;
           this.status = '';
+          this.selectedPets = [];
         })
         .catch((error) => {
           console.error('Error adding new post', error);
@@ -104,6 +110,17 @@ export class AddPostDialogComponent implements OnInit {
           duration: 5000,
         }
       );
+    }
+  }
+
+  loadPetNames() {
+    if (this.currentUserId) {
+      this.userService.getPets(this.currentUserId).subscribe((pets) => {
+        this.petNames = pets.map((pet) => ({ name: pet.name }));
+        console.log('Pet names loaded:', this.petNames);
+      });
+    } else {
+      console.error('No user ID found.');
     }
   }
 }
