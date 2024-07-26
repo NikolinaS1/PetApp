@@ -103,12 +103,25 @@ export class AddPetDialogComponent implements OnInit {
   }
 
   onImageSelected(event: any) {
-    this.selectedImage = event.target.files[0];
-    this.imageUrl = null;
-    const reader = new FileReader();
-    reader.readAsDataURL(this.selectedImage);
-    reader.onload = () => {
-      this.imageUrl = reader.result as string;
-    };
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/bmp'];
+    const file = event.target.files[0];
+
+    if (file && allowedTypes.includes(file.type)) {
+      this.selectedImage = file;
+      this.imageUrl = null;
+      const reader = new FileReader();
+      reader.readAsDataURL(this.selectedImage);
+      reader.onload = () => {
+        this.imageUrl = reader.result as string;
+      };
+    } else {
+      this.snackBar.open(
+        'Invalid file type. Please select a valid image file.',
+        'OK',
+        {
+          duration: 5000,
+        }
+      );
+    }
   }
 }
