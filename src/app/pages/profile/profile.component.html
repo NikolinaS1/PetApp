@@ -2,12 +2,13 @@
 
 <div class="content">
   <div class="profile-info" *ngIf="userProfile">
-    <div class="profile-image" (click)="openModal(userProfile.profileImageUrl)">
+    <div class="profile-image">
       <img
         style="cursor: pointer"
         *ngIf="userProfile?.profileImageUrl"
         [src]="userProfile.profileImageUrl"
         alt="Profile Image"
+        (click)="openModal(userProfile.profileImageUrl)"
       />
       <img
         *ngIf="!userProfile?.profileImageUrl"
