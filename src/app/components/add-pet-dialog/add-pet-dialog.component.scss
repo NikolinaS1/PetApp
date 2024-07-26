@@ -27,11 +27,28 @@
   right: 0;
 }
 
-button {
-  margin-top: 20px;
+.pet-name,
+.pet-age-row,
+.description {
+  width: 100%;
+  max-width: 400px;
 }
 
-.add {
+.pet-age-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pet-age,
+.age-unit {
+  flex: 1;
+}
+
+.pet-age {
+  margin-right: 10px;
+}
+
+.add-pet-button {
   position: relative;
 }
 

@@ -13,6 +13,7 @@
     </button>
   </div>
   <input #inputField type="file" hidden (change)="onImageSelected($event)" />
+
   <div class="pet-name">
     <mat-form-field appearance="fill">
       <mat-label>Pet name</mat-label>
@@ -25,6 +26,34 @@
       />
     </mat-form-field>
   </div>
+
+  <div class="pet-age-row">
+    <mat-form-field appearance="fill" class="pet-age" [style.width.px]="101">
+      <mat-label>Year</mat-label>
+      <input
+        matInput
+        type="number"
+        placeholder="Enter year"
+        min="1"
+        [(ngModel)]="petYear"
+        [readonly]="!isOwner"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="pet-age" [style.width.px]="101">
+      <mat-label>Month</mat-label>
+      <input
+        matInput
+        type="number"
+        placeholder="Enter month"
+        min="1"
+        max="11"
+        [(ngModel)]="petMonth"
+        [readonly]="!isOwner"
+      />
+    </mat-form-field>
+  </div>
+
   <div class="description">
     <mat-form-field appearance="fill">
       <mat-label>Description</mat-label>
@@ -37,6 +66,7 @@
       ></textarea>
     </mat-form-field>
   </div>
+
   <div class="add-pet-button">
     <button
       mat-raised-button
@@ -44,7 +74,12 @@
       color="primary"
       class="add"
       (click)="savePet()"
-      [disabled]="!petName || !petDescription || (!isEditing && !selectedImage)"
+      [disabled]="
+        !petName ||
+        (!petYear && !petMonth) ||
+        !petDescription ||
+        (!isEditing && !selectedImage)
+      "
     >
       {{ isEditing ? "Update pet" : "Add pet" }}
     </button>

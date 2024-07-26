@@ -12,6 +12,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class AddPetDialogComponent implements OnInit {
   selectedImage: File | null = null;
   petName: string = '';
+  petYear: string = '';
+  petMonth: string = '';
   petDescription: string = '';
   imageUrl: string | null = null;
   isSaving = false;
@@ -38,6 +40,8 @@ export class AddPetDialogComponent implements OnInit {
       const { pet } = this.data;
       this.petId = pet.id;
       this.petName = pet.name;
+      this.petYear = pet.year;
+      this.petMonth = pet.month;
       this.petDescription = pet.description;
       this.imageUrl = pet.imageUrl;
     }
@@ -59,6 +63,8 @@ export class AddPetDialogComponent implements OnInit {
         .updatePet(
           this.petId,
           this.petName,
+          this.petYear,
+          this.petMonth,
           this.petDescription,
           this.selectedImage ? this.selectedImage : null,
           accessToken
@@ -81,6 +87,8 @@ export class AddPetDialogComponent implements OnInit {
       this.petService
         .addPetWithImage(
           this.petName,
+          this.petYear,
+          this.petMonth,
           this.petDescription,
           this.selectedImage,
           accessToken

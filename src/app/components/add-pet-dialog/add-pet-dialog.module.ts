@@ -9,6 +9,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [AddPetDialogComponent],
@@ -22,6 +23,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
     FormsModule,
     MatSnackBarModule,
+    MatSelectModule,
   ],
 })
 export class AddPetDialogModule {}

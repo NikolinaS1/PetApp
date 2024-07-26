@@ -16,6 +16,8 @@ export class PetService {
 
   async addPetWithImage(
     petName: string,
+    petYear: string,
+    petMonth: string,
     petDescription: string,
     file: File,
     userId: string
@@ -36,6 +38,8 @@ export class PetService {
         .doc(petId)
         .set({
           name: petName,
+          year: petYear,
+          month: petMonth,
           description: petDescription,
           imageUrl: imageUrl,
         });
@@ -50,6 +54,8 @@ export class PetService {
   async updatePet(
     petId: string,
     petName: string,
+    petYear: string,
+    petMonth: string,
     petDescription: string,
     file: File | null,
     userId: string
@@ -73,6 +79,8 @@ export class PetService {
 
       const updateData: any = {
         name: petName,
+        year: petYear,
+        month: petMonth,
         description: petDescription,
       };
 
