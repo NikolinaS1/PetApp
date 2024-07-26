@@ -8,7 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { SignupModule } from '../signup/signup.module';
+import { GoogleSsoModule } from './directives/google-sso.module';
 
 const routes: Routes = [
   {
@@ -28,6 +28,7 @@ const routes: Routes = [
     MatIconModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    GoogleSsoModule,
   ],
 })
 export class SigninModule {}

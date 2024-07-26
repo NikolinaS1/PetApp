@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { arrayUnion, arrayRemove, Timestamp } from 'firebase/firestore'; // Ensure correct import
+import { arrayUnion, arrayRemove, Timestamp } from 'firebase/firestore';
 import {
   getStorage,
   ref,
@@ -313,6 +313,10 @@ export class PostService {
         .toPromise();
       const userData = userDoc.data() as UserProfile;
 
+      if (!userData) {
+        throw new Error('User data not found.');
+      }
+
       const comment: IComment = {
         commentId: uuidv4(),
         userId: currentUserId,
@@ -320,7 +324,7 @@ export class PostService {
         createdAt: new Date(),
         firstName: userData.firstName || 'Unknown',
         lastName: userData.lastName || 'User',
-        profileImageUrl: userData.profileImageUrl,
+        profileImageUrl: userData.profileImageUrl || '',
       };
 
       const postRef = this.firestore
@@ -334,20 +338,32 @@ export class PostService {
         if (!postDoc.exists) {
           throw new Error('Post does not exist!');
         }
+
         const postData = postDoc.data() as IPost;
         const comments = postData.comments || [];
         comments.push(comment);
         const commentCount = comments.length;
 
-        transaction.update(postRef.ref, {
+        const updatedData = {
           comments: comments,
           commentCount: commentCount,
-        });
+        };
+
+        transaction.update(
+          postRef.ref,
+          this.removeUndefinedFields(updatedData)
+        );
       });
     } catch (error) {
       console.error('Error adding comment:', error);
       throw error;
     }
+  }
+
+  removeUndefinedFields(data: any): any {
+    return Object.fromEntries(
+      Object.entries(data).filter(([key, value]) => value !== undefined)
+    );
   }
 
   getComments(postId: string, postOwnerId: string): Observable<IComment[]> {

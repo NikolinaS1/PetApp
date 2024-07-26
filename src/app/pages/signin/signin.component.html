@@ -39,6 +39,20 @@
         <mat-error>Requires uppercase, lowercase, and digit</mat-error>
         }
       </mat-form-field>
+      <p class="or">or</p>
+      <button
+        type="button"
+        mat-raised-button
+        class="google-sign-in-button"
+        (click)="onSignInWithGoogle()"
+      >
+        <img
+          class="google-icon"
+          src="../../../assets/google.png"
+          alt="Google"
+        />
+        Sign in with Google
+      </button>
       <div class="forgot-button">
         <button
           mat-button

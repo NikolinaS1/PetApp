@@ -40,6 +40,12 @@ export class SigninComponent implements OnInit {
         ],
       ],
     });
+
+    this.authenticationService.getAuthState().subscribe((user) => {
+      if (user) {
+        this.router.navigate(['/']);
+      }
+    });
   }
 
   togglePasswordVisibility(): void {
@@ -71,5 +77,17 @@ export class SigninComponent implements OnInit {
         );
       },
     });
+  }
+
+  async onSignInWithGoogle() {
+    try {
+      await this.authenticationService.signInWithGoogle();
+      this.router.navigate(['/']);
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      this.snackBar.open('Google sign-in error. Please try again.', 'OK', {
+        duration: 5000,
+      });
+    }
   }
 }
