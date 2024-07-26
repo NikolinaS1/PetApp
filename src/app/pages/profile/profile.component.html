@@ -2,8 +2,9 @@
 
 <div class="content">
   <div class="profile-info" *ngIf="userProfile">
-    <div class="profile-image">
+    <div class="profile-image" (click)="openModal(userProfile.profileImageUrl)">
       <img
+        style="cursor: pointer"
         *ngIf="userProfile?.profileImageUrl"
         [src]="userProfile.profileImageUrl"
         alt="Profile Image"
@@ -133,3 +134,8 @@
   </ng-container>
 </div>
 <footer><app-footer></app-footer></footer>
+
+<div id="myModal" class="modal">
+  <span class="close" (click)="closeModal()">&times;</span>
+  <img class="modal-content" id="img01" />
+</div>

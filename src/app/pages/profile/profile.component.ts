@@ -352,4 +352,20 @@ export class ProfileComponent implements OnInit {
     this.following = false;
     this.followers = true;
   }
+
+  openModal(imageUrl: string): void {
+    const modal = document.getElementById('myModal') as HTMLElement;
+    const modalImg = document.getElementById('img01') as HTMLImageElement;
+    modal.style.display = 'block';
+    modalImg.src = imageUrl;
+
+    modal.onclick = () => {
+      modal.style.display = 'none';
+    };
+  }
+
+  closeModal(): void {
+    const modal = document.getElementById('myModal') as HTMLElement;
+    modal.style.display = 'none';
+  }
 }
