@@ -13,7 +13,7 @@ export class AddPostHomeComponent {
   openAddPostDialog(): void {
     this.dialog.open(AddPostDialogComponent, {
       width: '600px',
-      height: '430px',
+      height: '450px',
     });
   }
 }
