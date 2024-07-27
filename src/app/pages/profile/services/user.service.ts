@@ -321,4 +321,18 @@ export class UserService {
       throw error;
     }
   }
+
+  getUserProfiles(userIds: string[]): Observable<UserProfile[]> {
+    return combineLatest(
+      userIds.map((id) =>
+        this.firestore
+          .collection('users')
+          .doc(id)
+          .valueChanges()
+          .pipe(
+            map((data) => ({ id, ...(data as UserProfile) } as UserProfile))
+          )
+      )
+    );
+  }
 }

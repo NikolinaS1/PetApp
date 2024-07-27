@@ -13,11 +13,12 @@
         />
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
-      <mat-autocomplete
-        #auto="matAutocomplete"
-        (optionSelected)="onUserSelected($event.option.value)"
-      >
-        <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option
+          *ngFor="let user of filteredUsers | async"
+          [value]="user"
+          (click)="onUserSelected(user)"
+        >
           <div class="user-info">
             <img
               *ngIf="user.profileImageUrl; else noImage"
@@ -39,6 +40,38 @@
         </mat-option>
       </mat-autocomplete>
     </form>
+    <div class="users">
+      <div *ngIf="latestMessages | async as latestMessages">
+        <div *ngFor="let chat of latestMessages" class="chat-item">
+          <div class="user-info">
+            <img
+              *ngIf="chat.user.profileImageUrl; else noImage"
+              class="profile-image"
+              [src]="chat.user.profileImageUrl"
+              alt="User Image"
+            />
+            <ng-template #noImage>
+              <img
+                src="../../../assets/profile-icon.png"
+                class="profile-image"
+                alt="Default Profile Image"
+              />
+            </ng-template>
+            <div class="text-content">
+              <div class="name-and-timestamp">
+                <span class="name" (click)="onUserSelected(chat.user)">
+                  {{ chat.user.firstName }} {{ chat.user.lastName }}
+                </span>
+                <span class="timestamp">
+                  {{ chat.latestMessage?.timestamp | date : "short" }}
+                </span>
+              </div>
+              <p class="latest-message">{{ chat.latestMessage?.message }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="right-panel" *ngIf="selectedUser">
     <app-chat-right-panel [selectedUser]="selectedUser"></app-chat-right-panel>

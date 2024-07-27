@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable } from 'rxjs';
+import { combineLatest, map, Observable, switchMap } from 'rxjs';
 import { ChatMessage } from '../models/chat.model';
+import { Timestamp } from 'firebase/firestore';
+import { UserProfile } from '../../profile/models/userProfile.model';
+import { UserService } from '../../profile/services/user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
-  constructor(private firestore: AngularFirestore) {}
+  constructor(
+    private firestore: AngularFirestore,
+    private userService: UserService
+  ) {}
 
   async sendMessage(
     senderId: string,
@@ -42,5 +48,80 @@ export class ChatService {
     return this.firestore
       .collection<ChatMessage>(chatPath, (ref) => ref.orderBy('timestamp'))
       .valueChanges();
+  }
+
+  getLatestMessages(
+    userId: string
+  ): Observable<{ user: UserProfile; latestMessage: ChatMessage }[]> {
+    return this.firestore
+      .collection('users')
+      .doc(userId)
+      .valueChanges()
+      .pipe(
+        switchMap((user: any) => {
+          const chatPaths = [
+            ...user.following.map(
+              (id: string) => `chat/${userId}_${id}/messages`
+            ),
+            ...user.followers.map(
+              (id: string) => `chat/${id}_${userId}/messages`
+            ),
+          ];
+
+          return combineLatest(
+            chatPaths.map((path) =>
+              this.firestore
+                .collection(path, (ref) =>
+                  ref.orderBy('timestamp', 'desc').limit(1)
+                )
+                .snapshotChanges()
+                .pipe(
+                  map((changes) =>
+                    changes.length > 0
+                      ? this.convertToChatMessage(changes[0].payload.doc.data())
+                      : null
+                  )
+                )
+            )
+          );
+        }),
+        switchMap((latestMessages) => {
+          const userIds = new Set<string>(
+            latestMessages
+              .filter((message) => message !== null)
+              .map((message) => {
+                const messageData = message as ChatMessage;
+                return messageData.senderId === userId
+                  ? messageData.receiverId
+                  : messageData.senderId;
+              })
+          );
+
+          return this.userService.getUserProfiles(Array.from(userIds)).pipe(
+            map((userProfiles) => {
+              return userProfiles.map((userProfile) => {
+                const latestMessage = latestMessages.find(
+                  (msg) =>
+                    msg &&
+                    ((msg as ChatMessage).senderId === userProfile.id ||
+                      (msg as ChatMessage).receiverId === userProfile.id)
+                ) as ChatMessage;
+
+                return { user: userProfile, latestMessage };
+              });
+            })
+          );
+        })
+      );
+  }
+
+  private convertToChatMessage(message: any): ChatMessage {
+    return {
+      ...message,
+      timestamp:
+        message.timestamp instanceof Timestamp
+          ? message.timestamp.toDate()
+          : message.timestamp,
+    } as ChatMessage;
   }
 }
