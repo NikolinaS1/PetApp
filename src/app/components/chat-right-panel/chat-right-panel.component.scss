@@ -66,10 +66,12 @@
 
 .message-sent {
   text-align: right;
+  margin: 10px 10px 0 0;
 }
 
 .message-received {
   text-align: left;
+  margin: 10px 0 0 10px;
 }
 
 .message-text {
@@ -79,9 +81,18 @@
 }
 
 .message-sent .message-text {
-  background-color: #dcf8c6; // Light green for sent messages
+  background-color: #e91e63;
+  color: white;
+  font-size: 16px;
 }
 
 .message-received .message-text {
-  background-color: #fff; // White for received messages
+  background-color: #f0f0f0;
+  font-size: 16px;
+}
+
+.message-date {
+  font-size: 0.8em;
+  color: #666;
+  margin: 0 10px;
 }

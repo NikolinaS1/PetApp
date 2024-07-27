@@ -8,34 +8,26 @@ import { Observable } from 'rxjs';
 export class ChatService {
   constructor(private firestore: AngularFirestore) {}
 
-  private getChatCollection(senderId: string, receiverId: string) {
-    const chatId = this.getChatId(senderId, receiverId);
-    return this.firestore.collection(`chats/${chatId}/messages`, (ref) =>
-      ref.orderBy('timestamp')
-    );
-  }
-
-  private getChatId(senderId: string, receiverId: string): string {
-    return senderId < receiverId
-      ? `${senderId}_${receiverId}`
-      : `${receiverId}_${senderId}`;
-  }
-
   async sendMessage(
     senderId: string,
     receiverId: string,
     message: string
   ): Promise<void> {
     try {
-      const chatId = this.getChatId(senderId, receiverId);
       const timestamp = new Date();
 
-      await this.firestore.collection(`chats/${chatId}/messages`).add({
+      const messageData = {
         senderId,
         receiverId,
         message,
         timestamp,
-      });
+      };
+
+      const chatPath = `chat/${senderId}_${receiverId}/messages`;
+      const chatPathReverse = `chat/${receiverId}_${senderId}/messages`;
+
+      await this.firestore.collection(chatPath).add(messageData);
+      await this.firestore.collection(chatPathReverse).add(messageData);
     } catch (error) {
       console.error('Error sending message:', error);
       throw error;
@@ -43,6 +35,11 @@ export class ChatService {
   }
 
   getMessages(senderId: string, receiverId: string): Observable<any[]> {
-    return this.getChatCollection(senderId, receiverId).valueChanges();
+    const chatPath = `chat/${senderId}_${receiverId}/messages`;
+    const chatPathReverse = `chat/${receiverId}_${senderId}/messages`;
+
+    return this.firestore
+      .collection(chatPath, (ref) => ref.orderBy('timestamp'))
+      .valueChanges();
   }
 }

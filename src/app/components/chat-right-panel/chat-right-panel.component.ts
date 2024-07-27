@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { UserProfile } from '../../pages/profile/models/userProfile.model';
 import { ChatService } from '../../pages/chat/services/chat.service';
+import { map } from 'rxjs/operators';
+import { Timestamp } from 'firebase/firestore';
 
 @Component({
   selector: 'app-chat-right-panel',
@@ -31,10 +33,18 @@ export class ChatRightPanelComponent implements OnChanges {
       const currentUser = await this.auth.currentUser;
       if (currentUser) {
         this.currentUserId = currentUser.uid;
-        this.messages$ = this.chatService.getMessages(
-          currentUser.uid,
-          this.selectedUser.id
-        );
+        this.messages$ = this.chatService
+          .getMessages(currentUser.uid, this.selectedUser.id)
+          .pipe(
+            map((messages) =>
+              messages.map((message) => {
+                if (message.timestamp instanceof Timestamp) {
+                  message.timestamp = message.timestamp.toDate();
+                }
+                return message;
+              })
+            )
+          );
       }
     }
   }

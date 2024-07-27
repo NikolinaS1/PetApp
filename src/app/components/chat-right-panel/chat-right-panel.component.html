@@ -25,6 +25,10 @@
     <div *ngIf="messages$ | async as messages">
       <div *ngFor="let message of messages" class="message">
         <div *ngIf="message.senderId === currentUserId" class="message-sent">
+          <span class="message-date">
+            {{ message.timestamp | date : "d MMMM, yyyy" }} at
+            {{ message.timestamp | date : "h:mm a" }}
+          </span>
           <span class="message-text">{{ message.message }}</span>
         </div>
         <div
@@ -32,6 +36,10 @@
           class="message-received"
         >
           <span class="message-text">{{ message.message }}</span>
+          <span class="message-date">
+            {{ message.timestamp | date : "d MMMM, yyyy" }} at
+            {{ message.timestamp | date : "h:mm a" }}
+          </span>
         </div>
       </div>
     </div>
