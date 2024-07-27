@@ -1,0 +1,87 @@
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.name-bar {
+  background-color: #fff;
+  margin-top: 40px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  padding: 15px 30px;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+  top: 0;
+  left: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info img {
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  object-fit: cover;
+  object-position: center;
+  margin-right: 10px;
+}
+
+.text-content {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.message-area {
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-start;
+}
+
+.message-form {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.send-icon {
+  display: flex;
+  align-items: flex-start;
+}
+
+.message {
+  margin-bottom: 10px;
+}
+
+.message-sent {
+  text-align: right;
+}
+
+.message-received {
+  text-align: left;
+}
+
+.message-text {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.message-sent .message-text {
+  background-color: #dcf8c6; // Light green for sent messages
+}
+
+.message-received .message-text {
+  background-color: #fff; // White for received messages
+}

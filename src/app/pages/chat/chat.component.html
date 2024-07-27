@@ -1,0 +1,47 @@
+<app-navbar></app-navbar>
+<div class="content">
+  <div class="left-panel">
+    <form class="search-form">
+      <mat-form-field class="search">
+        <mat-label>Search</mat-label>
+        <input
+          type="search"
+          matInput
+          [formControl]="searchControl"
+          placeholder="Type name..."
+          [matAutocomplete]="auto"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="onUserSelected($event.option.value)"
+      >
+        <mat-option *ngFor="let user of filteredUsers | async" [value]="user">
+          <div class="user-info">
+            <img
+              *ngIf="user.profileImageUrl; else noImage"
+              class="user"
+              [src]="user.profileImageUrl"
+              alt="User Image"
+            />
+            <ng-template #noImage>
+              <img
+                src="../../../assets/profile-icon.png"
+                class="user"
+                alt="Default Profile Image"
+              />
+            </ng-template>
+            <div class="text-content">
+              <span class="name">{{ user.firstName }} {{ user.lastName }}</span>
+            </div>
+          </div>
+        </mat-option>
+      </mat-autocomplete>
+    </form>
+  </div>
+  <div class="right-panel" *ngIf="selectedUser">
+    <app-chat-right-panel [selectedUser]="selectedUser"></app-chat-right-panel>
+  </div>
+</div>
+<app-footer></app-footer>

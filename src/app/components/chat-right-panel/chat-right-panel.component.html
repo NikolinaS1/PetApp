@@ -1,0 +1,54 @@
+<div class="content">
+  <div class="name-bar">
+    <div class="user-info" *ngIf="selectedUser">
+      <img
+        *ngIf="selectedUser.profileImageUrl; else noImage"
+        class="user"
+        [src]="selectedUser.profileImageUrl"
+        alt="User Image"
+      />
+      <ng-template #noImage>
+        <img
+          src="../../../assets/profile-icon.png"
+          class="user"
+          alt="Default Profile Image"
+        />
+      </ng-template>
+      <div class="text-content">
+        <span class="name">
+          {{ selectedUser.firstName }} {{ selectedUser.lastName }}
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="main-content">
+    <div *ngIf="messages$ | async as messages">
+      <div *ngFor="let message of messages" class="message">
+        <div *ngIf="message.senderId === currentUserId" class="message-sent">
+          <span class="message-text">{{ message.message }}</span>
+        </div>
+        <div
+          *ngIf="message.senderId !== currentUserId"
+          class="message-received"
+        >
+          <span class="message-text">{{ message.message }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="message-area">
+    <mat-form-field appearance="fill" class="message-form">
+      <mat-label>Send a message</mat-label>
+      <textarea
+        rows="2"
+        matInput
+        placeholder="Write something..."
+        [(ngModel)]="messageText"
+        (keyup.enter)="sendMessage()"
+      ></textarea>
+    </mat-form-field>
+    <button mat-icon-button class="send-icon" (click)="sendMessage()">
+      <mat-icon color="accent">send</mat-icon>
+    </button>
+  </div>
+</div>

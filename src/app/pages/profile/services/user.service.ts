@@ -269,4 +269,56 @@ export class UserService {
       throw error;
     }
   }
+
+  async searchMutualUsers(query: string): Promise<UserProfile[]> {
+    try {
+      const currentUserId = localStorage.getItem('accessToken');
+
+      if (!currentUserId) {
+        throw new Error('No current user ID found');
+      }
+
+      const currentUserDoc = await this.firestore
+        .collection('users')
+        .doc(currentUserId)
+        .get()
+        .toPromise();
+
+      const currentUserData = currentUserDoc.data() as UserProfile;
+      if (
+        !currentUserData ||
+        !currentUserData.following ||
+        !currentUserData.followers
+      ) {
+        return [];
+      }
+
+      const followingIds = new Set(currentUserData.following);
+      const followerIds = new Set(currentUserData.followers);
+
+      const mutualIds = [...followingIds].filter((id) => followerIds.has(id));
+
+      const userDocs = await Promise.all(
+        mutualIds.map((id) =>
+          this.firestore.collection('users').doc(id).get().toPromise()
+        )
+      );
+
+      const users = userDocs
+        .map((doc) => {
+          const data = doc.data() as UserProfile;
+          return { id: doc.id, ...data };
+        })
+        .filter((user) => {
+          const userName = (user.firstName || '') + ' ' + (user.lastName || '');
+          return userName.toLowerCase().includes(query.toLowerCase());
+        });
+
+      console.log('Filtered users:', users);
+      return users;
+    } catch (error) {
+      console.error('Error searching mutual users:', error);
+      throw error;
+    }
+  }
 }

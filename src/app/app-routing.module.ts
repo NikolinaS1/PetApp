@@ -28,6 +28,12 @@ const routes: Routes = [
       import('./pages/profile/profile.module').then((m) => m.ProfileModule),
     canActivate: [AuthGuard],
   },
+  {
+    path: 'messages',
+    loadChildren: () =>
+      import('./pages/chat/chat.module').then((m) => m.ChatModule),
+    canActivate: [AuthGuard],
+  },
 ];
 
 @NgModule({

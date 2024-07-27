@@ -57,103 +57,14 @@
       </a>
     </li>
     <li matTooltip="Messages">
-      <button mat-button [matMenuTriggerFor]="messageMenu">
-        <mat-icon matBadge="6" matBadgeColor="accent">message</mat-icon>
-      </button>
-      <mat-menu #messageMenu="matMenu" xPosition="before" class="customize">
-        <button mat-menu-item>
-          <div class="item-content">
-            <img
-              class="user"
-              src="../../../assets/person.jpg"
-              alt="User Image"
-            />
-            <div class="text-content">
-              <span class="name">Ime Prezime</span>
-              <p class="content">Dio Poruke...</p>
-            </div>
-          </div>
-        </button>
-        <button mat-menu-item>
-          <div class="item-content">
-            <img
-              class="user"
-              src="../../../assets/person.jpg"
-              alt="User Image"
-            />
-            <div class="text-content">
-              <span class="name">Ime Prezime</span>
-              <p class="content">Dio Poruke...</p>
-            </div>
-          </div>
-        </button>
-        <button mat-menu-item>
-          <div class="item-content">
-            <img
-              class="user"
-              src="../../../assets/person.jpg"
-              alt="User Image"
-            />
-            <div class="text-content">
-              <span class="name">Ime prezime</span>
-              <p class="content">
-                Dioooooooooooooooo porukeee hhsvc hdbshcb svdhsvh hsdbhs sdhs
-              </p>
-            </div>
-          </div>
-        </button>
-        <a routerLink="/messages" class="messages-link">Show all messages</a>
-      </mat-menu>
+      <a routerLink="/messages" class="nav-link">
+        <mat-icon matBadge="3" matBadgeColor="accent">message</mat-icon>
+      </a>
     </li>
     <li matTooltip="Notifications">
-      <button mat-button [matMenuTriggerFor]="notificationMenu">
-        <mat-icon matBadge="3" matBadgeColor="accent">notifications</mat-icon>
-      </button>
-      <mat-menu
-        #notificationMenu="matMenu"
-        xPosition="before"
-        class="notification-menu"
-      >
-        <button mat-menu-item>
-          <div class="item-content">
-            <img
-              class="user"
-              src="../../../assets/person.jpg"
-              alt="User Image"
-            />
-            <div class="text-content">
-              <p class="content">Bla bla bla</p>
-            </div>
-          </div>
-        </button>
-        <button mat-menu-item>
-          <div class="item-content">
-            <img
-              class="user"
-              src="../../../assets/person.jpg"
-              alt="User Image"
-            />
-            <div class="text-content">
-              <p class="content">Bla bla bla</p>
-            </div>
-          </div>
-        </button>
-        <button mat-menu-item>
-          <div class="item-content">
-            <img
-              class="user"
-              src="../../../assets/person.jpg"
-              alt="User Image"
-            />
-            <div class="text-content">
-              <p class="content">Bla bla bla</p>
-            </div>
-          </div>
-        </button>
-        <a routerLink="/notifications" class="notifications-link"
-          >Show all notifications</a
-        >
-      </mat-menu>
+      <a routerLink="/notifications" class="nav-link">
+        <mat-icon matBadge="6" matBadgeColor="accent">notifications</mat-icon>
+      </a>
     </li>
     <li>
       <mat-icon
