@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable, startWith, switchMap } from 'rxjs';
+import { Observable, startWith, switchMap, map } from 'rxjs';
 import { UserProfile } from '../profile/models/userProfile.model';
 import { ChatMessage } from './models/chat.model';
 import { UserService } from '../profile/services/user.service';
@@ -34,9 +34,17 @@ export class ChatComponent implements OnInit {
         switchMap((value) => this.userService.searchMutualUsers(value))
       );
 
-      this.latestMessages = this.chatService.getLatestMessages(
-        this.currentUserId
-      );
+      this.latestMessages = this.chatService
+        .getLatestMessages(this.currentUserId)
+        .pipe(
+          map((messages) =>
+            messages.sort(
+              (a, b) =>
+                new Date(b.latestMessage.timestamp).getTime() -
+                new Date(a.latestMessage.timestamp).getTime()
+            )
+          )
+        );
     }
   }
 
