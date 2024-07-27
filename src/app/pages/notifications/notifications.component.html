@@ -1,0 +1,25 @@
+<app-navbar></app-navbar>
+<div class="content">
+  <div class="notifications">
+    <h1>Notifications</h1>
+    <div
+      *ngFor="let notification of notifications$ | async"
+      class="notification"
+    >
+      <img
+        [src]="notification.profileImageUrl || '../../../assets/photo.jpg'"
+        alt="Profile Image"
+        width="50"
+        height="50"
+        (error)="this.src = '../../../assets/photo.jpg'"
+      />
+      <div class="notification-text">
+        <span class="notification-message">{{ notification.message }}</span>
+        <span class="notification-timestamp">{{
+          notification.timestamp | date : "short"
+        }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>

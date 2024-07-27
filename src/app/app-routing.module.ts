@@ -34,6 +34,14 @@ const routes: Routes = [
       import('./pages/chat/chat.module').then((m) => m.ChatModule),
     canActivate: [AuthGuard],
   },
+  {
+    path: 'notifications',
+    loadChildren: () =>
+      import('./pages/notifications/notifications.module').then(
+        (m) => m.NotificationsModule
+      ),
+    canActivate: [AuthGuard],
+  },
 ];
 
 @NgModule({
