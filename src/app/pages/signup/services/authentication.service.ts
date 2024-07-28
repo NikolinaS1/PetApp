@@ -56,6 +56,7 @@ export class AuthenticationService {
       return result;
     } catch (error) {
       console.error('Error registering:', error);
+      this.isRegistering = false;
       this.snackBar.open(
         'The email address is already in use by another account.',
         'OK',

@@ -29,12 +29,23 @@ form {
     mat-form-field {
       width: 280px;
       margin-bottom: 15px;
+
+      mat-error {
+        color: red;
+        font-size: 12px;
+      }
     }
 
     .forgot-button {
-      margin: 20px 0 20px 0;
+      margin: 20px 0;
       text-align: right;
       width: 100%;
+
+      .button-loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
     }
 
     .login {
@@ -75,11 +86,15 @@ form {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.google-sign-in-button img {
-  width: 18px;
-  height: 18px;
-  margin-right: 10px;
-  vertical-align: middle;
+.google-sign-in-button {
+  display: flex;
+  align-items: center;
+  img {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
 }
 
 .or {
@@ -89,11 +104,11 @@ form {
 
 .logo {
   text-align: center;
-}
 
-.logo img {
-  width: 160px;
-  padding: 20px;
+  img {
+    width: 160px;
+    padding: 20px;
+  }
 }
 
 @media only screen and (max-width: 850px) {
