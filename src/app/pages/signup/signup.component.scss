@@ -21,13 +21,13 @@ form {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   .form-container {
-    padding: 10px 60px 20px 60px;
+    padding: 5px 50px 15px 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
 
     mat-form-field {
-      width: 280px;
+      width: 100%;
       margin-bottom: 15px;
 
       mat-error {
@@ -44,6 +44,7 @@ form {
 
     .login {
       margin-top: 10px;
+      white-space: nowrap;
     }
 
     .password-input-wrapper {

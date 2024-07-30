@@ -27,7 +27,7 @@ form {
     align-items: center;
 
     mat-form-field {
-      width: 280px;
+      width: 100%;
       margin-bottom: 15px;
 
       mat-error {
@@ -55,6 +55,7 @@ form {
 
     .register {
       margin-top: 10px;
+      white-space: nowrap;
     }
 
     .password-input-wrapper {
