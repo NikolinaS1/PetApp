@@ -16,28 +16,24 @@
       <div class="name">
         <p>{{ userProfile.firstName }} {{ userProfile.lastName }}</p>
       </div>
-      <div class="select-container" *ngIf="petNames.length > 0">
-        <mat-form-field
-          appearance="fill"
-          class="select-field"
-          [style.width.px]="250"
-        >
-          <mat-label>Select pets related to post</mat-label>
-          <mat-select [(ngModel)]="selectedPets" multiple>
-            <mat-option *ngFor="let pet of petNames" [value]="pet.name">
-              {{ pet.name }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
-      <div class="placeholder" *ngIf="petNames.length === 0"></div>
     </div>
+    <div class="select-container" *ngIf="petNames.length > 0">
+      <mat-form-field appearance="fill">
+        <mat-label>Select pets related to post</mat-label>
+        <mat-select [(ngModel)]="selectedPets" multiple>
+          <mat-option *ngFor="let pet of petNames" [value]="pet.name">
+            {{ pet.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="placeholder" *ngIf="petNames.length === 0"></div>
   </div>
   <div class="post-form">
-    <mat-form-field class="post" style="width: 600px">
-      <mat-label>New post</mat-label>
+    <mat-form-field class="post">
+      <mat-label>What did your pet do?</mat-label>
       <textarea
-        rows="8"
+        rows="6"
         placeholder="Write something..."
         maxlength="255"
         matInput
