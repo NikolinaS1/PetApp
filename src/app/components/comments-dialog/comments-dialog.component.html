@@ -36,6 +36,7 @@
         [(ngModel)]="newComment"
         matInput
         placeholder="Write something..."
+        (keyup.enter)="submitComment()"
       ></textarea>
       <button mat-icon-button (click)="submitComment()" class="post-icon">
         <mat-icon color="accent">send</mat-icon>

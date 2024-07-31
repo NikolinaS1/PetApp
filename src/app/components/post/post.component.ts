@@ -38,16 +38,20 @@ export class PostComponent implements OnInit {
   openLikesDialog(event: Event, postId: string, userId: string): void {
     event.stopPropagation();
     this.dialog.open(LikesDialogComponent, {
-      width: '450px',
-      height: '500px',
+      width: '80vw',
+      maxWidth: '450px',
+      height: '80vh',
+      maxHeight: '500px',
       data: { userId, postId },
     });
   }
 
   openCommentsDialog(postId: string, userId: string): void {
     this.dialog.open(CommentsDialogComponent, {
-      width: '450px',
-      height: '500px',
+      width: '80vw',
+      maxWidth: '450px',
+      height: '80vh',
+      maxHeight: '500px',
       data: { userId, postId },
     });
   }
