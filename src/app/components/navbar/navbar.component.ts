@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -13,10 +13,6 @@ import { Observable, startWith, switchMap } from 'rxjs';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
-  isMenuOpen: boolean = false;
-  @ViewChild(MatSidenav) sidenav!: MatSidenav;
-  isMobile = false;
-  isCollapsed = true;
   searchControl = new FormControl();
   filteredUsers!: Observable<any[]>;
   uid = localStorage.getItem('accessToken');
@@ -29,19 +25,50 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.observer.observe(['(max-width: 700px)']).subscribe(() => {
-      this.isMobile = true;
-    });
-
     this.filteredUsers = this.searchControl.valueChanges.pipe(
       startWith(''),
       switchMap((value) => this.userService.searchUsers(value))
     );
   }
 
-  toggle() {
-    this.sidenav.toggle();
-    this.isCollapsed = false;
+  @HostListener('window:scroll', ['$event'])
+  onScroll() {
+    this.scrollActive();
+    this.scrollHeader();
+  }
+
+  scrollActive() {
+    const sections = document.querySelectorAll('section[id]');
+    const scrollY = window.pageYOffset;
+
+    sections.forEach((current) => {
+      const section = current as HTMLElement;
+      const sectionHeight = section.offsetHeight;
+      const sectionTop = section.offsetTop - 50;
+      const sectionId = section.getAttribute('id');
+
+      if (sectionId) {
+        const navMenu = document.querySelector(
+          `.nav__menu a[href*=${sectionId}]`
+        ) as HTMLElement;
+        if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
+          navMenu?.classList.add('active-link');
+        } else {
+          navMenu?.classList.remove('active-link');
+        }
+      }
+    });
+  }
+
+  scrollHeader() {
+    const header = document.getElementById('header') as HTMLElement;
+    if (header) {
+      if (window.scrollY >= 80) {
+        header.classList.add('scroll-header');
+      } else {
+        header.classList.remove('scroll-header');
+      }
+    }
   }
 
   navigateToUserProfile(userId: string) {
@@ -53,9 +80,4 @@ export class NavbarComponent implements OnInit {
       this.router.navigate(['/profile', this.uid]);
     }
   }
-
-  /* logout() {
-    this.router.navigate(['signin']);
-    this.authenticationService.logout().subscribe();
-  } */
 }
