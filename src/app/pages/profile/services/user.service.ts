@@ -89,21 +89,22 @@ export class UserService {
       .valueChanges({ idField: 'id' }) as Observable<Pet[]>;
   }
 
-  searchUsers(query: string): Observable<any[]> {
+  searchUsers(query: string): Observable<UserProfile[]> {
     return this.firestore
-      .collection('users', (ref) =>
-        ref
-          .orderBy('firstName')
-          .startAt(query)
-          .endAt(query + '\uf8ff')
-      )
+      .collection('users')
       .snapshotChanges()
       .pipe(
         map((actions) =>
           actions.map((a) => {
-            const data = a.payload.doc.data() as { [key: string]: any };
+            const data = a.payload.doc.data() as UserProfile;
             const id = a.payload.doc.id;
             return { id, ...data };
+          })
+        ),
+        map((users) =>
+          users.filter((user) => {
+            const userName = `${user.firstName || ''} ${user.lastName || ''}`;
+            return userName.toLowerCase().includes(query.toLowerCase());
           })
         )
       );

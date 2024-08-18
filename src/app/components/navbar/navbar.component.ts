@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -6,6 +6,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { UserService } from '../../pages/profile/services/user.service';
 import { FormControl } from '@angular/forms';
 import { Observable, startWith, switchMap } from 'rxjs';
+import { UserProfile } from '../../pages/profile/models/userProfile.model';
 
 @Component({
   selector: 'app-navbar',
@@ -14,7 +15,7 @@ import { Observable, startWith, switchMap } from 'rxjs';
 })
 export class NavbarComponent implements OnInit {
   searchControl = new FormControl();
-  filteredUsers!: Observable<any[]>;
+  filteredUsers!: Observable<UserProfile[]>;
   uid = localStorage.getItem('accessToken');
 
   constructor(
