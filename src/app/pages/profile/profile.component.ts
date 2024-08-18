@@ -84,8 +84,10 @@ export class ProfileComponent implements OnInit {
 
   openAddPostDialog(): void {
     this.dialog.open(AddPostDialogComponent, {
-      width: '600px',
-      height: '450px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      width: 'auto',
+      height: 'auto',
     });
   }
 

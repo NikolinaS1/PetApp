@@ -66,8 +66,19 @@
     </div>
   </div>
   <div class="add-post-button">
-    <button mat-raised-button color="primary" (click)="addPost()">
-      Add post
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="isSaving"
+      (click)="addPost()"
+    >
+      <mat-spinner
+        *ngIf="isSaving"
+        class="button-spinner"
+        color="primary"
+        diameter="20"
+      ></mat-spinner>
+      <span *ngIf="!isSaving">Add post</span>
     </button>
   </div>
 </div>

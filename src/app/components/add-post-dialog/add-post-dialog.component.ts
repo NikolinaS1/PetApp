@@ -16,6 +16,7 @@ export class AddPostDialogComponent implements OnInit {
   imageUrl: string | null = null;
   petNames: { name: string }[] = [];
   selectedPets: string[] = [];
+  isSaving = false;
   currentUserId = localStorage.getItem('accessToken');
 
   constructor(
@@ -46,6 +47,8 @@ export class AddPostDialogComponent implements OnInit {
 
   addPost() {
     const accessToken = localStorage.getItem('accessToken');
+    this.isSaving = true;
+
     if (!accessToken) {
       console.error('Access token not found in local storage.');
       return;
@@ -67,6 +70,7 @@ export class AddPostDialogComponent implements OnInit {
           this.selectedPets
         )
         .then(() => {
+          this.isSaving = false;
           console.log('Post added successfully!');
           this.snackBar.open('New post added successfully.', 'OK', {
             duration: 5000,
@@ -77,9 +81,11 @@ export class AddPostDialogComponent implements OnInit {
           this.selectedPets = [];
         })
         .catch((error) => {
+          this.isSaving = false;
           console.error('Error adding new post', error);
         });
     } else {
+      this.isSaving = false;
       this.snackBar.open(
         'Please select an image and/or enter some text.',
         'OK',

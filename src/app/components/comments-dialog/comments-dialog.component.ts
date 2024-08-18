@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class CommentsDialogComponent {
   comments: IComment[] = [];
   newComment: string = '';
+  isSaving = false;
   currentUserId = localStorage.getItem('accessToken');
 
   constructor(
@@ -38,14 +39,17 @@ export class CommentsDialogComponent {
   }
 
   submitComment(): void {
+    this.isSaving = true;
     if (this.newComment.trim()) {
       this.postService
         .addComment(this.data.postId, this.data.userId, this.newComment)
         .then(() => {
+          this.isSaving = false;
           this.newComment = '';
           this.loadComments();
         })
         .catch((error) => {
+          this.isSaving = false;
           console.error('Error adding comment:', error);
         });
     }

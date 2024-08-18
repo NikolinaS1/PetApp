@@ -29,7 +29,11 @@
     </div>
   </div>
   <div class="comment-form-container">
-    <mat-form-field appearance="fill" class="comment-form" style="width: 100%">
+    <mat-form-field
+      appearance="fill"
+      class="comment-form"
+      style="width: 100%; position: relative"
+    >
       <mat-label>Add a comment</mat-label>
       <textarea
         rows="2"
@@ -37,8 +41,14 @@
         matInput
         placeholder="Write something..."
         (keyup.enter)="submitComment()"
+        style="padding-right: 40px"
       ></textarea>
-      <button mat-icon-button (click)="submitComment()" class="post-icon">
+      <button
+        mat-icon-button
+        (click)="submitComment()"
+        [disabled]="isSaving"
+        class="post-icon"
+      >
         <mat-icon color="accent">send</mat-icon>
       </button>
     </mat-form-field>
