@@ -111,7 +111,7 @@
         color="primary"
         (click)="openAddPostDialog()"
       >
-        Add new post
+        Add post
       </button>
       <ng-container *ngIf="currentUserId !== uid">
         <button
@@ -134,7 +134,7 @@
     <app-followers [userId]="uid"></app-followers>
   </ng-container>
 </div>
-<footer><app-footer></app-footer></footer>
+<div class="pom"></div>
 
 <div id="myModal" class="modal">
   <span class="close" (click)="closeModal()">&times;</span>
