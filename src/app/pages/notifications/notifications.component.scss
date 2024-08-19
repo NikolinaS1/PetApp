@@ -4,19 +4,29 @@
 }
 
 .notifications {
-  margin-top: 100px;
-  background-color: #fff;
-  width: 50%;
+  margin-top: 85px;
+  background-color: #ffffff;
+  width: 90%;
+  max-width: 800px;
   border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  position: relative;
   margin-left: auto;
   margin-right: auto;
-  padding-bottom: 20px;
-  display: block;
 }
 
 h1 {
-  padding: 20px;
+  padding: 20px 0 0 30px;
+  color: #000;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.notification img {
+  border-radius: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .notification {
