@@ -15,9 +15,13 @@ export class NotificationsComponent implements OnInit {
   constructor(private notificationsService: NotificationsService) {}
 
   ngOnInit() {
-    const userId = localStorage.getItem('accessToken');
-    this.notifications$ =
-      this.notificationsService.getUserNotifications(userId);
+    const userId = localStorage.getItem('accessToken') || '';
+    if (userId) {
+      this.notifications$ =
+        this.notificationsService.getNotificationsForUser(userId);
+    } else {
+      this.notifications$ = new Observable();
+    }
   }
 
   formatTimestamp(date: Date): string {

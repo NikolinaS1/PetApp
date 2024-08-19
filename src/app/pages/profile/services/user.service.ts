@@ -114,6 +114,7 @@ export class UserService {
     try {
       const currentUserId = localStorage.getItem('accessToken');
       const batch = this.firestore.firestore.batch();
+      const timestamp = new Date();
 
       const currentUserRef = this.firestore
         .collection('users')
@@ -123,11 +124,17 @@ export class UserService {
         .doc(followingUserId).ref;
 
       batch.update(currentUserRef, {
-        following: firebase.firestore.FieldValue.arrayUnion(followingUserId),
+        following: firebase.firestore.FieldValue.arrayUnion({
+          userId: followingUserId,
+          followedAt: timestamp,
+        }),
       });
 
       batch.update(followingUserRef, {
-        followers: firebase.firestore.FieldValue.arrayUnion(currentUserId),
+        followers: firebase.firestore.FieldValue.arrayUnion({
+          userId: currentUserId,
+          followedAt: timestamp,
+        }),
       });
 
       await batch.commit();
@@ -149,12 +156,32 @@ export class UserService {
         .collection('users')
         .doc(followingUserId).ref;
 
+      const currentUserDoc = await currentUserRef.get();
+      const currentUserData = currentUserDoc.data() as
+        | { following: Array<{ userId: string; followedAt: Date }> }
+        | undefined;
+      const currentFollowing = currentUserData?.following || [];
+
+      const followingUserDoc = await followingUserRef.get();
+      const followingUserData = followingUserDoc.data() as
+        | { followers: Array<{ userId: string; followedAt: Date }> }
+        | undefined;
+      const followingFollowers = followingUserData?.followers || [];
+
+      const updatedFollowing = currentFollowing.filter(
+        (follow) => follow.userId !== followingUserId
+      );
+
+      const updatedFollowers = followingFollowers.filter(
+        (follower) => follower.userId !== currentUserId
+      );
+
       batch.update(currentUserRef, {
-        following: firebase.firestore.FieldValue.arrayRemove(followingUserId),
+        following: updatedFollowing,
       });
 
       batch.update(followingUserRef, {
-        followers: firebase.firestore.FieldValue.arrayRemove(currentUserId),
+        followers: updatedFollowers,
       });
 
       await batch.commit();
@@ -172,7 +199,9 @@ export class UserService {
       .pipe(
         map((user: any) => {
           if (user && user.following) {
-            return user.following.length;
+            return (
+              user.following as Array<{ userId: string; followedAt: Date }>
+            ).length;
           } else {
             return 0;
           }
@@ -192,7 +221,9 @@ export class UserService {
       .pipe(
         map((user: any) => {
           if (user && user.followers) {
-            return user.followers.length;
+            return (
+              user.followers as Array<{ userId: string; followedAt: Date }>
+            ).length;
           } else {
             return 0;
           }
@@ -210,10 +241,15 @@ export class UserService {
       .doc(userId)
       .valueChanges()
       .pipe(
-        map(
-          (user: any) =>
-            user && user.following && user.following.includes(followingUserId)
-        )
+        map((user: any) => {
+          if (user && user.following) {
+            return (
+              user.following as Array<{ userId: string; followedAt: Date }>
+            ).some((follow) => follow.userId === followingUserId);
+          } else {
+            return false;
+          }
+        })
       );
   }
 
@@ -224,12 +260,15 @@ export class UserService {
         .doc(userId)
         .get()
         .toPromise();
-      const userData = userDoc.data() as UserProfile;
+
+      const userData = userDoc.data() as {
+        following: Array<{ userId: string; followedAt: Date }>;
+      };
       if (!userData || !userData.following) {
         return [];
       }
 
-      const followingIds = userData.following;
+      const followingIds = userData.following.map((follow) => follow.userId);
 
       const userDocs = await Promise.all(
         followingIds.map((id) =>
@@ -251,12 +290,15 @@ export class UserService {
         .doc(userId)
         .get()
         .toPromise();
-      const userData = userDoc.data() as UserProfile;
+
+      const userData = userDoc.data() as {
+        followers: Array<{ userId: string; followedAt: Date }>;
+      };
       if (!userData || !userData.followers) {
         return [];
       }
 
-      const followerIds = userData.followers;
+      const followerIds = userData.followers.map((follower) => follower.userId);
 
       const followerDocs = await Promise.all(
         followerIds.map((id) =>
@@ -285,7 +327,11 @@ export class UserService {
         .get()
         .toPromise();
 
-      const currentUserData = currentUserDoc.data() as UserProfile;
+      const currentUserData = currentUserDoc.data() as {
+        following: Array<{ userId: string; followedAt: Date }>;
+        followers: Array<{ userId: string; followedAt: Date }>;
+      };
+
       if (
         !currentUserData ||
         !currentUserData.following ||
@@ -294,8 +340,12 @@ export class UserService {
         return [];
       }
 
-      const followingIds = new Set(currentUserData.following);
-      const followerIds = new Set(currentUserData.followers);
+      const followingIds = new Set(
+        currentUserData.following.map((follow) => follow.userId)
+      );
+      const followerIds = new Set(
+        currentUserData.followers.map((follower) => follower.userId)
+      );
 
       const mutualIds = [...followingIds].filter((id) => followerIds.has(id));
 
