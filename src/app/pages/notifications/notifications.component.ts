@@ -8,7 +8,9 @@ import { Observable } from 'rxjs';
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
-  notifications$: Observable<{ message: string; profileImageUrl: string }[]>;
+  notifications$: Observable<
+    { message: string; profileImageUrl: string; timestamp: Date }[]
+  >;
 
   constructor(private notificationsService: NotificationsService) {}
 
@@ -16,5 +18,9 @@ export class NotificationsComponent implements OnInit {
     const userId = localStorage.getItem('accessToken');
     this.notifications$ =
       this.notificationsService.getUserNotifications(userId);
+  }
+
+  formatTimestamp(date: Date): string {
+    return date.toLocaleString();
   }
 }

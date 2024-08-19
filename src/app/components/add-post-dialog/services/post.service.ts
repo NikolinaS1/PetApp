@@ -10,7 +10,7 @@ import {
 } from 'firebase/storage';
 import { combineLatest, from, Observable, of, switchMap } from 'rxjs';
 import { map, toArray } from 'rxjs/operators';
-import { IPost } from '../../post/models/post.model';
+import { ILike, IPost } from '../../post/models/post.model';
 import { UserProfile } from '../../../pages/profile/models/userProfile.model';
 import { IComment } from '../../comments-dialog/models/comments.model';
 import { v4 as uuidv4 } from 'uuid';
@@ -107,11 +107,11 @@ export class PostService {
                 .collection('posts')
                 .doc(userId)
                 .collection('posts', (ref) => ref.orderBy('createdAt', 'desc'))
-                .valueChanges({ idField: 'id' })
+                .valueChanges({ idField: 'postId' })
                 .pipe(
                   map((posts: any[]) =>
                     posts.map((p) => ({
-                      id: p.id,
+                      id: p.postId,
                       text: p.text,
                       imageUrl: p.imageUrl,
                       createdAt: p.createdAt
@@ -126,6 +126,7 @@ export class PostService {
                       likes: p.likes || [],
                       commentCount: p.commentCount || 0,
                       petNames: p.petNames || [],
+                      postId: p.postId,
                     }))
                   )
                 )
@@ -222,18 +223,17 @@ export class PostService {
         throw new Error('No user is logged in.');
       }
 
-      const batch = this.firestore.firestore.batch();
       const postRef = this.firestore
         .collection('posts')
         .doc(userId)
         .collection('posts')
         .doc(postId).ref;
 
-      batch.update(postRef, {
-        likes: arrayUnion(currentUserId),
-      });
+      const timestamp = new Date();
 
-      await batch.commit();
+      await postRef.update({
+        likes: arrayUnion({ userId: currentUserId, timestamp: timestamp }),
+      });
     } catch (error) {
       console.error('Error liking post:', error);
       throw new Error('Unable to like post. Please try again later.');
@@ -247,18 +247,49 @@ export class PostService {
         throw new Error('No user is logged in.');
       }
 
-      const batch = this.firestore.firestore.batch();
       const postRef = this.firestore
         .collection('posts')
         .doc(userId)
         .collection('posts')
         .doc(postId).ref;
 
-      batch.update(postRef, {
-        likes: arrayRemove(currentUserId),
+      const likeToRemove: ILike = {
+        userId: currentUserId,
+        timestamp: new Date(),
+      };
+
+      console.log('Attempting to remove like:', likeToRemove);
+
+      await this.firestore.firestore.runTransaction(async (transaction) => {
+        const postDoc = await transaction.get(postRef);
+        if (!postDoc.exists) {
+          throw new Error('Post does not exist!');
+        }
+
+        const postData = postDoc.data() as IPost;
+        const likes = postData.likes || [];
+
+        console.log('Current likes:', likes);
+
+        const likeIndex = likes.findIndex(
+          (like) => like.userId === currentUserId
+        );
+
+        if (likeIndex === -1) {
+          console.log('Like not found for removal.');
+          return;
+        }
+
+        const likeToRemoveArray = [likes[likeIndex]];
+
+        console.log('Removing likes:', likeToRemoveArray);
+
+        transaction.update(postRef, {
+          likes: arrayRemove(...likeToRemoveArray),
+        });
       });
 
-      await batch.commit();
+      console.log('Like removed successfully.');
     } catch (error) {
       console.error('Error unliking post:', error);
       throw new Error('Unable to unlike post. Please try again later.');
@@ -283,7 +314,7 @@ export class PostService {
         return [];
       }
 
-      const likesIds = postData.likes;
+      const likesIds = postData.likes.map((like) => like.userId);
 
       const userDocs = await Promise.all(
         likesIds.map((id) =>

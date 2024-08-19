@@ -86,7 +86,12 @@
         </ul>
       </div>
       <div class="nav__logout">
-        <a routerLink="/logout" class="nav__link" matTooltip="Logout">
+        <a
+          routerLink="/logout"
+          class="nav__link"
+          matTooltip="Logout"
+          (click)="authenticationService.logout()"
+        >
           <mat-icon color="accent">logout</mat-icon>
         </a>
       </div>

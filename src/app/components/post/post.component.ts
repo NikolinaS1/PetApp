@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { IPost } from './models/post.model';
+import { ILike, IPost } from './models/post.model';
 import { PostService } from '../add-post-dialog/services/post.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
@@ -80,61 +80,34 @@ export class PostComponent implements OnInit {
     }
   }
 
-  deletePost(post: IPost): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '320px',
-      height: 'auto',
-      data: {
-        message: `Are you sure you want to delete this post?`,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        const userId = this.uid || this.currentUserId;
-        if (userId) {
-          this.postService
-            .deletePost(userId, post.id)
-            .then(() => {
-              this.snackBar.open('Post deleted successfully.', 'OK', {
-                duration: 5000,
-              });
-              this.loadPosts();
-            })
-            .catch((error) => {
-              console.error('Error deleting post:', error);
-            });
-        }
-      }
-    });
-  }
-
   toggleLike(post: IPost): void {
     if (this.currentUserId) {
-      const isLiked = post.likes.includes(this.currentUserId);
+      const isLiked = post.likes.some(
+        (like) => like.userId === this.currentUserId
+      );
       const delta = isLiked ? -1 : 1;
 
-      this.updatePostLikes(post.id, delta);
+      this.updatePostLikes(post.postId, delta);
 
       if (isLiked) {
         this.postService
-          .unlikePost(post.userId, post.id)
+          .unlikePost(post.userId, post.postId)
           .then(() => {
             console.log('Post unliked successfully.');
           })
           .catch((error) => {
             console.error('Error unliking post:', error);
-            this.updatePostLikes(post.id, -delta);
+            this.updatePostLikes(post.postId, -delta);
           });
       } else {
         this.postService
-          .likePost(post.userId, post.id)
+          .likePost(post.userId, post.postId)
           .then(() => {
             console.log('Post liked successfully.');
           })
           .catch((error) => {
             console.error('Error liking post:', error);
-            this.updatePostLikes(post.id, -delta);
+            this.updatePostLikes(post.postId, -delta);
           });
       }
     }
@@ -142,20 +115,38 @@ export class PostComponent implements OnInit {
 
   updatePostLikes(postId: string, delta: number): void {
     this.posts = this.posts.map((post) => {
-      if (post.id === postId) {
+      if (post.postId === postId) {
         const updatedLikes = [...post.likes];
         if (delta > 0) {
-          updatedLikes.push(this.currentUserId!);
+          updatedLikes.push({
+            userId: this.currentUserId!,
+            timestamp: new Date(),
+          });
         } else {
-          const index = updatedLikes.indexOf(this.currentUserId!);
+          const index = updatedLikes.findIndex(
+            (like) => like.userId === this.currentUserId!
+          );
           if (index > -1) {
             updatedLikes.splice(index, 1);
           }
         }
+
         return { ...post, likes: updatedLikes };
       }
       return post;
     });
+  }
+
+  isPostLiked(post: IPost): boolean {
+    return post.likes.some((like) => like.userId === this.currentUserId);
+  }
+
+  getIcon(post: IPost): string {
+    return this.isPostLiked(post) ? 'favorite' : 'favorite_border';
+  }
+
+  getIconClass(post: IPost): string {
+    return this.isPostLiked(post) ? 'liked' : 'not-liked';
   }
 
   goToUserProfile(userId: string): void {

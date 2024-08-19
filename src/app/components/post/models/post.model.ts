@@ -1,16 +1,23 @@
 import { IComment } from '../../comments-dialog/models/comments.model';
 
+// Define a new type for Like
+export interface ILike {
+  userId: string;
+  timestamp: Date;
+}
+
+// Update IPost model to use ILike
 export interface IPost {
-  id: string;
-  text?: string;
+  postId: string;
+  userId: string;
+  text: string;
   imageUrl?: string;
-  createdAt?: Date;
-  userId?: string;
-  firstName?: string;
-  lastName?: string;
-  profileImageUrl?: string;
-  likes?: string[];
-  comments?: IComment[];
-  commentCount?: number;
+  createdAt: Date;
+  firstName: string;
+  lastName: string;
+  profileImageUrl: string;
+  likes: ILike[]; // Updated type
   petNames: string[];
+  commentCount?: number;
+  comments?: IComment[];
 }

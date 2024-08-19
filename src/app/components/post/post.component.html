@@ -56,22 +56,20 @@
     </div>
     <div class="actions">
       <div class="action_like">
-        <mat-icon
-          matBadge="{{ post.likes.length }}"
-          matBadgeColor="primary"
-          [color]="post.likes.includes(currentUserId) ? 'accent' : 'primary'"
-          (click)="toggleLike(post)"
-        >
-          {{
-            post.likes && post.likes.includes(currentUserId)
-              ? "favorite"
-              : "favorite_border"
-          }}
+        <div class="like-container">
+          <mat-icon
+            matBadge="{{ post.likes.length }}"
+            matBadgeColor="primary"
+            [ngClass]="getIconClass(post)"
+            (click)="toggleLike(post)"
+          >
+            {{ getIcon(post) }}
+          </mat-icon>
           <span
             class="badge-click-area"
             (click)="openLikesDialog($event, post.id, post.userId)"
           ></span>
-        </mat-icon>
+        </div>
       </div>
       <div class="action_comment">
         <mat-icon

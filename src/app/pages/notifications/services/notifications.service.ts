@@ -3,6 +3,7 @@ import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { IPost } from '../../../components/post/models/post.model';
 import { UserProfile } from '../../../pages/profile/models/userProfile.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import firebase from 'firebase/compat/app';
 
 @Injectable({
   providedIn: 'root',
@@ -53,7 +54,7 @@ export class NotificationsService {
                       message: `${comment.firstName} ${comment.lastName} commented on your post.`,
                       profileImageUrl:
                         user?.profileImageUrl || this.defaultProfileImageUrl,
-                      timestamp: new Date(), // Generate a new timestamp
+                      timestamp: this.convertTimestampToDate(comment.createdAt),
                     }))
                   )
               )
@@ -61,18 +62,18 @@ export class NotificationsService {
 
           const likeNotifications = posts.flatMap((post) =>
             (post.likes || [])
-              .filter((likeUserId) => likeUserId !== userId)
-              .map((likeUserId) =>
+              .filter((like) => like.userId !== userId)
+              .map((like) =>
                 this.firestore
                   .collection('users')
-                  .doc(likeUserId)
+                  .doc(like.userId)
                   .valueChanges()
                   .pipe(
                     map((user: UserProfile) => ({
                       message: `${user.firstName} ${user.lastName} liked your post.`,
                       profileImageUrl:
                         user?.profileImageUrl || this.defaultProfileImageUrl,
-                      timestamp: new Date(), // Generate a new timestamp
+                      timestamp: this.convertTimestampToDate(like.timestamp),
                     }))
                   )
               )
@@ -105,7 +106,7 @@ export class NotificationsService {
                   message: `${follower.firstName} ${follower.lastName} followed you.`,
                   profileImageUrl:
                     follower?.profileImageUrl || this.defaultProfileImageUrl,
-                  timestamp: new Date(), // Generate a new timestamp
+                  timestamp: new Date(),
                 }))
               )
           );
@@ -122,5 +123,17 @@ export class NotificationsService {
     { message: string; profileImageUrl: string; timestamp: Date }[]
   > {
     return this.getNotificationsForUser(userId);
+  }
+
+  private convertTimestampToDate(
+    timestamp: firebase.firestore.Timestamp | Date | undefined
+  ): Date {
+    if (timestamp instanceof firebase.firestore.Timestamp) {
+      return timestamp.toDate();
+    }
+    if (timestamp instanceof Date) {
+      return timestamp;
+    }
+    return new Date();
   }
 }
