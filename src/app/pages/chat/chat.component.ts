@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable, startWith, switchMap, map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map, startWith, switchMap } from 'rxjs/operators';
 import { UserProfile } from '../profile/models/userProfile.model';
 import { ChatMessage } from './models/chat.model';
 import { UserService } from '../profile/services/user.service';
@@ -12,13 +13,12 @@ import { ChatService } from './services/chat.service';
   styleUrls: ['./chat.component.scss'],
 })
 export class ChatComponent implements OnInit {
-  searchControl = new FormControl();
+  searchControl = new FormControl('');
   filteredUsers!: Observable<UserProfile[]>;
   latestMessages!: Observable<
     { user: UserProfile; latestMessage: ChatMessage }[]
   >;
   selectedUser: UserProfile | null = null;
-  currentUserId: string | null = null;
 
   constructor(
     private userService: UserService,
@@ -26,16 +26,15 @@ export class ChatComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.currentUserId = localStorage.getItem('accessToken');
+    this.filteredUsers = this.searchControl.valueChanges.pipe(
+      startWith(''),
+      switchMap((value) => this.userService.searchMutualUsers(value))
+    );
 
-    if (this.currentUserId) {
-      this.filteredUsers = this.searchControl.valueChanges.pipe(
-        startWith(''),
-        switchMap((value) => this.userService.searchMutualUsers(value))
-      );
-
+    const currentUserId = localStorage.getItem('accessToken');
+    if (currentUserId) {
       this.latestMessages = this.chatService
-        .getLatestMessages(this.currentUserId)
+        .getLatestMessages(currentUserId)
         .pipe(
           map((messages) =>
             messages.sort(

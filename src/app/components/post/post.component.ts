@@ -154,4 +154,34 @@ export class PostComponent implements OnInit {
       this.router.navigate(['/profile', userId]);
     }
   }
+
+  deletePost(post: IPost): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '300px',
+      data: { message: 'Are you sure you want to delete this post?' },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.postService
+          .deletePost(post.userId, post.postId)
+          .then(() => {
+            this.snackBar.open('Post deleted successfully', 'Close', {
+              duration: 3000,
+            });
+            this.loadPosts();
+          })
+          .catch((error) => {
+            console.error('Error deleting post:', error);
+            this.snackBar.open(
+              'Error deleting post. Please try again.',
+              'Close',
+              {
+                duration: 3000,
+              }
+            );
+          });
+      }
+    });
+  }
 }

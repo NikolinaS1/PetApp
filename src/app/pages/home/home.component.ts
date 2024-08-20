@@ -30,6 +30,8 @@ export class HomeComponent implements OnInit {
         },
       });
       this.loadUserProfile(this.currentUserId);
+    } else {
+      console.error('No currentUserId found in localStorage.');
     }
   }
 

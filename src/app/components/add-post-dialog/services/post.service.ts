@@ -177,43 +177,57 @@ export class PostService {
   }
 
   getPostsByFollowing(currentUserId: string): Observable<IPost[]> {
-    return this.getPosts(currentUserId).pipe(
-      switchMap((currentUserPosts) =>
-        this.firestore
-          .collection('users')
-          .doc(currentUserId)
-          .valueChanges()
-          .pipe(
-            switchMap((user: any) => {
-              const followingIds: string[] = user.following || [];
-              const postObservables: Observable<IPost[]>[] = followingIds.map(
-                (userId: string) =>
-                  this.getPosts(userId).pipe(
-                    map((posts) =>
-                      posts.map((p) => ({
-                        ...p,
-                        createdAt:
-                          p.createdAt instanceof Timestamp
-                            ? p.createdAt.toDate()
-                            : p.createdAt,
-                      }))
-                    )
-                  )
-              );
-              return combineLatest(postObservables).pipe(
-                map((postsArrays: IPost[][]) =>
-                  postsArrays.flat().concat(currentUserPosts)
-                ),
-                map((posts: IPost[]) =>
-                  posts.sort(
-                    (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    return this.firestore
+      .collection('users')
+      .doc(currentUserId)
+      .valueChanges()
+      .pipe(
+        switchMap((user: any) => {
+          const followingIds: string[] =
+            user.following?.map((f: any) => f.userId) || [];
+          followingIds.push(currentUserId);
+
+          if (followingIds.length === 0) {
+            return of([]);
+          }
+
+          const postObservables: Observable<IPost[]>[] = followingIds.map(
+            (userId) =>
+              this.firestore
+                .collection('posts')
+                .doc(userId)
+                .collection('posts', (ref) => ref.orderBy('createdAt', 'desc'))
+                .valueChanges({ idField: 'postId' })
+                .pipe(
+                  map((posts: any[]) =>
+                    posts.map((p) => ({
+                      postId: p.postId,
+                      id: p.postId,
+                      text: p.text,
+                      imageUrl: p.imageUrl,
+                      createdAt: p.createdAt ? p.createdAt.toDate() : null,
+                      userId: userId,
+                      firstName: p.firstName,
+                      lastName: p.lastName,
+                      profileImageUrl: p.profileImageUrl,
+                      likes: p.likes || [],
+                      petNames: p.petNames || [],
+                      commentCount: p.commentCount || 0,
+                    }))
                   )
                 )
-              );
-            })
-          )
-      )
-    );
+          );
+
+          return combineLatest(postObservables).pipe(
+            map((postsArrays: IPost[][]) => postsArrays.flat()),
+            map((posts: IPost[]) =>
+              posts.sort(
+                (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+              )
+            )
+          );
+        })
+      );
   }
 
   async likePost(userId: string, postId: string): Promise<void> {

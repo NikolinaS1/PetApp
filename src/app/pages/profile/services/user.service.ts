@@ -313,64 +313,71 @@ export class UserService {
     }
   }
 
-  async searchMutualUsers(query: string): Promise<UserProfile[]> {
-    try {
+  searchMutualUsers(query: string): Observable<UserProfile[]> {
+    return new Observable((observer) => {
       const currentUserId = localStorage.getItem('accessToken');
-
       if (!currentUserId) {
-        throw new Error('No current user ID found');
+        observer.next([]);
+        observer.complete();
+        return;
       }
 
-      const currentUserDoc = await this.firestore
+      this.firestore
         .collection('users')
         .doc(currentUserId)
         .get()
-        .toPromise();
+        .toPromise()
+        .then((currentUserDoc) => {
+          const currentUserData = currentUserDoc.data() as {
+            following?: Array<{ userId: string }>;
+            followers?: Array<{ userId: string }>;
+          };
 
-      const currentUserData = currentUserDoc.data() as {
-        following: Array<{ userId: string; followedAt: Date }>;
-        followers: Array<{ userId: string; followedAt: Date }>;
-      };
+          if (!currentUserData) {
+            observer.next([]);
+            observer.complete();
+            return;
+          }
 
-      if (
-        !currentUserData ||
-        !currentUserData.following ||
-        !currentUserData.followers
-      ) {
-        return [];
-      }
+          const followingIds = new Set(
+            currentUserData.following?.map((follow) => follow.userId) || []
+          );
+          const followerIds = new Set(
+            currentUserData.followers?.map((follower) => follower.userId) || []
+          );
+          const mutualIds = [...followingIds].filter((id) =>
+            followerIds.has(id)
+          );
 
-      const followingIds = new Set(
-        currentUserData.following.map((follow) => follow.userId)
-      );
-      const followerIds = new Set(
-        currentUserData.followers.map((follower) => follower.userId)
-      );
-
-      const mutualIds = [...followingIds].filter((id) => followerIds.has(id));
-
-      const userDocs = await Promise.all(
-        mutualIds.map((id) =>
-          this.firestore.collection('users').doc(id).get().toPromise()
-        )
-      );
-
-      const users = userDocs
-        .map((doc) => {
-          const data = doc.data() as UserProfile;
-          return { id: doc.id, ...data };
+          Promise.all(
+            mutualIds.map((id) =>
+              this.firestore.collection('users').doc(id).get().toPromise()
+            )
+          )
+            .then((userDocs) => {
+              const users = userDocs
+                .map((doc) => {
+                  const data = doc.data() as UserProfile;
+                  return { id: doc.id, ...data };
+                })
+                .filter((user) => {
+                  const userName =
+                    (user.firstName || '') + ' ' + (user.lastName || '');
+                  return userName.toLowerCase().includes(query.toLowerCase());
+                });
+              observer.next(users);
+              observer.complete();
+            })
+            .catch((error) => {
+              console.error('Error searching mutual users:', error);
+              observer.error(error);
+            });
         })
-        .filter((user) => {
-          const userName = (user.firstName || '') + ' ' + (user.lastName || '');
-          return userName.toLowerCase().includes(query.toLowerCase());
+        .catch((error) => {
+          console.error('Error retrieving current user data:', error);
+          observer.error(error);
         });
-
-      console.log('Filtered users:', users);
-      return users;
-    } catch (error) {
-      console.error('Error searching mutual users:', error);
-      throw error;
-    }
+    });
   }
 
   getUserProfiles(userIds: string[]): Observable<UserProfile[]> {
@@ -384,6 +391,11 @@ export class UserService {
             map((data) => ({ id, ...(data as UserProfile) } as UserProfile))
           )
       )
+    ).pipe(
+      map((profiles) => {
+        console.log('User profiles:', profiles);
+        return profiles;
+      })
     );
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { combineLatest, map, Observable, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { ChatMessage } from '../models/chat.model';
 import { Timestamp } from 'firebase/firestore';
 import { UserProfile } from '../../profile/models/userProfile.model';
@@ -59,6 +59,11 @@ export class ChatService {
       .valueChanges()
       .pipe(
         switchMap((user: any) => {
+          if (!user || !user.following || !user.followers) {
+            console.log('No following or followers data');
+            return of([]);
+          }
+
           const chatPaths = [
             ...user.following.map(
               (id: string) => `chat/${userId}_${id}/messages`
@@ -88,12 +93,12 @@ export class ChatService {
         switchMap((latestMessages) => {
           const userIds = new Set<string>(
             latestMessages
-              .filter((message) => message !== null)
-              .map((message) => {
-                const messageData = message as ChatMessage;
-                return messageData.senderId === userId
-                  ? messageData.receiverId
-                  : messageData.senderId;
+              .filter((msg) => msg !== null)
+              .map((msg) => {
+                const message = msg as ChatMessage;
+                return message.senderId === userId
+                  ? message.receiverId
+                  : message.senderId;
               })
           );
 
