@@ -43,7 +43,6 @@ export class ChatService {
 
   getMessages(senderId: string, receiverId: string): Observable<ChatMessage[]> {
     const chatPath = `chat/${senderId}_${receiverId}/messages`;
-    const chatPathReverse = `chat/${receiverId}_${senderId}/messages`;
 
     return this.firestore
       .collection<ChatMessage>(chatPath, (ref) => ref.orderBy('timestamp'))
@@ -54,23 +53,17 @@ export class ChatService {
     userId: string
   ): Observable<{ user: UserProfile; latestMessage: ChatMessage }[]> {
     return this.firestore
-      .collection('users')
-      .doc(userId)
+      .doc<UserProfile>(`users/${userId}`)
       .valueChanges()
       .pipe(
-        switchMap((user: any) => {
+        switchMap((user) => {
           if (!user || !user.following || !user.followers) {
-            console.log('No following or followers data');
             return of([]);
           }
 
           const chatPaths = [
-            ...user.following.map(
-              (id: string) => `chat/${userId}_${id}/messages`
-            ),
-            ...user.followers.map(
-              (id: string) => `chat/${id}_${userId}/messages`
-            ),
+            ...user.following.map((f) => `chat/${userId}_${f.userId}/messages`),
+            ...user.followers.map((f) => `chat/${f.userId}_${userId}/messages`),
           ];
 
           return combineLatest(
@@ -91,28 +84,27 @@ export class ChatService {
           );
         }),
         switchMap((latestMessages) => {
-          const userIds = new Set<string>(
-            latestMessages
-              .filter((msg) => msg !== null)
-              .map((msg) => {
-                const message = msg as ChatMessage;
-                return message.senderId === userId
-                  ? message.receiverId
-                  : message.senderId;
-              })
+          const userIds = Array.from(
+            new Set(
+              latestMessages
+                .filter((msg) => msg !== null)
+                .map((msg) =>
+                  msg!.senderId === userId ? msg!.receiverId : msg!.senderId
+                )
+            )
           );
 
-          return this.userService.getUserProfiles(Array.from(userIds)).pipe(
+          return this.userService.getUserProfiles(userIds).pipe(
             map((userProfiles) => {
               return userProfiles.map((userProfile) => {
                 const latestMessage = latestMessages.find(
                   (msg) =>
                     msg &&
-                    ((msg as ChatMessage).senderId === userProfile.id ||
-                      (msg as ChatMessage).receiverId === userProfile.id)
-                ) as ChatMessage;
+                    (msg.senderId === userProfile.id ||
+                      msg.receiverId === userProfile.id)
+                );
 
-                return { user: userProfile, latestMessage };
+                return { user: userProfile, latestMessage: latestMessage! };
               });
             })
           );

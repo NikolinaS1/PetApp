@@ -51,4 +51,8 @@ export class ChatComponent implements OnInit {
     this.selectedUser = user;
     this.searchControl.setValue('');
   }
+
+  goBack() {
+    this.selectedUser = null;
+  }
 }

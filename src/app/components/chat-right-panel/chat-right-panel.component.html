@@ -1,26 +1,4 @@
 <div class="content">
-  <div class="name-bar">
-    <div class="user-info" *ngIf="selectedUser">
-      <img
-        *ngIf="selectedUser.profileImageUrl; else noImage"
-        class="user"
-        [src]="selectedUser.profileImageUrl"
-        alt="User Image"
-      />
-      <ng-template #noImage>
-        <img
-          src="../../../assets/profile-icon.png"
-          class="user"
-          alt="Default Profile Image"
-        />
-      </ng-template>
-      <div class="text-content">
-        <span class="name">
-          {{ selectedUser.firstName }} {{ selectedUser.lastName }}
-        </span>
-      </div>
-    </div>
-  </div>
   <div class="main-content">
     <div *ngIf="messages$ | async as messages">
       <div *ngFor="let message of messages" class="message">

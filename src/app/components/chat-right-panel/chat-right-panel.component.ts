@@ -66,4 +66,8 @@ export class ChatRightPanelComponent implements OnChanges {
       }
     }
   }
+
+  goBack() {
+    this.selectedUser = null;
+  }
 }

@@ -43,7 +43,7 @@
     <div class="users">
       <div *ngIf="latestMessages | async as latestMessages">
         <div *ngFor="let chat of latestMessages" class="chat-item">
-          <div class="user-info">
+          <div class="user-info" (click)="onUserSelected(chat.user)">
             <img
               *ngIf="chat.user.profileImageUrl; else noImage"
               class="profile-image"
@@ -59,22 +59,29 @@
             </ng-template>
             <div class="text-content">
               <div class="name-and-timestamp">
-                <span class="name" (click)="onUserSelected(chat.user)">
+                <span class="name">
                   {{ chat.user.firstName }} {{ chat.user.lastName }}
                 </span>
                 <span class="timestamp">
                   {{ chat.latestMessage?.timestamp | date : "short" }}
                 </span>
               </div>
-              <p class="latest-message">{{ chat.latestMessage?.message }}</p>
+              <p class="latest-message">
+                {{ chat.latestMessage?.message }}
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="right-panel" *ngIf="selectedUser">
+  <div class="right-panel" [class.active]="selectedUser">
+    <div class="right-panel-header">
+      <mat-icon (click)="goBack()">arrow_back</mat-icon>
+      <span class="user-name" *ngIf="selectedUser">
+        {{ selectedUser.firstName }} {{ selectedUser.lastName }}
+      </span>
+    </div>
     <app-chat-right-panel [selectedUser]="selectedUser"></app-chat-right-panel>
   </div>
 </div>
-<app-footer></app-footer>
