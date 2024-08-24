@@ -7,6 +7,8 @@ import { UserService } from '../../pages/profile/services/user.service';
 import { FormControl } from '@angular/forms';
 import { Observable, startWith, switchMap } from 'rxjs';
 import { UserProfile } from '../../pages/profile/models/userProfile.model';
+import { MatDialog } from '@angular/material/dialog';
+import { RateAppDialogComponent } from '../rate-app-dialog/rate-app-dialog.component';
 
 @Component({
   selector: 'app-navbar',
@@ -17,15 +19,23 @@ export class NavbarComponent implements OnInit {
   searchControl = new FormControl();
   filteredUsers!: Observable<UserProfile[]>;
   uid = localStorage.getItem('accessToken');
+  profileImageUrl: string | null = null;
 
   constructor(
     public authenticationService: AuthenticationService,
     private userService: UserService,
+    private dialog: MatDialog,
     private router: Router,
     private observer: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
+    if (this.uid) {
+      this.userService.getCurrentUserProfileImage().subscribe((url) => {
+        this.profileImageUrl = url;
+      });
+    }
+
     this.filteredUsers = this.searchControl.valueChanges.pipe(
       startWith(''),
       switchMap((value) => this.userService.searchUsers(value))
@@ -80,5 +90,13 @@ export class NavbarComponent implements OnInit {
     if (this.uid) {
       this.router.navigate(['/profile', this.uid]);
     }
+  }
+
+  openRateAppDialog(): void {
+    this.dialog.open(RateAppDialogComponent, {
+      width: '440px',
+      height: '300px',
+      data: {},
+    });
   }
 }

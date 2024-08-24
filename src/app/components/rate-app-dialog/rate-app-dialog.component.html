@@ -1,0 +1,46 @@
+<div *ngIf="!loading">
+  <ng-container *ngIf="!hasRated; else ratedContent">
+    <div class="content">
+      <h1 class="title">Rate this app</h1>
+      <p class="text">
+        If you enjoy using this app, would you mind taking a moment to rate it?
+        Thank you for your support!
+      </p>
+      <div class="star-rating">
+        <mat-icon
+          *ngFor="let i of [1, 2, 3, 4, 5]; let index = index"
+          [ngClass]="{ filled: index < rating }"
+          (click)="rate(index + 1)"
+        >
+          {{ index < rating ? "star" : "star_border" }}
+        </mat-icon>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        class="rate"
+        [disabled]="rating === 0"
+        (click)="submitRating()"
+      >
+        Submit
+      </button>
+    </div>
+  </ng-container>
+
+  <ng-template #ratedContent>
+    <div class="content">
+      <h1 class="title">Thank you for your rating!</h1>
+      <p class="text">
+        You've already rated this app. We appreciate your feedback and support!
+      </p>
+      <div class="star-rating">
+        <mat-icon
+          *ngFor="let i of [1, 2, 3, 4, 5]; let index = index"
+          [ngClass]="{ filled: index < rating }"
+        >
+          {{ index < rating ? "star" : "star_border" }}
+        </mat-icon>
+      </div>
+    </div>
+  </ng-template>
+</div>

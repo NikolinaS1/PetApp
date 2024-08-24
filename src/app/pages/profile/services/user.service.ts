@@ -398,4 +398,28 @@ export class UserService {
       })
     );
   }
+
+  getCurrentUserProfileImage(): Observable<string | null> {
+    return this.auth.authState.pipe(
+      switchMap((user) => {
+        if (user) {
+          const userProfileRef = this.firestore
+            .collection('users')
+            .doc(user.uid);
+          return userProfileRef.get().pipe(
+            map((doc) => {
+              const data = doc.data() as UserProfile;
+              return data?.profileImageUrl || null;
+            })
+          );
+        } else {
+          return of(null);
+        }
+      }),
+      catchError((error) => {
+        console.error('Error fetching profile image:', error);
+        return of(null);
+      })
+    );
+  }
 }

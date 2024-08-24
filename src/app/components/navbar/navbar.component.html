@@ -32,9 +32,9 @@
                 />
               </ng-template>
               <div class="text-content">
-                <span class="name"
-                  >{{ user.firstName }} {{ user.lastName }}</span
-                >
+                <span class="name">
+                  {{ user.firstName }} {{ user.lastName }}
+                </span>
               </div>
             </div>
           </mat-option>
@@ -84,14 +84,31 @@
         </ul>
       </div>
       <div class="nav__logout">
-        <a
-          routerLink="/logout"
-          class="nav__link"
-          matTooltip="Logout"
-          (click)="authenticationService.logout()"
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="profileMenu"
+          aria-label="Profile Menu"
         >
-          <mat-icon color="accent">logout</mat-icon>
-        </a>
+          <img
+            *ngIf="profileImageUrl; else defaultIcon"
+            [src]="profileImageUrl"
+            alt="Profile Image"
+            class="profile-img"
+          />
+          <ng-template #defaultIcon>
+            <img
+              src="../../../assets/profile-icon.png"
+              class="profile-img"
+              alt="Default Profile Image"
+            />
+          </ng-template>
+        </button>
+        <mat-menu #profileMenu="matMenu">
+          <button mat-menu-item (click)="openRateAppDialog()">Rate app</button>
+          <button mat-menu-item (click)="authenticationService.logout()">
+            Logout
+          </button>
+        </mat-menu>
       </div>
     </div>
     <img src="assets/img/perfil.png" alt="" class="nav__img" />

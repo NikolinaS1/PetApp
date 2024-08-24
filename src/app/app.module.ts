@@ -13,6 +13,7 @@ import { BlankComponent } from './mocks/blank/blank.component';
 import { HttpClientModule } from '@angular/common/http';
 import { AddPetDialogModule } from './components/add-pet-dialog/add-pet-dialog.module';
 import { AddPostDialogModule } from './components/add-post-dialog/add-post-dialog.module';
+import { RateAppDialogModule } from './components/rate-app-dialog/rate-app-dialog.module';
 
 @NgModule({
   declarations: [AppComponent, BlankComponent],
@@ -26,6 +27,7 @@ import { AddPostDialogModule } from './components/add-post-dialog/add-post-dialo
     provideAuth(() => getAuth()),
     AddPetDialogModule,
     AddPostDialogModule,
+    RateAppDialogModule,
   ],
   providers: [provideAnimationsAsync()],
   bootstrap: [AppComponent],
