@@ -15,15 +15,20 @@
           {{ index < rating ? "star" : "star_border" }}
         </mat-icon>
       </div>
-      <button
-        mat-raised-button
-        color="primary"
-        class="rate"
-        [disabled]="rating === 0"
-        (click)="submitRating()"
-      >
-        Submit
-      </button>
+      <div class="submit-button">
+        <button
+          mat-raised-button
+          color="primary"
+          class="rate"
+          [disabled]="rating === 0 || isSaving"
+          (click)="submitRating()"
+        >
+          Submit
+        </button>
+        <button mat-button *ngIf="isSaving" class="button-loader">
+          <mat-spinner color="primary" diameter="20"></mat-spinner>
+        </button>
+      </div>
     </div>
   </ng-container>
 

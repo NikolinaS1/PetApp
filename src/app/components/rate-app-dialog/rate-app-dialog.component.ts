@@ -13,6 +13,7 @@ export class RateAppDialogComponent implements OnInit {
   userId = localStorage.getItem('accessToken');
   hasRated = false;
   loading = true;
+  isSaving = false;
 
   constructor(
     private dialogRef: MatDialogRef<RateAppDialogComponent>,
@@ -51,14 +52,17 @@ export class RateAppDialogComponent implements OnInit {
   }
 
   async submitRating() {
+    this.isSaving = true;
     if (this.userId && !this.hasRated) {
       try {
         await this.ratingService.saveRating(this.userId, this.rating);
         this.snackBar.open('Thank you for your rating!', 'Close', {
           duration: 2000,
         });
+        this.isSaving = false;
         this.dialogRef.close();
       } catch (error) {
+        this.isSaving = false;
         this.snackBar.open(
           'Failed to submit rating. Please try again.',
           'Close',
@@ -67,14 +71,6 @@ export class RateAppDialogComponent implements OnInit {
           }
         );
       }
-    } else if (this.hasRated) {
-      this.snackBar.open('You have already rated this app.', 'Close', {
-        duration: 2000,
-      });
-    } else {
-      this.snackBar.open('User is not authenticated.', 'Close', {
-        duration: 2000,
-      });
     }
   }
 }

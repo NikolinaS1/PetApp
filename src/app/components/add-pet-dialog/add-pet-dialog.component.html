@@ -78,7 +78,8 @@
         !petName ||
         (!petYear && !petMonth) ||
         !petDescription ||
-        (!isEditing && !selectedImage)
+        (!isEditing && !selectedImage) ||
+        isSaving
       "
     >
       {{ isEditing ? "Update pet" : "Add pet" }}

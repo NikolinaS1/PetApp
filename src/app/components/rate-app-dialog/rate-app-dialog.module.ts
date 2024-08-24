@@ -22,6 +22,7 @@ import { FormsModule } from '@angular/forms';
     MatProgressSpinnerModule,
     FormsModule,
     MatSnackBarModule,
+    MatProgressSpinnerModule,
   ],
   exports: [RateAppDialogComponent],
 })
