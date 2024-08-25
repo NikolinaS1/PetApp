@@ -141,13 +141,25 @@ export class ChatService {
     try {
       const chatPath = `chat/${senderId}_${receiverId}/messages`;
 
+      const reverseChatPath = `chat/${receiverId}_${senderId}/messages`;
+
+      const batch = this.firestore.firestore.batch();
+
       const messagesSnapshot = await this.firestore
         .collection(chatPath, (ref) => ref.where('isRead', '==', false))
         .get()
         .toPromise();
 
-      const batch = this.firestore.firestore.batch();
       messagesSnapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { isRead: true });
+      });
+
+      const reverseMessagesSnapshot = await this.firestore
+        .collection(reverseChatPath, (ref) => ref.where('isRead', '==', false))
+        .get()
+        .toPromise();
+
+      reverseMessagesSnapshot.docs.forEach((doc) => {
         batch.update(doc.ref, { isRead: true });
       });
 
@@ -208,5 +220,41 @@ export class ChatService {
           return of(0);
         })
       );
+  }
+
+  async markMessagesAsReadForUser(
+    senderId: string,
+    receiverId: string
+  ): Promise<void> {
+    try {
+      const chatPath = `chat/${senderId}_${receiverId}/messages`;
+
+      const reverseChatPath = `chat/${receiverId}_${senderId}/messages`;
+
+      const batch = this.firestore.firestore.batch();
+
+      const messagesSnapshot = await this.firestore
+        .collection(chatPath, (ref) => ref.where('isRead', '==', false))
+        .get()
+        .toPromise();
+
+      messagesSnapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { isRead: true });
+      });
+
+      const reverseMessagesSnapshot = await this.firestore
+        .collection(reverseChatPath, (ref) => ref.where('isRead', '==', false))
+        .get()
+        .toPromise();
+
+      reverseMessagesSnapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { isRead: true });
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+      throw error;
+    }
   }
 }

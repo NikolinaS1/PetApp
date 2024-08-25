@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 import { UserProfile } from '../profile/models/userProfile.model';
 import { ChatMessage } from './models/chat.model';
@@ -19,6 +19,7 @@ export class ChatComponent implements OnInit {
     { user: UserProfile; latestMessage: ChatMessage }[]
   >;
   selectedUser: UserProfile | null = null;
+  unreadMessagesCount$: Observable<number> = of(0);
 
   constructor(
     private userService: UserService,
@@ -44,12 +45,20 @@ export class ChatComponent implements OnInit {
             )
           )
         );
+
+      this.unreadMessagesCount$ =
+        this.chatService.countUnreadMessages(currentUserId);
     }
   }
 
-  onUserSelected(user: UserProfile): void {
+  async onUserSelected(user: UserProfile): Promise<void> {
     this.selectedUser = user;
     this.searchControl.setValue('');
+
+    const currentUserId = localStorage.getItem('accessToken');
+    if (currentUserId) {
+      await this.chatService.markMessagesAsReadForUser(user.id, currentUserId);
+    }
   }
 
   goBack() {
