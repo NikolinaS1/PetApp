@@ -1,0 +1,30 @@
+<app-navbar></app-navbar>
+
+<h1 class="title">Statistics</h1>
+<div class="statistics-container">
+  <div class="rating-details">
+    <p *ngFor="let count of ratingCounts; let i = index">
+      <span class="stars">
+        <ng-container *ngFor="let star of [].constructor(i + 1)">
+          <mat-icon>star</mat-icon>
+        </ng-container>
+      </span>
+      : <span class="rate">{{ count }}</span> ratings
+    </p>
+  </div>
+
+  <canvas id="ratingChart"></canvas>
+
+  <div class="additional-details">
+    <p>
+      Total Ratings: <span class="additional">{{ totalRatings }}</span>
+    </p>
+    <p>
+      Mode Rating: <span class="additional">{{ modeRating }}</span> stars
+    </p>
+    <p>
+      Average Rating:
+      <span class="average">{{ averageRating | number : "1.1-2" }}</span>
+    </p>
+  </div>
+</div>

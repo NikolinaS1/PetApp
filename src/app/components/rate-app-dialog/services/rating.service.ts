@@ -39,4 +39,24 @@ export class RatingService {
       throw error;
     }
   }
+
+  async getRatingCounts(): Promise<number[]> {
+    const counts = [0, 0, 0, 0, 0];
+    try {
+      const snapshot = await this.firestore
+        .collection('ratings')
+        .get()
+        .toPromise();
+      snapshot.forEach((doc) => {
+        const data = doc.data() as Rating;
+        if (data.rating >= 1 && data.rating <= 5) {
+          counts[data.rating - 1]++;
+        }
+      });
+      return counts;
+    } catch (error) {
+      console.error('Error fetching rating counts:', error);
+      throw error;
+    }
+  }
 }

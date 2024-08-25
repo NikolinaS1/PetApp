@@ -20,6 +20,7 @@ export class NavbarComponent implements OnInit {
   filteredUsers!: Observable<UserProfile[]>;
   uid = localStorage.getItem('accessToken');
   profileImageUrl: string | null = null;
+  role: string | null = null;
 
   constructor(
     public authenticationService: AuthenticationService,
@@ -40,6 +41,10 @@ export class NavbarComponent implements OnInit {
       startWith(''),
       switchMap((value) => this.userService.searchUsers(value))
     );
+
+    this.userService.getUserRole(this.uid).subscribe((role) => {
+      this.role = role;
+    });
   }
 
   @HostListener('window:scroll', ['$event'])

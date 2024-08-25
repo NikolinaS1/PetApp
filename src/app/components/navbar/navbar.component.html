@@ -104,9 +104,17 @@
           </ng-template>
         </button>
         <mat-menu #profileMenu="matMenu">
-          <button mat-menu-item (click)="openRateAppDialog()">Rate app</button>
+          <button mat-menu-item (click)="openRateAppDialog()" *ngIf="!role">
+            <mat-icon>star_rate</mat-icon>
+            <span>Rate app</span>
+          </button>
+          <button routerLink="/statistics" *ngIf="role" mat-menu-item>
+            <mat-icon>bar_chart</mat-icon>
+            <span>View rating statistics</span>
+          </button>
           <button mat-menu-item (click)="authenticationService.logout()">
-            Logout
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
           </button>
         </mat-menu>
       </div>

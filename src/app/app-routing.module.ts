@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './shared/guard/auth.guard';
 import { preventLoggedInAccessGuard } from './shared/guard/prevent-logged-in-access.guard';
+import { AdminGuard } from './shared/guard/admin.guard';
 
 const routes: Routes = [
   {
@@ -41,6 +42,14 @@ const routes: Routes = [
         (m) => m.NotificationsModule
       ),
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'statistics',
+    loadChildren: () =>
+      import('./pages/statistics/statistics.module').then(
+        (m) => m.StatisticsModule
+      ),
+    canActivate: [AuthGuard, AdminGuard],
   },
 ];
 

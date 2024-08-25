@@ -1,0 +1,67 @@
+.statistics-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  margin: 0 auto;
+}
+
+.title {
+  margin-top: 70px;
+  padding: 30px;
+  text-align: center;
+  color: #000;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.rating-details,
+.additional-details {
+  padding: 0 50px;
+}
+
+.additional-details p,
+.rating-details p {
+  white-space: nowrap;
+  margin-bottom: 40px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.rating-details {
+  margin-right: 50px;
+  margin-top: 25px;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.stars mat-icon {
+  color: #ffc107;
+  font-size: 24px;
+}
+
+.rate,
+.additional {
+  padding: 5px 10px;
+  margin: 0 10px;
+  color: #fff;
+  background-color: #512da8;
+  border-radius: 100%;
+}
+
+.average {
+  padding: 12px 10px;
+  margin: 0 10px;
+  color: #fff;
+  background-color: #512da8;
+  border-radius: 100%;
+}
+
+.additional-details {
+  margin-left: 50px;
+}

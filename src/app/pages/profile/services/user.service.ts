@@ -422,4 +422,18 @@ export class UserService {
       })
     );
   }
+
+  getUserRole(uid: string): Observable<string | null> {
+    return this.firestore
+      .collection('users')
+      .doc(uid)
+      .valueChanges()
+      .pipe(
+        map((user: UserProfile) => user.role || null),
+        catchError((error) => {
+          console.error('Error fetching user role:', error);
+          return of(null);
+        })
+      );
+  }
 }

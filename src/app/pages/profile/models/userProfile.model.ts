@@ -6,4 +6,5 @@ export interface UserProfile {
   profileImageUrl?: string;
   followers?: Array<{ userId: string; followedAt: Date }>;
   following?: Array<{ userId: string; followedAt: Date }>;
+  role?: string;
 }
