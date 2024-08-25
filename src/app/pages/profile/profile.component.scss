@@ -1,5 +1,6 @@
 .content {
   min-height: calc(100vh - 40px);
+  position: relative;
 }
 
 .profile-info {
@@ -119,7 +120,7 @@
 }
 
 .pom {
-  margin-bottom: 70px;
+  height: 85px;
 }
 
 .button-actions {
