@@ -65,3 +65,61 @@
 .additional-details {
   margin-left: 50px;
 }
+
+@media (max-width: 768px) {
+  .statistics-container {
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+  }
+
+  .title {
+    margin-top: 70px;
+    margin-bottom: -20px;
+  }
+
+  .rating-details,
+  .additional-details {
+    padding: 0 20px;
+  }
+
+  .rating-details {
+    margin-right: 0;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .stars {
+    margin-right: 5px;
+  }
+
+  .stars mat-icon {
+    font-size: 20px;
+  }
+
+  .rate,
+  .additional {
+    padding: 5px 10px;
+    margin: 0 5px;
+  }
+
+  .average {
+    padding: 8px;
+    margin: 0 5px;
+  }
+
+  .additional-details {
+    margin-left: 0;
+  }
+
+  .rating-details p,
+  .additional-details p {
+    margin-bottom: 20px;
+  }
+
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+    margin-bottom: 30px;
+  }
+}

@@ -17,6 +17,12 @@ mat-icon {
   line-height: 1;
 }
 
+@media (max-width: 768px) {
+  mat-icon {
+    font-size: 2rem;
+  }
+}
+
 mat-icon.filled {
   color: #ffc107;
 }
