@@ -1,5 +1,5 @@
 <div class="content">
-  <div class="main-content">
+  <div class="main-content" id="card-body" (scroll)="onScroll()">
     <div *ngIf="messages$ | async as messages">
       <div *ngFor="let message of messages" class="message">
         <div *ngIf="message.senderId === currentUserId" class="message-sent">
