@@ -100,7 +100,7 @@ export class NavbarComponent implements OnInit {
   openRateAppDialog(): void {
     this.dialog.open(RateAppDialogComponent, {
       width: '440px',
-      height: '300px',
+      height: 'auto',
       data: {},
     });
   }

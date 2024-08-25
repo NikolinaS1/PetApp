@@ -103,20 +103,24 @@
 }
 
 .profile-image {
+  margin-right: 20px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.profile-image img {
   width: 70px;
   height: 70px;
   border-radius: 100%;
-  margin-right: 20px;
   object-fit: cover;
   object-position: center;
-  box-sizing: border-box;
-  cursor: pointer;
 }
 
 .text-content {
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-top: 5px;
 }
 
 .name-and-timestamp {
@@ -166,4 +170,8 @@ mat-icon {
 mat-icon:hover {
   background-color: #e0e0e0;
   color: #000;
+}
+
+.chat-item {
+  display: flex;
 }
