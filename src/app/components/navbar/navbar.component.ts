@@ -6,14 +6,13 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
-import { MatSidenav } from '@angular/material/sidenav';
-import { BreakpointObserver } from '@angular/cdk/layout';
 import { UserService } from '../../pages/profile/services/user.service';
 import { FormControl } from '@angular/forms';
 import { Observable, startWith, switchMap } from 'rxjs';
 import { UserProfile } from '../../pages/profile/models/userProfile.model';
 import { MatDialog } from '@angular/material/dialog';
 import { RateAppDialogComponent } from '../rate-app-dialog/rate-app-dialog.component';
+import { ChatService } from '../../pages/chat/services/chat.service';
 
 @Component({
   selector: 'app-navbar',
@@ -21,6 +20,8 @@ import { RateAppDialogComponent } from '../rate-app-dialog/rate-app-dialog.compo
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
+  unreadMessagesCount: number = 0;
+  hasUnreadMessages: boolean = false;
   searchControl = new FormControl();
   filteredUsers!: Observable<UserProfile[]>;
   uid = localStorage.getItem('accessToken');
@@ -32,12 +33,17 @@ export class NavbarComponent implements OnInit {
     private userService: UserService,
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
-    private router: Router,
-    private observer: BreakpointObserver
+    private chatService: ChatService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     if (this.uid) {
+      this.chatService.countUnreadMessages(this.uid).subscribe((count) => {
+        this.unreadMessagesCount = count;
+        this.hasUnreadMessages = count > 0;
+      });
+
       this.userService.getProfileImageUrl().subscribe((url) => {
         this.profileImageUrl = url;
         this.cdr.markForCheck();

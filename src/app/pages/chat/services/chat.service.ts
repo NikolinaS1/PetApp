@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  map,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 import { ChatMessage } from '../models/chat.model';
 import { Timestamp } from 'firebase/firestore';
 import { UserProfile } from '../../profile/models/userProfile.model';
@@ -28,6 +35,7 @@ export class ChatService {
         receiverId,
         message,
         timestamp,
+        isRead: false,
       };
 
       const chatPath = `chat/${senderId}_${receiverId}/messages`;
@@ -51,7 +59,7 @@ export class ChatService {
 
   getLatestMessages(
     userId: string
-  ): Observable<{ user: UserProfile; latestMessage: ChatMessage }[]> {
+  ): Observable<{ user: UserProfile; latestMessage: ChatMessage | null }[]> {
     return this.firestore
       .doc<UserProfile>(`users/${userId}`)
       .valueChanges()
@@ -104,7 +112,10 @@ export class ChatService {
                       msg.receiverId === userProfile.id)
                 );
 
-                return { user: userProfile, latestMessage: latestMessage! };
+                return {
+                  user: userProfile,
+                  latestMessage: latestMessage || null,
+                };
               });
             })
           );
@@ -119,6 +130,83 @@ export class ChatService {
         message.timestamp instanceof Timestamp
           ? message.timestamp.toDate()
           : message.timestamp,
+      isRead: message.isRead || false,
     } as ChatMessage;
+  }
+
+  async markMessagesAsRead(
+    senderId: string,
+    receiverId: string
+  ): Promise<void> {
+    try {
+      const chatPath = `chat/${senderId}_${receiverId}/messages`;
+
+      const messagesSnapshot = await this.firestore
+        .collection(chatPath, (ref) => ref.where('isRead', '==', false))
+        .get()
+        .toPromise();
+
+      const batch = this.firestore.firestore.batch();
+      messagesSnapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, { isRead: true });
+      });
+
+      await batch.commit();
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+      throw error;
+    }
+  }
+
+  countUnreadMessages(userId: string): Observable<number> {
+    return this.firestore
+      .collection<UserProfile>('users')
+      .doc(userId)
+      .valueChanges()
+      .pipe(
+        switchMap((user) => {
+          if (!user || !user.following || !user.followers) {
+            return of(0);
+          }
+
+          const chatPaths = [
+            ...user.following.map((f) => `chat/${userId}_${f.userId}/messages`),
+            ...user.followers.map((f) => `chat/${f.userId}_${userId}/messages`),
+          ];
+
+          const observables = chatPaths.map((path) =>
+            this.firestore
+              .collection<ChatMessage>(path, (ref) =>
+                ref.where('isRead', '==', false)
+              )
+              .valueChanges()
+              .pipe(
+                map((messages) => {
+                  const sendersWithUnreadMessages = new Set<string>();
+                  messages.forEach((message) => {
+                    if (message.receiverId === userId) {
+                      sendersWithUnreadMessages.add(message.senderId);
+                    }
+                  });
+                  return sendersWithUnreadMessages;
+                })
+              )
+          );
+
+          return combineLatest(observables).pipe(
+            map((sets) => {
+              const distinctSenders = new Set<string>();
+              sets.forEach((set) =>
+                set.forEach((senderId) => distinctSenders.add(senderId))
+              );
+              return distinctSenders.size;
+            })
+          );
+        }),
+        catchError((error) => {
+          console.error('Error counting unread messages:', error);
+          return of(0);
+        })
+      );
   }
 }

@@ -70,6 +70,12 @@
           >
             <a routerLink="/messages" class="nav__link">
               <mat-icon>message</mat-icon>
+              <mat-badge
+                *ngIf="hasUnreadMessages"
+                [matBadge]="unreadMessagesCount"
+                matBadgeColor="accent"
+                matBadgeOverlap="false"
+              ></mat-badge>
             </a>
           </li>
           <li
