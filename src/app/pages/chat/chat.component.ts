@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { map, startWith, switchMap } from 'rxjs/operators';
+import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { UserProfile } from '../profile/models/userProfile.model';
 import { ChatMessage } from './models/chat.model';
 import { UserService } from '../profile/services/user.service';
@@ -20,6 +20,8 @@ export class ChatComponent implements OnInit {
   >;
   selectedUser: UserProfile | null = null;
   unreadMessagesCount$: Observable<number> = of(0);
+  unreadMessagesMap: Map<string, boolean> = new Map<string, boolean>();
+  currentUserId: string | null = null;
 
   constructor(
     private userService: UserService,
@@ -32,11 +34,22 @@ export class ChatComponent implements OnInit {
       switchMap((value) => this.userService.searchMutualUsers(value))
     );
 
-    const currentUserId = localStorage.getItem('accessToken');
-    if (currentUserId) {
+    this.currentUserId = localStorage.getItem('accessToken');
+    if (this.currentUserId) {
       this.latestMessages = this.chatService
-        .getLatestMessages(currentUserId)
+        .getLatestMessages(this.currentUserId)
         .pipe(
+          tap((messages) => {
+            this.unreadMessagesMap.clear();
+            messages.forEach((chat) => {
+              if (chat.latestMessage.receiverId === this.currentUserId) {
+                this.unreadMessagesMap.set(
+                  chat.user.id,
+                  !chat.latestMessage.isRead
+                );
+              }
+            });
+          }),
           map((messages) =>
             messages.sort(
               (a, b) =>
@@ -46,8 +59,9 @@ export class ChatComponent implements OnInit {
           )
         );
 
-      this.unreadMessagesCount$ =
-        this.chatService.countUnreadMessages(currentUserId);
+      this.unreadMessagesCount$ = this.chatService.countUnreadMessages(
+        this.currentUserId
+      );
     }
   }
 
@@ -55,13 +69,20 @@ export class ChatComponent implements OnInit {
     this.selectedUser = user;
     this.searchControl.setValue('');
 
-    const currentUserId = localStorage.getItem('accessToken');
-    if (currentUserId) {
-      await this.chatService.markMessagesAsReadForUser(user.id, currentUserId);
+    if (this.currentUserId) {
+      await this.chatService.markMessagesAsReadForUser(
+        user.id,
+        this.currentUserId
+      );
+      this.unreadMessagesMap.delete(user.id);
     }
   }
 
   goBack() {
     this.selectedUser = null;
+  }
+
+  hasUnreadMessages(userId: string): boolean {
+    return this.unreadMessagesMap.get(userId) || false;
   }
 }

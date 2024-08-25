@@ -34,7 +34,9 @@
               />
             </ng-template>
             <div class="text-content">
-              <span class="name">{{ user.firstName }} {{ user.lastName }}</span>
+              <span class="name" [class.bold]="hasUnreadMessages(user.id)">
+                {{ user.firstName }} {{ user.lastName }}
+              </span>
             </div>
           </div>
         </mat-option>
@@ -62,14 +64,20 @@
           </div>
           <div class="text-content">
             <div class="name-and-timestamp">
-              <span class="name">
+              <span class="name" [class.bold]="hasUnreadMessages(chat.user.id)">
                 {{ chat.user.firstName }} {{ chat.user.lastName }}
               </span>
               <span class="timestamp">
                 {{ chat.latestMessage?.timestamp | date : "short" }}
               </span>
             </div>
-            <p class="latest-message">
+            <p
+              class="latest-message"
+              [class.bold]="
+                chat.latestMessage?.receiverId === currentUserId &&
+                !chat.latestMessage?.isRead
+              "
+            >
               {{ chat.latestMessage?.message }}
             </p>
           </div>
