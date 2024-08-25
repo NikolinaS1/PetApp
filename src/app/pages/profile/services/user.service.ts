@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import {
+  BehaviorSubject,
   Observable,
   catchError,
   combineLatest,
@@ -27,10 +28,17 @@ import { IPost } from '../../../components/post/models/post.model';
   providedIn: 'root',
 })
 export class UserService {
+  private profileImageUrlSubject = new BehaviorSubject<string | null>(null);
+
   constructor(
     private firestore: AngularFirestore,
     private auth: AngularFireAuth
-  ) {}
+  ) {
+    const cachedImageUrl = localStorage.getItem('profileImageUrl');
+    if (cachedImageUrl) {
+      this.profileImageUrlSubject.next(cachedImageUrl);
+    }
+  }
 
   async getUserProfile(uid: string): Promise<UserProfile | null> {
     try {
@@ -400,6 +408,11 @@ export class UserService {
   }
 
   getCurrentUserProfileImage(): Observable<string | null> {
+    const cachedImageUrl = this.profileImageUrlSubject.value;
+    if (cachedImageUrl) {
+      return of(cachedImageUrl);
+    }
+
     return this.auth.authState.pipe(
       switchMap((user) => {
         if (user) {
@@ -409,7 +422,12 @@ export class UserService {
           return userProfileRef.get().pipe(
             map((doc) => {
               const data = doc.data() as UserProfile;
-              return data?.profileImageUrl || null;
+              const imageUrl = data?.profileImageUrl || null;
+              this.profileImageUrlSubject.next(imageUrl);
+              if (imageUrl) {
+                localStorage.setItem('profileImageUrl', imageUrl);
+              }
+              return imageUrl;
             })
           );
         } else {
@@ -421,6 +439,15 @@ export class UserService {
         return of(null);
       })
     );
+  }
+
+  getProfileImageUrl(): Observable<string | null> {
+    return this.profileImageUrlSubject.asObservable();
+  }
+
+  clearProfileImageCache(): void {
+    this.profileImageUrlSubject.next(null);
+    localStorage.removeItem('profileImageUrl');
   }
 
   getUserRole(uid: string): Observable<string | null> {

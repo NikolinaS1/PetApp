@@ -1,4 +1,9 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './services/authentication.service';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -25,6 +30,7 @@ export class NavbarComponent implements OnInit {
   constructor(
     public authenticationService: AuthenticationService,
     private userService: UserService,
+    private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
     private router: Router,
     private observer: BreakpointObserver
@@ -32,9 +38,12 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.uid) {
-      this.userService.getCurrentUserProfileImage().subscribe((url) => {
+      this.userService.getProfileImageUrl().subscribe((url) => {
         this.profileImageUrl = url;
+        this.cdr.markForCheck();
       });
+
+      this.userService.getCurrentUserProfileImage().subscribe();
     }
 
     this.filteredUsers = this.searchControl.valueChanges.pipe(
