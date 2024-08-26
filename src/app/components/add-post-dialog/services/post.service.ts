@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { arrayUnion, arrayRemove, Timestamp } from 'firebase/firestore';
+import {
+  arrayUnion,
+  arrayRemove,
+  Timestamp,
+  DocumentReference,
+} from 'firebase/firestore';
 import {
   getStorage,
   ref,
@@ -14,6 +19,7 @@ import { ILike, IPost } from '../../post/models/post.model';
 import { UserProfile } from '../../../pages/profile/models/userProfile.model';
 import { IComment } from '../../comments-dialog/models/comments.model';
 import { v4 as uuidv4 } from 'uuid';
+import { AppNotification } from '../../../pages/notifications/models/notifications.model';
 
 @Injectable({
   providedIn: 'root',
@@ -150,7 +156,7 @@ export class PostService {
     }
   }
 
-  async deletePost(userId: string, postId: string) {
+  async deletePost(userId: string, postId: string): Promise<string> {
     const storage = getStorage();
     const filePath = `posts/${userId}/${postId}`;
     const fileRef = ref(storage, filePath);
@@ -162,6 +168,8 @@ export class PostService {
     }
 
     try {
+      await this.deleteAllPostNotifications(userId, postId);
+
       await this.firestore
         .collection('posts')
         .doc(userId)
@@ -173,6 +181,36 @@ export class PostService {
     } catch (error) {
       console.error('Error deleting post:', error);
       throw error;
+    }
+  }
+
+  private async deleteAllPostNotifications(
+    userId: string,
+    postId: string
+  ): Promise<void> {
+    try {
+      const notificationsRef = this.firestore
+        .collection('notifications')
+        .doc(userId)
+        .collection('notifications', (ref) =>
+          ref.where('postId', '==', postId)
+        );
+
+      const notificationSnapshot = await notificationsRef.get().toPromise();
+
+      const batch = this.firestore.firestore.batch();
+
+      notificationSnapshot?.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+
+      console.log(
+        `All notifications related to post ${postId} have been deleted.`
+      );
+    } catch (error) {
+      console.error('Error deleting post notifications:', error);
     }
   }
 
@@ -237,17 +275,53 @@ export class PostService {
         throw new Error('No user is logged in.');
       }
 
+      const batch = this.firestore.firestore.batch();
+      const timestamp = new Date();
+
       const postRef = this.firestore
         .collection('posts')
         .doc(userId)
         .collection('posts')
         .doc(postId).ref;
 
-      const timestamp = new Date();
+      const currentUserDoc = await this.firestore
+        .collection('users')
+        .doc(currentUserId)
+        .ref.get();
 
-      await postRef.update({
-        likes: arrayUnion({ userId: currentUserId, timestamp: timestamp }),
+      const currentUserData = currentUserDoc.data() as UserProfile | undefined;
+      if (!currentUserData) {
+        throw new Error('Current user data not found');
+      }
+
+      const { profileImageUrl = '', firstName = '' } = currentUserData;
+
+      const notificationRef = this.firestore
+        .collection('notifications')
+        .doc(userId)
+        .collection('notifications')
+        .doc();
+
+      const notification: AppNotification = {
+        userId: currentUserId,
+        profileImageUrl,
+        firstName,
+        message: 'liked your post',
+        timestamp,
+        isRead: false,
+        postId,
+      };
+
+      batch.update(postRef, {
+        likes: arrayUnion({
+          userId: currentUserId,
+          timestamp,
+        }),
       });
+
+      batch.set(notificationRef.ref, notification);
+
+      await batch.commit();
     } catch (error) {
       console.error('Error liking post:', error);
       throw new Error('Unable to like post. Please try again later.');
@@ -303,7 +377,23 @@ export class PostService {
         });
       });
 
-      console.log('Like removed successfully.');
+      const notificationsSnapshot = await this.firestore
+        .collection('notifications')
+        .doc(userId)
+        .collection('notifications')
+        .ref.where('userId', '==', currentUserId)
+        .where('message', '==', 'liked your post')
+        .where('postId', '==', postId)
+        .get();
+
+      const batch = this.firestore.firestore.batch();
+      notificationsSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+
+      console.log('Like and notification removed successfully.');
     } catch (error) {
       console.error('Error unliking post:', error);
       throw new Error('Unable to unlike post. Please try again later.');
@@ -365,8 +455,9 @@ export class PostService {
         throw new Error('User data not found.');
       }
 
+      const commentId = uuidv4();
       const comment: IComment = {
-        commentId: uuidv4(),
+        commentId: commentId,
         userId: currentUserId,
         text: text,
         createdAt: new Date(),
@@ -402,6 +493,27 @@ export class PostService {
           this.removeUndefinedFields(updatedData)
         );
       });
+
+      if (currentUserId !== postOwnerId) {
+        const notificationRef = this.firestore
+          .collection('notifications')
+          .doc(postOwnerId)
+          .collection('notifications')
+          .doc();
+
+        const notification: AppNotification = {
+          userId: currentUserId,
+          profileImageUrl: userData.profileImageUrl || '',
+          firstName: userData.firstName || 'Unknown',
+          message: 'commented on your post',
+          timestamp: new Date(),
+          isRead: false,
+          postId: postId,
+          commentId: commentId,
+        };
+
+        await notificationRef.set(notification);
+      }
     } catch (error) {
       console.error('Error adding comment:', error);
       throw error;
@@ -450,6 +562,7 @@ export class PostService {
         if (!postDoc.exists) {
           throw new Error('Post does not exist!');
         }
+
         const postData = postDoc.data() as IPost;
         const comments = postData.comments || [];
 
@@ -463,10 +576,39 @@ export class PostService {
         });
       });
 
-      console.log('Comment deleted successfully.');
+      const currentUserId = localStorage.getItem('accessToken');
+      if (currentUserId) {
+        await this.deleteCommentNotification(postOwnerId, commentId);
+      }
+
+      console.log('Comment and related notifications deleted successfully.');
     } catch (error) {
       console.error('Error deleting comment:', error);
       throw error;
+    }
+  }
+
+  private async deleteCommentNotification(
+    userId: string,
+    commentId: string
+  ): Promise<void> {
+    try {
+      const notificationsSnapshot = await this.firestore
+        .collection('notifications')
+        .doc(userId)
+        .collection('notifications')
+        .ref.where('commentId', '==', commentId)
+        .get();
+
+      const batch = this.firestore.firestore.batch();
+      notificationsSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+      console.log('Comment notifications deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting comment notifications:', error);
     }
   }
 }

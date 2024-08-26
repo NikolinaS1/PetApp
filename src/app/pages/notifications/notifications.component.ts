@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NotificationsService } from './services/notifications.service';
+import { Router } from '@angular/router';
+import { AppNotification } from './models/notifications.model';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -8,23 +10,10 @@ import { Observable } from 'rxjs';
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
-  notifications$: Observable<
-    { message: string; profileImageUrl: string; timestamp: Date }[]
-  >;
+  constructor(
+    private notificationsService: NotificationsService,
+    private router: Router
+  ) {}
 
-  constructor(private notificationsService: NotificationsService) {}
-
-  ngOnInit() {
-    const userId = localStorage.getItem('accessToken') || '';
-    if (userId) {
-      this.notifications$ =
-        this.notificationsService.getNotificationsForUser(userId);
-    } else {
-      this.notifications$ = new Observable();
-    }
-  }
-
-  formatTimestamp(date: Date): string {
-    return date.toLocaleString();
-  }
+  ngOnInit(): void {}
 }

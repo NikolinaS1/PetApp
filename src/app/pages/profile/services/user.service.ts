@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import {
+  AngularFirestore,
+  DocumentReference,
+} from '@angular/fire/compat/firestore';
 import {
   BehaviorSubject,
   Observable,
@@ -23,6 +26,7 @@ import {
 } from 'firebase/storage';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { IPost } from '../../../components/post/models/post.model';
+import { AppNotification } from '../../notifications/models/notifications.model';
 
 @Injectable({
   providedIn: 'root',
@@ -121,15 +125,42 @@ export class UserService {
   async followUser(followingUserId: string): Promise<void> {
     try {
       const currentUserId = localStorage.getItem('accessToken');
+      if (!currentUserId) {
+        throw new Error('No access token found');
+      }
+
       const batch = this.firestore.firestore.batch();
       const timestamp = new Date();
 
       const currentUserRef = this.firestore
         .collection('users')
-        .doc(currentUserId).ref;
+        .doc(currentUserId).ref as DocumentReference<UserProfile>;
       const followingUserRef = this.firestore
         .collection('users')
-        .doc(followingUserId).ref;
+        .doc(followingUserId).ref as DocumentReference<UserProfile>;
+
+      const currentUserDoc = await currentUserRef.get();
+      const currentUserData = currentUserDoc.data();
+      if (!currentUserData) {
+        throw new Error('Current user data not found');
+      }
+
+      const { profileImageUrl = '', firstName = '' } = currentUserData;
+
+      const notificationRef = this.firestore
+        .collection('notifications')
+        .doc(followingUserId)
+        .collection('notifications')
+        .doc();
+
+      const notification: AppNotification = {
+        userId: currentUserId,
+        profileImageUrl,
+        firstName,
+        message: 'followed you',
+        timestamp,
+        isRead: false,
+      };
 
       batch.update(currentUserRef, {
         following: firebase.firestore.FieldValue.arrayUnion({
@@ -145,6 +176,8 @@ export class UserService {
         }),
       });
 
+      batch.set(notificationRef.ref, notification);
+
       await batch.commit();
     } catch (error) {
       console.error('Error following user:', error);
@@ -155,34 +188,37 @@ export class UserService {
   async unfollowUser(followingUserId: string): Promise<void> {
     try {
       const currentUserId = localStorage.getItem('accessToken');
+      if (!currentUserId) {
+        throw new Error('No access token found');
+      }
+
       const batch = this.firestore.firestore.batch();
 
       const currentUserRef = this.firestore
         .collection('users')
-        .doc(currentUserId).ref;
+        .doc(currentUserId).ref as DocumentReference<UserProfile>;
       const followingUserRef = this.firestore
         .collection('users')
-        .doc(followingUserId).ref;
+        .doc(followingUserId).ref as DocumentReference<UserProfile>;
 
       const currentUserDoc = await currentUserRef.get();
-      const currentUserData = currentUserDoc.data() as
-        | { following: Array<{ userId: string; followedAt: Date }> }
-        | undefined;
-      const currentFollowing = currentUserData?.following || [];
-
+      const currentUserData = currentUserDoc.data() as UserProfile;
       const followingUserDoc = await followingUserRef.get();
-      const followingUserData = followingUserDoc.data() as
-        | { followers: Array<{ userId: string; followedAt: Date }> }
-        | undefined;
-      const followingFollowers = followingUserData?.followers || [];
+      const followingUserData = followingUserDoc.data() as UserProfile;
 
-      const updatedFollowing = currentFollowing.filter(
-        (follow) => follow.userId !== followingUserId
-      );
+      if (!currentUserData || !followingUserData) {
+        throw new Error('User data not found');
+      }
 
-      const updatedFollowers = followingFollowers.filter(
-        (follower) => follower.userId !== currentUserId
-      );
+      const updatedFollowing =
+        currentUserData.following?.filter(
+          (follow) => follow.userId !== followingUserId
+        ) || [];
+
+      const updatedFollowers =
+        followingUserData.followers?.filter(
+          (follower) => follower.userId !== currentUserId
+        ) || [];
 
       batch.update(currentUserRef, {
         following: updatedFollowing,
@@ -190,6 +226,20 @@ export class UserService {
 
       batch.update(followingUserRef, {
         followers: updatedFollowers,
+      });
+
+      const notificationsCollection = this.firestore
+        .collection('notifications')
+        .doc(followingUserId)
+        .collection('notifications');
+
+      const snapshot = await firstValueFrom(notificationsCollection.get());
+
+      snapshot.forEach((doc) => {
+        const docData = doc.data() as AppNotification;
+        if (docData.userId === currentUserId) {
+          batch.delete(doc.ref);
+        }
       });
 
       await batch.commit();

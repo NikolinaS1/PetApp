@@ -2,9 +2,10 @@
 <div class="content">
   <div class="notifications">
     <h1>Notifications</h1>
-    <div
+    <!-- <div
       *ngFor="let notification of notifications$ | async"
       class="notification"
+      (click)="goToUserProfile()"
     >
       <img
         [src]="
@@ -23,6 +24,6 @@
           notification.timestamp | date : "short"
         }}</span>
       </div>
-    </div>
+    </div> -->
   </div>
 </div>

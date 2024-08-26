@@ -13,6 +13,7 @@ import { UserProfile } from '../../pages/profile/models/userProfile.model';
 import { MatDialog } from '@angular/material/dialog';
 import { RateAppDialogComponent } from '../rate-app-dialog/rate-app-dialog.component';
 import { ChatService } from '../../pages/chat/services/chat.service';
+import { NotificationsService } from '../../pages/notifications/services/notifications.service';
 
 @Component({
   selector: 'app-navbar',
@@ -22,6 +23,7 @@ import { ChatService } from '../../pages/chat/services/chat.service';
 export class NavbarComponent implements OnInit {
   unreadMessagesCount: number = 0;
   hasUnreadMessages: boolean = false;
+  unreadNotificationsCount: number = 0;
   searchControl = new FormControl();
   filteredUsers!: Observable<UserProfile[]>;
   uid = localStorage.getItem('accessToken');
@@ -34,6 +36,7 @@ export class NavbarComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
     private chatService: ChatService,
+    private notificationsService: NotificationsService,
     private router: Router
   ) {}
 
