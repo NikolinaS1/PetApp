@@ -1,11 +1,17 @@
 <app-navbar></app-navbar>
 <div class="content">
   <div class="notifications">
-    <h1>Notifications</h1>
-    <!-- <div
+    <div class="header">
+      <h1>Notifications</h1>
+      <button (click)="markAllAsRead()" class="mark-all-button">
+        Mark All as Read
+      </button>
+    </div>
+    <div
       *ngFor="let notification of notifications$ | async"
       class="notification"
-      (click)="goToUserProfile()"
+      [class.bold]="!notification.isRead"
+      (click)="onNotificationClicked(notification)"
     >
       <img
         [src]="
@@ -19,11 +25,13 @@
         "
       />
       <div class="notification-text">
-        <span class="notification-message">{{ notification.message }}</span>
-        <span class="notification-timestamp">{{
-          notification.timestamp | date : "short"
-        }}</span>
+        <span class="notification-message">
+          {{ notification.firstName }} {{ notification.message }}
+        </span>
+        <span class="notification-timestamp">
+          {{ notification.timestamp | date : "short" }}
+        </span>
       </div>
-    </div> -->
+    </div>
   </div>
 </div>

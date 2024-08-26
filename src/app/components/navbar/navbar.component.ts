@@ -47,6 +47,12 @@ export class NavbarComponent implements OnInit {
         this.hasUnreadMessages = count > 0;
       });
 
+      this.notificationsService
+        .getUnreadNotificationsCount()
+        .subscribe((count) => {
+          this.unreadNotificationsCount = count;
+        });
+
       this.userService.getProfileImageUrl().subscribe((url) => {
         this.profileImageUrl = url;
         this.cdr.markForCheck();

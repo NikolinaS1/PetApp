@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NotificationsService } from './services/notifications.service';
-import { Router } from '@angular/router';
 import { AppNotification } from './models/notifications.model';
 import { Observable } from 'rxjs';
 
@@ -10,10 +9,24 @@ import { Observable } from 'rxjs';
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
+  notifications$: Observable<AppNotification[]>;
+
   constructor(
     private notificationsService: NotificationsService,
-    private router: Router
+    private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.notifications$ =
+      this.notificationsService.getNotificationsForCurrentUser();
+  }
+
+  async markAllAsRead(): Promise<void> {
+    try {
+      await this.notificationsService.markAllNotificationsAsRead();
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  }
 }

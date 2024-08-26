@@ -275,6 +275,21 @@ export class PostService {
         throw new Error('No user is logged in.');
       }
 
+      if (currentUserId === userId) {
+        await this.firestore
+          .collection('posts')
+          .doc(userId)
+          .collection('posts')
+          .doc(postId)
+          .update({
+            likes: arrayUnion({
+              userId: currentUserId,
+              timestamp: new Date(),
+            }),
+          });
+        return;
+      }
+
       const batch = this.firestore.firestore.batch();
       const timestamp = new Date();
 

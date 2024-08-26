@@ -85,6 +85,12 @@
           >
             <a routerLink="/notifications" class="nav__link">
               <mat-icon>notifications</mat-icon>
+              <mat-badge
+                *ngIf="unreadNotificationsCount > 0"
+                [matBadge]="unreadNotificationsCount"
+                matBadgeColor="accent"
+                matBadgeOverlap="false"
+              ></mat-badge>
             </a>
           </li>
         </ul>
