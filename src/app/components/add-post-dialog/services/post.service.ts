@@ -311,13 +311,15 @@ export class PostService {
 
       const { profileImageUrl = '', firstName = '' } = currentUserData;
 
+      const notificationId = uuidv4();
       const notificationRef = this.firestore
         .collection('notifications')
         .doc(userId)
         .collection('notifications')
-        .doc();
+        .doc(notificationId);
 
       const notification: AppNotification = {
+        id: notificationId,
         userId: currentUserId,
         profileImageUrl,
         firstName,
@@ -510,13 +512,15 @@ export class PostService {
       });
 
       if (currentUserId !== postOwnerId) {
+        const notificationId = uuidv4();
         const notificationRef = this.firestore
           .collection('notifications')
           .doc(postOwnerId)
           .collection('notifications')
-          .doc();
+          .doc(notificationId);
 
         const notification: AppNotification = {
+          id: notificationId,
           userId: currentUserId,
           profileImageUrl: userData.profileImageUrl || '',
           firstName: userData.firstName || 'Unknown',

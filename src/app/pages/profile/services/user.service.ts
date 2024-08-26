@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { v4 as uuidv4 } from 'uuid';
 import {
   AngularFirestore,
   DocumentReference,
@@ -147,13 +148,15 @@ export class UserService {
 
       const { profileImageUrl = '', firstName = '' } = currentUserData;
 
+      const notificationId = uuidv4();
       const notificationRef = this.firestore
         .collection('notifications')
         .doc(followingUserId)
         .collection('notifications')
-        .doc();
+        .doc(notificationId);
 
       const notification: AppNotification = {
+        id: notificationId,
         userId: currentUserId,
         profileImageUrl,
         firstName,

@@ -1,4 +1,5 @@
 export interface AppNotification {
+  id: string;
   userId: string;
   profileImageUrl: string;
   firstName: string;

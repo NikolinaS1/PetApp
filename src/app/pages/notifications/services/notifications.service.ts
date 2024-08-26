@@ -1,18 +1,23 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { Observable, of, combineLatest } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { AppNotification } from '../models/notifications.model';
 import { Timestamp } from 'firebase/firestore';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationsService {
-  constructor(private firestore: AngularFirestore) {}
+  private uid: string | null = null;
+
+  constructor(private firestore: AngularFirestore, private router: Router) {
+    this.uid = localStorage.getItem('accessToken');
+  }
 
   getNotificationsForCurrentUser(): Observable<AppNotification[]> {
-    const currentUserId = localStorage.getItem('accessToken');
+    const currentUserId = this.uid;
     if (!currentUserId) {
       return of([]);
     }
@@ -40,7 +45,7 @@ export class NotificationsService {
   }
 
   getUnreadNotificationsCount(): Observable<number> {
-    const currentUserId = localStorage.getItem('accessToken');
+    const currentUserId = this.uid;
     if (!currentUserId) {
       return of(0);
     }
@@ -60,7 +65,7 @@ export class NotificationsService {
   }
 
   async markAllNotificationsAsRead(): Promise<void> {
-    const currentUserId = localStorage.getItem('accessToken');
+    const currentUserId = this.uid;
     if (!currentUserId) {
       throw new Error('No user is logged in.');
     }
@@ -84,6 +89,48 @@ export class NotificationsService {
       await batch.commit();
     } catch (error) {
       console.error('Error marking notifications as read:', error);
+      throw error;
+    }
+  }
+
+  handleNotificationClick(notification: AppNotification): void {
+    this.markNotificationAsRead(notification.id).then(() => {
+      if (notification.message.includes('followed you')) {
+        this.navigateToUserProfile(notification.userId);
+      } else {
+        this.navigateToCurrentUserProfile();
+      }
+    });
+  }
+
+  navigateToUserProfile(userId: string) {
+    this.router.navigate(['/profile', userId]);
+  }
+
+  navigateToCurrentUserProfile() {
+    if (this.uid) {
+      this.router.navigate(['/profile', this.uid]);
+    }
+  }
+
+  async markNotificationAsRead(notificationId: string): Promise<void> {
+    try {
+      const currentUserId = this.uid;
+      if (!currentUserId) {
+        throw new Error('No user is logged in.');
+      }
+
+      const notificationRef = this.firestore
+        .collection('notifications')
+        .doc(currentUserId)
+        .collection('notifications')
+        .doc(notificationId).ref;
+
+      await notificationRef.update({ isRead: true });
+
+      console.log(`Notification ${notificationId} marked as read.`);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
       throw error;
     }
   }
