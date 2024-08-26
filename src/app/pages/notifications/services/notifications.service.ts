@@ -94,12 +94,19 @@ export class NotificationsService {
   }
 
   handleNotificationClick(notification: AppNotification): void {
-    this.markNotificationAsRead(notification.id).then(() => {
-      if (notification.message.includes('followed you')) {
-        this.navigateToUserProfile(notification.userId);
-      } else {
-        this.navigateToCurrentUserProfile();
-      }
+    const markAsRead = () => this.markNotificationAsRead(notification.id);
+
+    let navigationUrl: string[] = [];
+    if (notification.message.includes('followed you')) {
+      navigationUrl = ['/profile', notification.userId];
+    } else {
+      navigationUrl = ['/profile', notification.userId];
+    }
+
+    this.router.navigate(navigationUrl).then(() => {
+      markAsRead().catch((error) => {
+        console.error('Error marking notification as read:', error);
+      });
     });
   }
 
