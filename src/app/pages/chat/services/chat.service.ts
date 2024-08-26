@@ -114,13 +114,24 @@ export class ChatService {
 
                 return {
                   user: userProfile,
-                  latestMessage: latestMessage || null,
+                  latestMessage: latestMessage
+                    ? {
+                        ...latestMessage,
+                        message: this.truncateMessage(latestMessage.message),
+                      }
+                    : null,
                 };
               });
             })
           );
         })
       );
+  }
+
+  private truncateMessage(message: string, maxLength: number = 40): string {
+    return message.length > maxLength
+      ? message.substring(0, maxLength) + '...'
+      : message;
   }
 
   private convertToChatMessage(message: any): ChatMessage {
